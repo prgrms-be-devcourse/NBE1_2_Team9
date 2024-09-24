@@ -43,9 +43,9 @@ public class Location {
     @Column(nullable = false)
     private LocationType type;
 
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Pin> pins = new ArrayList<>();
+    private Pin pin;
 
     @OneToMany(mappedBy = "startLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
