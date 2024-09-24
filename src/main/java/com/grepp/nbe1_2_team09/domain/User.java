@@ -8,12 +8,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user_tb")
-@Getter @Setter
+@Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class User {
     @Id
@@ -36,12 +37,33 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime lastLoginDate;
 
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<Group> createdGroups = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<GroupMembership> groupMemberships = new ArrayList<>();
+
+    //비즈니스 메서드 기본
+
+    @Builder
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+    // 외부에 보이는 정보들을 업데이트
+    public void updateProfile(String username, String email){
+        this.username = username;
+        this.email = email;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    //마지막 로그인 시간 업데이트
+    public void updateLastLoginDate() {
+        this.lastLoginDate = LocalDateTime.now();
+    }
 
 }

@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "event_tb")
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,12 +35,27 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id")
-    private Location location;
-
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Pin> pins = new ArrayList<>();
+    private List<EventLocation> eventLocations = new ArrayList<>();
+
+
+    //비즈니스 메서드
+
+    @Builder
+    public Event(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
+        this.eventName = eventName;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.group = group;
+    }
+
+    public void updateEventDetails(String eventName, String description, LocalDateTime startDateTime, LocalDateTime endDateTime ){
+        this.eventName = eventName;
+        this.description = description;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+    }
+
+
 }

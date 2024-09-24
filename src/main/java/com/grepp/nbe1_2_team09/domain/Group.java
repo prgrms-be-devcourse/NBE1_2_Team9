@@ -10,9 +10,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "group_tb")
-@Getter @Setter
+@Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Group {
     @Id
@@ -21,11 +21,6 @@ public class Group {
 
     @Column(nullable = false, length = 100)
     private String groupName;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by_user_id", nullable = false)
-    @ToString.Exclude
-    private User createdBy;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -46,6 +41,24 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Expense> expenses = new ArrayList<>();
+
+    //기본 비즈니스 메서드
+
+    @Builder
+    public Group(String groupName) {
+        this.groupName = groupName;
+    }
+
+    //그룹 이름 변경
+    public void updateGroupName(String newName){
+        this.groupName = newName;
+    }
+
+
+
+
+
+
 
 
 }

@@ -25,4 +25,23 @@ public class Task {
 
     @Column(nullable = false)
     private boolean isCompleted = false;
+
+    //비즈니스 메서드
+
+    @Builder
+    public Task(String taskName, Group group) {
+        this.taskName = taskName;
+        this.group = group;
+    }
+
+    public void updateTaskName(String newName){
+        this.taskName = newName;
+    }
+
+    public void check(){
+        this.isCompleted = true;
+    }
+    public void uncheck(){
+        this.isCompleted = false;
+    }
 }

@@ -8,9 +8,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "group_membership_tb")
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class GroupMembership {
     @Id
@@ -33,6 +32,20 @@ public class GroupMembership {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.MEMBER;
+
+    //비즈니스 메서드
+
+    @Builder
+    public GroupMembership(Group group, User user, Role role) {
+        this.group = group;
+        this.user = user;
+        this.role = role;
+    }
+
+    //그룹 탈퇴 같은 상황에서 Role 변경 로직
+    public void changeRole(Role newRole){
+        this.role = newRole;
+    }
 
 
 }

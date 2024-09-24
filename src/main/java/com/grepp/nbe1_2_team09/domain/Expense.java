@@ -32,10 +32,37 @@ public class Expense {
     @Column(nullable = false)
     private LocalDateTime expenseDate;
 
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paid_by_user_id", nullable = false)
-    private User paidBy;
+    //지불한 사람 기록
+    @Column(nullable = false, length = 50)
+    private String paidBy;
 
-    private String receiptImage;
+    @Lob
+    @Column
+    private byte[] receiptImage;
+
+    @Builder
+    public Expense(String itemName, BigDecimal amount, LocalDateTime expenseDate, String paidBy, Group group) {
+        this.itemName = itemName;
+        this.amount = amount;
+        this.expenseDate = expenseDate;
+        this.paidBy = paidBy;
+        this.group = group;
+
+    }
+
+    public void updateExpenseDetails(String itemName, BigDecimal amount, LocalDateTime expenseDate) {
+        this.itemName = itemName;
+        this.amount = amount;
+        this.expenseDate = expenseDate;
+    }
+
+    public void changePaidBy(String username){
+        this.paidBy = username;
+    }
+
+    public void attachReceiptImage(byte[] receiptImage){
+        this.receiptImage = receiptImage;
+    }
+
+
 }

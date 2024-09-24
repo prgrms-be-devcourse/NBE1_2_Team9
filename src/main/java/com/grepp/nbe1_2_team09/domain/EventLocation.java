@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pin {
+public class EventLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pinId;
@@ -27,4 +27,24 @@ public class Pin {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    //기본 비즈니스 메서드
+
+    @Builder
+    public EventLocation(Event event, Location location, String description) {
+        this.event = event;
+        this.location = location;
+        this.description = description;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void changeLocation(Location location) {
+        this.location = location;
+    }
+    public void assignToEvent(Event event) {
+        this.event = event;
+    }
 }

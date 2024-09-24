@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "location_tb")
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,7 +44,7 @@ public class Location {
 
     @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Pin pin;
+    private EventLocation eventLocation;
 
     @OneToMany(mappedBy = "startLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -54,4 +53,34 @@ public class Location {
     @OneToMany(mappedBy = "endLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Route> routesTo = new ArrayList<>();
+
+    //비즈니스 메서드
+
+    @Builder
+    public Location(String placeName, BigDecimal latitude, BigDecimal longitude, String address, String city, String country, LocationType type) {
+        this.placeName = placeName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.type = type;
+
+    }
+
+    public void updateDetails(String placeName, String address, String city, String country) {
+        this.placeName = placeName;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+    }
+
+    public void updateCoordinates(BigDecimal latitude, BigDecimal longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public void updateRating(BigDecimal rating) {
+        this.rating = rating;
+    }
 }

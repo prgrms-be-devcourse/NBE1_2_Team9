@@ -32,5 +32,33 @@ public class Route {
     private BigDecimal distance;
 
     private LocalDateTime estimatedTime;
+
+    //기본 비즈니스 메서드
+
+    @Builder
+    public Route(Location startLocation, Location endLocation, BigDecimal distance, LocalDateTime estimatedTime) {
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
+        this.distance = distance;
+        this.estimatedTime = estimatedTime;
+    }
+
+    public void updateRouteDetails(BigDecimal distance, LocalDateTime estimatedTime) {
+        this.distance = distance;
+        this.estimatedTime = estimatedTime;
+    }
+
+    public void changeStartLocation(Location startLocation) {
+        this.startLocation = startLocation;
+    }
+
+    public void changeEndLocation(Location endLocation) {
+        this.endLocation = endLocation;
+    }
+
+    public void calculateRoute(BigDecimal distance, LocalDateTime estimatedTime) {
+        this.distance = distance;
+        this.estimatedTime = estimatedTime;
+    }
 }
 
