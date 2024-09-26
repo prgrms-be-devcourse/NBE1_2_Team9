@@ -96,6 +96,12 @@ public class AccountBookService {
     //가계부 지출 수정
     @Transactional
     public void updateAccountBook(UpdateAccountBookReq updateAccountBookReq) {
+        try{
+            accountBookRepository.findById(updateAccountBookReq.getExpenseId());
+        } catch(Exception e){
+            throw new AccountBookException(ExceptionMessage.EXPENSE_NOT_FOUND);
+        }
+
         Expense expense=em.find(Expense.class, updateAccountBookReq.getExpenseId());
 
         expense.setExpenseDate(updateAccountBookReq.getExpenseDate());
@@ -108,5 +114,9 @@ public class AccountBookService {
             updateAccountBookReq.setReceiptImageByte(fileData);
         }
         expense.setReceiptImage(updateAccountBookReq.getReceiptImageByte());
+    }
+
+    public void deleteAccountBook(Long expenseId) {
+
     }
 }
