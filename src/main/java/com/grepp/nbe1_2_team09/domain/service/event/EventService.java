@@ -61,6 +61,9 @@ public class EventService {
                 .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
 
         // 내일 여기에 시작일이 종료일보다 앞인지 확인하는 검사 포함
+        if(request.startDateTime().isAfter(request.endDateTime())){
+            throw new EventException(ExceptionMessage.EVENT_DATE_INVALID);
+        }
         event.updateEventDetails(request.eventName(), request.description(), request.startDateTime(), request.endDateTime());
 
         return EventDto.from(event);

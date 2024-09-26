@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "event_tb")
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Event {
     @Id
