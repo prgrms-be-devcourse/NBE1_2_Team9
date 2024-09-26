@@ -15,6 +15,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -31,21 +33,32 @@ class AccountBookServiceTest {
     @Autowired
     private AccountBookService accountBookService;
 
+    Group group;
+    Group groupResult;
+
+    @AfterEach
+    public void after(){
+        accountBookRepository.deleteAll();
+        groupRepository.deleteAll();
+    }
+
+    @BeforeEach
+    public void before(){
+        group = new Group("TestGroup");
+        groupResult = groupRepository.save(group);
+    }
+
     @Test
     @Order(0)
     @DisplayName("지출 목록 삽입에 성공한다")
     public void insert_test() {
         //given
-        Group group = new Group("TestGroup");
-
         AccountBookReq req = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
                 .amount(new BigDecimal(1000))
                 .paidByUserId("유저1")
                 .build();
-
-        Group groupResult = groupRepository.save(group);
 
         //when
         accountBookService.addAccountBook(groupResult.getGroupId(), req);
@@ -61,16 +74,12 @@ class AccountBookServiceTest {
     @Test
     @DisplayName("그룹을 찾지 못해 삽입에 성공하지 못한다")
     public void not_find_group_test() {
-        Group group = new Group("TestGroup");
-
         AccountBookReq req = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
                 .amount(new BigDecimal(1000))
                 .paidByUserId("유저1")
                 .build();
-
-        Group groupResult = groupRepository.save(group);
 
         try {
             accountBookService.addAccountBook(groupResult.getGroupId() + 12345678, req);
@@ -84,8 +93,6 @@ class AccountBookServiceTest {
     @DisplayName("가계부 목록 전체 조회에 성공한다.")
     void findAllAccountBooks_test() {
         //given
-        Group group = new Group("TestGroup");
-
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
@@ -107,7 +114,6 @@ class AccountBookServiceTest {
                 .paidByUserId("유저2")
                 .build();
 
-        Group groupResult = groupRepository.save(group);
         accountBookService.addAccountBook(groupResult.getGroupId(), req1);
         accountBookService.addAccountBook(groupResult.getGroupId(), req2);
         accountBookService.addAccountBook(groupResult.getGroupId(), req3);
@@ -124,8 +130,6 @@ class AccountBookServiceTest {
     void findAccountBook() {
         //given
         String image = Base64.getEncoder().encodeToString("test image".getBytes());
-
-        Group group = new Group("TestGroup");
 
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
@@ -151,7 +155,6 @@ class AccountBookServiceTest {
                 .receiptImage(image)
                 .build();
 
-        Group groupResult = groupRepository.save(group);
         accountBookService.addAccountBook(groupResult.getGroupId(), req1);
         accountBookService.addAccountBook(groupResult.getGroupId(), req2);
         accountBookService.addAccountBook(groupResult.getGroupId(), req3);
@@ -183,8 +186,6 @@ class AccountBookServiceTest {
         String image = Base64.getEncoder().encodeToString("test image".getBytes());
         String updateimage=Base64.getEncoder().encodeToString("update image".getBytes());
 
-        Group group = new Group("TestGroup");
-
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
@@ -193,8 +194,6 @@ class AccountBookServiceTest {
                 .receiptImage(image)
                 .build();
 
-
-        Group groupResult = groupRepository.save(group);
         accountBookService.addAccountBook(groupResult.getGroupId(), req1);
 
         List<Expense> all = accountBookRepository.findAll();
@@ -230,10 +229,8 @@ class AccountBookServiceTest {
 
     @Test
     @DisplayName("가계부 지출 삭제에 성공한다.")
-    public void delete_test(){
+    public void delete_test() {
         //given
-        Group group = new Group("TestGroup");
-
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
@@ -241,7 +238,6 @@ class AccountBookServiceTest {
                 .paidByUserId("유저1")
                 .build();
 
-        Group groupResult = groupRepository.save(group);
         accountBookService.addAccountBook(groupResult.getGroupId(), req1);
 
         List<AccountBookAllResp> before = accountBookService.findAllAccountBooks(groupResult.getGroupId());
