@@ -4,6 +4,7 @@ import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
+import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Group;
 import com.grepp.nbe1_2_team09.domain.repository.finance.AccountBookRepository;
@@ -173,5 +174,57 @@ class AccountBookServiceTest {
         Assertions.assertThat(res2.getPaidByUserId()).isEqualTo(req2.getPaidByUserId());
         Assertions.assertThat(res2.getReceiptImage()).isEqualTo(req2.getReceiptImage());
 
+    }
+
+    @Test
+    @DisplayName("가계부 지출 수정에 성공한다")
+    public void update_test(){
+        //given
+        String image = Base64.getEncoder().encodeToString("test image".getBytes());
+        String updateimage=Base64.getEncoder().encodeToString("update image".getBytes());
+
+        Group group = new Group("TestGroup");
+
+        AccountBookReq req1 = AccountBookReq.builder()
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal("1000"))
+                .paidByUserId("유저1")
+                .receiptImage(image)
+                .build();
+
+
+        Group groupResult = groupRepository.save(group);
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1);
+
+        List<Expense> all = accountBookRepository.findAll();
+        AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId()); //update 전 원본
+        Assertions.assertThat(res1.getExpensesDate()).isEqualTo(req1.getExpenseDate());
+        Assertions.assertThat(res1.getItemName()).isEqualTo(req1.getItemName());
+        Assertions.assertThat(res1.getAmount().compareTo(req1.getAmount())).isEqualTo(0);
+        Assertions.assertThat(res1.getPaidByUserId()).isEqualTo(req1.getPaidByUserId());
+        Assertions.assertThat(res1.getReceiptImage()).isEqualTo(req1.getReceiptImage());
+
+        //when
+        UpdateAccountBookReq updateReq = UpdateAccountBookReq.builder()
+                .expenseId(res1.getExpensesId())
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal("1000.6"))
+                .paidByUserId("유저2")
+                .receiptImage(updateimage)
+                .build();
+
+        accountBookService.updateAccountBook(updateReq);
+        AccountBookOneResp result = accountBookService.findAccountBook(updateReq.getExpenseId());
+
+        //then
+        Assertions.assertThat(result.getExpensesId()).isEqualTo(res1.getExpensesId()); //update 전/후 아이디가 같은지 확인
+        //바뀐게 잘 들어갔는지 확인
+        Assertions.assertThat(result.getExpensesDate()).isEqualTo(updateReq.getExpenseDate());
+        Assertions.assertThat(result.getItemName()).isEqualTo(updateReq.getItemName());
+        Assertions.assertThat(result.getAmount().compareTo(updateReq.getAmount())).isEqualTo(0);
+        Assertions.assertThat(result.getPaidByUserId()).isEqualTo(updateReq.getPaidByUserId());
+        Assertions.assertThat(result.getReceiptImage()).isEqualTo(updateReq.getReceiptImage());
     }
 }

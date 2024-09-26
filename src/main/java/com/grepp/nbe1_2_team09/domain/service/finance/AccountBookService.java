@@ -6,11 +6,14 @@ import com.grepp.nbe1_2_team09.common.exception.exceptions.LocationException;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
+import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Group;
 import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
 import com.grepp.nbe1_2_team09.domain.repository.finance.AccountBookRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
@@ -27,6 +30,7 @@ public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
     private final GroupRepository groupRepository;
+    private final EntityManager em;
 
     //가계부 지출 기록
     public void addAccountBook(Long groupId, AccountBookReq accountBookReq) {
@@ -70,6 +74,8 @@ public class AccountBookService {
                 });
     }
 
+    //가계부 지출 수정
+    @Transactional
     public AccountBookOneResp findAccountBook(Long expenseId) {
         Expense expense = accountBookRepository.findById(expenseId)
                 .orElseThrow(()->{
@@ -85,5 +91,22 @@ public class AccountBookService {
         }
         accountBookOneResp.setReceiptImage(image);
         return accountBookOneResp;
+    }
+
+    //가계부 지출 수정
+    @Transactional
+    public void updateAccountBook(UpdateAccountBookReq updateAccountBookReq) {
+        Expense expense=em.find(Expense.class, updateAccountBookReq.getExpenseId());
+
+        expense.setExpenseDate(updateAccountBookReq.getExpenseDate());
+        expense.setItemName(updateAccountBookReq.getItemName());
+        expense.setAmount(updateAccountBookReq.getAmount());
+        expense.setPaidBy(updateAccountBookReq.getPaidByUserId());
+
+        if (updateAccountBookReq.getReceiptImage() != null) {
+            byte[] fileData = Base64.getDecoder().decode(updateAccountBookReq.getReceiptImage());
+            updateAccountBookReq.setReceiptImageByte(fileData);
+        }
+        expense.setReceiptImage(updateAccountBookReq.getReceiptImageByte());
     }
 }

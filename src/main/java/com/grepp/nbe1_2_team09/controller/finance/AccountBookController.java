@@ -3,6 +3,7 @@ package com.grepp.nbe1_2_team09.controller.finance;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
+import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.service.finance.AccountBookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,9 @@ public class AccountBookController {
         return accountBookService.findAccountBook(expenseId);
     }
 
-
+    //가계부 지출 기록 수정
+    @PutMapping
+    public void updateAccountBook(@RequestBody UpdateAccountBookReq updateAccountBookReq){
+        accountBookService.updateAccountBook(updateAccountBookReq);
+    }
 }
