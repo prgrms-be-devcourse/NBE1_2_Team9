@@ -43,8 +43,9 @@ public class Event {
     //비즈니스 메서드
 
     @Builder
-    public Event(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
+    public Event(String eventName, String description, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
         this.eventName = eventName;
+        this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.group = group;
