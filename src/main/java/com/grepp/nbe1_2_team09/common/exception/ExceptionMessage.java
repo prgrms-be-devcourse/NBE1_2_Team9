@@ -33,7 +33,12 @@ public enum ExceptionMessage {
     QUESTION_NOT_WRITTEN_BY_MEMBER("본인이 작성하지 않은 FAQ입니다."),
 
     // Cart
-    CART_NOT_FOUND("해당 장바구니를 찾을 수 없습니다.")
+    CART_NOT_FOUND("해당 장바구니를 찾을 수 없습니다."),
+
+    //AccountBook
+    GROUP_NOT_FOUND("그룹을 찾을 수 없습니다"),
+    MEMBER_ACCESS_ONLY("리소스에 대한 액세스 권한이 없습니다. 해당 유저가 그룹에 속해있지 않습니다."),
+    DB_ERROR("저장 실패")
 
     ;
 
