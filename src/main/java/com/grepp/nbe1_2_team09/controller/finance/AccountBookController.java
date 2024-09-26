@@ -53,4 +53,10 @@ public class AccountBookController {
         accountBookService.updateAccountBook(updateAccountBookReq);
     }
 
+    //가계부 지출 삭제
+    @DeleteMapping
+    public void deleteAccountBook(@RequestParam Long expenseId){
+        accountBookService.deleteAccountBook(expenseId);
+    }
+
 }

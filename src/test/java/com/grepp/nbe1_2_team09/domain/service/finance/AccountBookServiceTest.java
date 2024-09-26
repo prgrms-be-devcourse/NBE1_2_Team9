@@ -227,4 +227,32 @@ class AccountBookServiceTest {
         Assertions.assertThat(result.getPaidByUserId()).isEqualTo(updateReq.getPaidByUserId());
         Assertions.assertThat(result.getReceiptImage()).isEqualTo(updateReq.getReceiptImage());
     }
+
+    @Test
+    @DisplayName("가계부 지출 삭제에 성공한다.")
+    public void delete_test(){
+        //given
+        Group group = new Group("TestGroup");
+
+        AccountBookReq req1 = AccountBookReq.builder()
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal(1000))
+                .paidByUserId("유저1")
+                .build();
+
+        Group groupResult = groupRepository.save(group);
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1);
+
+        List<AccountBookAllResp> before = accountBookService.findAllAccountBooks(groupResult.getGroupId());
+        Assertions.assertThat(before.size()).isEqualTo(1);
+        Assertions.assertThat(before.get(0).getItemName()).isEqualTo("food");
+
+        //when
+        accountBookService.deleteAccountBook(before.get(0).getExpensesId());
+
+        //then
+        List<AccountBookAllResp> after = accountBookService.findAllAccountBooks(groupResult.getGroupId());
+        Assertions.assertThat(after.size()).isEqualTo(0);
+    }
 }

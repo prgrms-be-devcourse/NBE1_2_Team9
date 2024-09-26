@@ -116,7 +116,15 @@ public class AccountBookService {
         expense.setReceiptImage(updateAccountBookReq.getReceiptImageByte());
     }
 
+    //가계부 지출 삭제
+    @Transactional
     public void deleteAccountBook(Long expenseId) {
+        try{
+            accountBookRepository.findById(expenseId);
+        } catch(Exception e){
+            throw new AccountBookException(ExceptionMessage.EXPENSE_NOT_FOUND);
+        }
 
+        accountBookRepository.deleteById(expenseId);
     }
 }
