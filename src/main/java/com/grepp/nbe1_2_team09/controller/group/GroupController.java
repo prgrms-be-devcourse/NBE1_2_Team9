@@ -47,7 +47,7 @@ public class GroupController {
 
     //userId에 대한 정보를 받아서 해당 사용자가 속한 group들을 보내준다(이때 아마 local storage에 있던게 헤더를 통해서 들어올건지 내일 물어보기
     @GetMapping("/user")
-    public ResponseEntity<List<GroupDto>> getUserGroups(Long userId){
+    public ResponseEntity<List<GroupDto>> getUserGroups(Long userId){ //userId 변경해야하는 부분
         List<GroupDto> groups = groupService.getUserGroups(userId);
         return ResponseEntity.ok(groups);
     }
@@ -60,7 +60,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupId}/members/{userId}")
-    public ResponseEntity<Void> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
+    public ResponseEntity<Void> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {//여기는 다른 사람
         groupService.removeMemberFromGroup(groupId,userId);
         return ResponseEntity.ok().build();
     }
@@ -72,7 +72,7 @@ public class GroupController {
     }
 
     @PutMapping("/{groupId}/members/{userId}/role")
-    public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestParam Role role) {
+    public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestParam Role role) { //userId 변경해야하는 부분
         groupService.changeGroupMemberRole(groupId,userId,role);
         return ResponseEntity.ok().build();
     }
