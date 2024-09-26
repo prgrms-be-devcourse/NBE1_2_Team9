@@ -9,6 +9,7 @@ import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Group;
 import com.grepp.nbe1_2_team09.domain.repository.finance.AccountBookRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -49,7 +50,6 @@ class AccountBookServiceTest {
     }
 
     @Test
-    @Order(0)
     @DisplayName("지출 목록 삽입에 성공한다")
     public void insert_test() {
         //given
@@ -64,10 +64,10 @@ class AccountBookServiceTest {
         accountBookService.addAccountBook(groupResult.getGroupId(), req);
 
         //then
-        Optional<Expense> expense = accountBookRepository.findById(1L);
-        Assertions.assertThat(expense.get().getExpenseDate()).isEqualTo(req.getExpenseDate());
-        Assertions.assertThat(expense.get().getItemName()).isEqualTo(req.getItemName());
-        Assertions.assertThat(expense.get().getPaidBy()).isEqualTo(req.getPaidByUserId());
+        Expense expense = accountBookRepository.findAll().get(0);
+        Assertions.assertThat(expense.getExpenseDate()).isEqualTo(req.getExpenseDate());
+        Assertions.assertThat(expense.getItemName()).isEqualTo(req.getItemName());
+        Assertions.assertThat(expense.getPaidBy()).isEqualTo(req.getPaidByUserId());
 
     }
 
