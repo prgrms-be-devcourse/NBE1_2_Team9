@@ -2,8 +2,9 @@ package com.grepp.nbe1_2_team09.controller.finance;
 
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
+import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
+import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
-import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookResp;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.service.finance.AccountBookService;
 import java.util.List;
@@ -34,7 +35,12 @@ public class AccountBookController {
     }
 
     @GetMapping("/{groupId}")
-    public List<AccountBookResp> findAllAccountBooks(@PathVariable Long groupId) {
+    public List<AccountBookAllResp> findAllAccountBooks(@PathVariable Long groupId) {
         return accountBookService.findAllAccountBooks(groupId);
+    }
+
+    @GetMapping("/{expenseId}")
+    public AccountBookOneResp findAccountBook(@PathVariable Long expenseId) {
+        return accountBookService.findAccountBook(expenseId);
     }
 }

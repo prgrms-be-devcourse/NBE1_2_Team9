@@ -3,8 +3,9 @@ package com.grepp.nbe1_2_team09.domain.service.finance;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.LocationException;
+import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
+import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
-import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookResp;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Group;
 import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
@@ -52,12 +53,12 @@ public class AccountBookService {
     }
 
     //가계부 목록 전체 조회
-    public List<AccountBookResp> findAllAccountBooks(Long groupId) {
+    public List<AccountBookAllResp> findAllAccountBooks(Long groupId) {
         findGroup(groupId);
         List<Expense> expenses = accountBookRepository.findAllByGroup_GroupId(groupId);
 
         return expenses.stream()
-                .map(AccountBookResp::toDTO)
+                .map(AccountBookAllResp::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -67,5 +68,22 @@ public class AccountBookService {
                     log.warn(">>>> {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
                     return new AccountBookException(ExceptionMessage.GROUP_NOT_FOUND);
                 });
+    }
+
+    public AccountBookOneResp findAccountBook(Long expenseId) {
+        Expense expense = accountBookRepository.findById(expenseId)
+                .orElseThrow(()->{
+                    log.warn(">>>> {} : {} <<<<", expenseId, ExceptionMessage.EXPENSE_NOT_FOUND);
+                    return new AccountBookException(ExceptionMessage.EXPENSE_NOT_FOUND);
+                });
+
+        AccountBookOneResp accountBookOneResp = AccountBookOneResp.toDTO(expense);
+
+        String image=null;
+        if(expense.getReceiptImage()!=null){
+            image=Base64.getEncoder().encodeToString(expense.getReceiptImage());
+        }
+        accountBookOneResp.setReceiptImage(image);
+        return accountBookOneResp;
     }
 }
