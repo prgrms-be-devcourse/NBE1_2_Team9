@@ -13,6 +13,7 @@ import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +39,11 @@ public class AccountBookService {
         }
 
         Expense expense = AccountBookReq.toEntity(accountBookReq);
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
-                    return new AccountBookException(ExceptionMessage.GROUP_NOT_FOUND);
-                });
 
-        expense.setGroup(group);
+        findGroup(groupId);
+
+        Optional<Group> group = groupRepository.findById(groupId);
+        expense.setGroup(group.get());
         try {
             accountBookRepository.save(expense);
         } catch (Exception e) {
@@ -56,15 +55,18 @@ public class AccountBookService {
     public List<AccountBookResp> findAllAccountBooks(Long groupId) {
         List<Expense> expenses = accountBookRepository.findAllByGroup_GroupId(groupId);
 
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
-                    return new AccountBookException(ExceptionMessage.GROUP_NOT_FOUND);
-                });
+        findGroup(groupId);
 
         return expenses.stream()
                 .map(AccountBookResp::toDTO)
                 .collect(Collectors.toList());
     }
 
+    private void findGroup(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
+                    return new AccountBookException(ExceptionMessage.GROUP_NOT_FOUND);
+                });
+    }
 }
