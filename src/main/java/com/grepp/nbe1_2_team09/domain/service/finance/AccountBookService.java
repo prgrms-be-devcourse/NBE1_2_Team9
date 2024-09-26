@@ -28,16 +28,16 @@ public class AccountBookService {
 
     //가계부 지출 기록
     public void addAccountBook(Long groupId, AccountBookReq accountBookReq) {
-        if(accountBookReq.getReceiptImage()!=null) {
+        if (accountBookReq.getReceiptImage() != null) {
             byte[] fileData = Base64.getDecoder().decode(accountBookReq.getReceiptImage());
             accountBookReq.setReceiptImageByte(fileData);
         }
 
-        if(accountBookReq.getExpenseDate()==null){
+        if (accountBookReq.getExpenseDate() == null) {
             accountBookReq.setExpenseDate(LocalDateTime.now());
         }
 
-        Expense expense=AccountBookReq.toEntity(accountBookReq);
+        Expense expense = AccountBookReq.toEntity(accountBookReq);
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> {
                     log.warn(">>>> {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
@@ -47,9 +47,24 @@ public class AccountBookService {
         expense.setGroup(group);
         try {
             accountBookRepository.save(expense);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new AccountBookException(ExceptionMessage.DB_ERROR);
         }
+    }
+
+    //가계부 목록 전체 조회
+    public List<AccountBookResp> findAllAccountBooks(Long groupId) {
+        List<Expense> expenses = accountBookRepository.findAllByGroup_GroupId(groupId);
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
+                    return new AccountBookException(ExceptionMessage.GROUP_NOT_FOUND);
+                });
+
+        return expenses.stream()
+                .map(AccountBookResp::toDTO)
+                .collect(Collectors.toList());
     }
 
 }
