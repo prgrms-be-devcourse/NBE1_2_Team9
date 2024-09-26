@@ -19,8 +19,8 @@ public enum ExceptionMessage {
 
     // Event
     EVENT_NOT_FOUND("해당 이벤트를 찾을 수 없습니다."),
-    EVENT_DATE_INVALID("이벤트 시작 시간은 종료 시간보다 늦을 수 없습니다.");
+    EVENT_DATE_INVALID("이벤트 시작 시간은 종료 시간보다 늦을 수 없습니다."),
 
-
+    REVIEW_NOT_FOUND ("해당 리뷰를 찾을 수 없습니다.");
     private final String text;
 }
