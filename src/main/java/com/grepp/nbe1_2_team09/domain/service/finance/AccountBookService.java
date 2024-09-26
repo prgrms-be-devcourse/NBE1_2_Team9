@@ -53,9 +53,8 @@ public class AccountBookService {
 
     //가계부 목록 전체 조회
     public List<AccountBookResp> findAllAccountBooks(Long groupId) {
-        List<Expense> expenses = accountBookRepository.findAllByGroup_GroupId(groupId);
-
         findGroup(groupId);
+        List<Expense> expenses = accountBookRepository.findAllByGroup_GroupId(groupId);
 
         return expenses.stream()
                 .map(AccountBookResp::toDTO)
