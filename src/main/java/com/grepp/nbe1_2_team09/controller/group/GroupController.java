@@ -6,6 +6,7 @@ import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
 import com.grepp.nbe1_2_team09.domain.entity.Role;
 import com.grepp.nbe1_2_team09.domain.service.group.GroupService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class GroupController {
 
 
     //먼저 CRUD 4종 세트 구현 시작
-
-    public ResponseEntity<GroupDto> createGroup(CreateGroupRequest request, Long userId) {
+    //jwt 적용시 HttpServletRequest에서 jwtUtil.getUserId(jwtUtil.extractToken(httpRequest))로 userId 추출
+    public ResponseEntity<GroupDto> createGroup(@Valid @RequestBody CreateGroupRequest request, Long userId) {
         GroupDto groupDto = groupService.createGroup(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(groupDto); // 201 리턴
     }

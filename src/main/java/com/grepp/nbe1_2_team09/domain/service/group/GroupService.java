@@ -11,9 +11,9 @@ import com.grepp.nbe1_2_team09.domain.entity.Group;
 import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
 import com.grepp.nbe1_2_team09.domain.entity.Role;
 import com.grepp.nbe1_2_team09.domain.entity.User;
-import com.grepp.nbe1_2_team09.domain.repository.UserRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
+import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +60,7 @@ public class GroupService {
     //사용자가 참여한 그룹의 리스트 조회
     public List<GroupDto> getUserGroups(Long userId) {
 
-        return groupMembershipRepository.findByUserId(userId).stream()
+        return groupMembershipRepository.findByUser_Id(userId).stream()
                 .map(GroupMembership::getGroup)//User로 group을 찾음
                 .map(GroupDto::from)//그리고 dto로 변환
                 .collect(Collectors.toList());
