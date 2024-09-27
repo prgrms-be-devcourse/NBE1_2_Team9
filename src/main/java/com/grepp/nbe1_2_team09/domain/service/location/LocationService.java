@@ -14,13 +14,4 @@ import org.springframework.stereotype.Service;
 public class LocationService {
 
     private final LocationRepository locationRepository;
-
-    // 리뷰 조회 예외처리
-    public Location findByIdOrThrowReviewException(Long locationId) {
-        return locationRepository.findById(locationId)
-                .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", locationId, ExceptionMessage.REVIEW_NOT_FOUND);
-                    return new LocationException(ExceptionMessage.REVIEW_NOT_FOUND);
-                });
-    }
 }

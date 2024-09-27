@@ -29,6 +29,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime signUpDate;
@@ -45,10 +49,11 @@ public class User {
     //비즈니스 메서드 기본
 
     @Builder
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password, Role role) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
     // 외부에 보이는 정보들을 업데이트
     public void updateProfile(String username, String email){
