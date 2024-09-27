@@ -12,12 +12,14 @@ import com.grepp.nbe1_2_team09.domain.repository.event.EventLocationRepository;
 import com.grepp.nbe1_2_team09.domain.repository.event.EventRepository;
 import com.grepp.nbe1_2_team09.domain.repository.location.LocationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,10 +32,8 @@ public class EventLocationService {
     //일정에 장소 추가
     @Transactional
     public EventLocationDto addLocationToEvent(Long eventId, Long locationId){
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
-        Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new LocationException(ExceptionMessage.LOCATION_NOT_FOUND));
+        Event event = findEventByIdOrThrowEventException(eventId);
+        Location location = findLocationByIdOrThrowLocationException(locationId);
 
         EventLocation eventLocation = EventLocation.builder()
                 .event(event)
@@ -48,8 +48,7 @@ public class EventLocationService {
 
     //일정에 포함된 장소 불러오기
     public List<EventLocationInfoDto> getEventLocations(Long eventId){
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
+        Event event = findEventByIdOrThrowEventException(eventId);
 
         List<EventLocation> eventLocations = eventLocationRepository.findByEvent(event);
 
@@ -65,13 +64,10 @@ public class EventLocationService {
     //일정에 추가된 장소에 대한 description 추가
     @Transactional
     public EventLocationDto updateDescription(Long eventId, Long locationId, String description){
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
-        Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new LocationException(ExceptionMessage.LOCATION_NOT_FOUND));
+        Event event = findEventByIdOrThrowEventException(eventId);
+        Location location = findLocationByIdOrThrowLocationException(locationId);
 
-        EventLocation eventLocation = eventLocationRepository.findByEventAndLocation(event, location)
-                .orElseThrow(() -> new LocationException(ExceptionMessage.LOCATION_NOT_FOUND));
+        EventLocation eventLocation = findEventLocationOrThrowException(event, location);
 
         eventLocation.updateDescription(description);
         return EventLocationDto.from(eventLocation);
@@ -82,14 +78,38 @@ public class EventLocationService {
     //일정에 포함된 장소 삭제
     @Transactional
     public void removeLocationFromEvent(Long eventId, Long locationId){
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
-        Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new LocationException(ExceptionMessage.LOCATION_NOT_FOUND));
+        Event event = findEventByIdOrThrowEventException(eventId);
+        Location location = findLocationByIdOrThrowLocationException(locationId);
 
-        EventLocation eventLocation = eventLocationRepository.findByEventAndLocation(event, location)
-                .orElseThrow(() -> new LocationException(ExceptionMessage.LOCATION_NOT_FOUND));
+        EventLocation eventLocation = findEventLocationOrThrowException(event, location);
 
         eventLocationRepository.delete(eventLocation);
+    }
+
+
+    //예외 처리
+    private Event findEventByIdOrThrowEventException(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> EventId {} : {} <<<<", eventId, ExceptionMessage.EVENT_NOT_FOUND);
+                    return new EventException(ExceptionMessage.EVENT_NOT_FOUND);
+                });
+    }
+
+    private Location findLocationByIdOrThrowLocationException(Long locationId) {
+        return locationRepository.findById(locationId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> LocationId {} : {} <<<<", locationId, ExceptionMessage.LOCATION_NOT_FOUND);
+                    return new LocationException(ExceptionMessage.LOCATION_NOT_FOUND);
+                });
+    }
+
+    private EventLocation findEventLocationOrThrowException(Event event, Location location) {
+        return eventLocationRepository.findByEventAndLocation(event, location)
+                .orElseThrow(() -> {
+                    log.warn(">>>> EventLocation not found for Event {} and Location {} : {} <<<<",
+                            event.getEventId(), location.getLocationId(), ExceptionMessage.LOCATION_NOT_FOUND);
+                    return new LocationException(ExceptionMessage.LOCATION_NOT_FOUND);
+                });
     }
 }

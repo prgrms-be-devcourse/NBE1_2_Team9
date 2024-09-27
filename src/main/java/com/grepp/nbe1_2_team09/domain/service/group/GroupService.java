@@ -12,12 +12,15 @@ import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,8 +33,7 @@ public class GroupService {
     // 관리자 유저 정보 받아서 그룹 생성
     @Transactional
     public GroupDto createGroup(CreateGroupRequest request, Long creatorId) {
-        User creator = userRepository.findById(creatorId)
-                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_FOUND));
+        User creator = findUserByIdOrThrowUserException(creatorId);
 
         Group group = Group.builder()
                 .groupName(request.groupName())
@@ -50,7 +52,7 @@ public class GroupService {
 
     //groupId를 통해 group 조회
     public GroupDto getGroupById(Long id) {
-        Group group = groupRepository.findById(id).orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(id);
         return GroupDto.from(group);
     }
 
@@ -66,7 +68,7 @@ public class GroupService {
 
     @Transactional
     public GroupDto updateGroup(Long id, UpdateGroupRequest request) {
-        Group group = groupRepository.findById(id).orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(id);
         group.updateGroupName(request.groupName());
         Group updatedGroup = groupRepository.save(group);
         return GroupDto.from(updatedGroup);
@@ -83,15 +85,12 @@ public class GroupService {
     //그룹에 멤버 추가 기능
     @Transactional
     public void addMemberToGroup(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(groupId);
+        User user = findUserByIdOrThrowUserException(userId);
 
         //추가하려고 하는데 해당 사용자가 이미 그룹에 속해있는 경우
         if (groupMembershipRepository.existsByGroupAndUser(group, user)) {
             throw new GroupException(ExceptionMessage.USER_ALREADY_IN_GROUP);
-
         }
 
         GroupMembership membership = GroupMembership.builder()
@@ -104,14 +103,9 @@ public class GroupService {
 
     @Transactional
     public void changeGroupMemberRole(Long groupId, Long userId, GroupRole role) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_FOUND));
-
-        GroupMembership membership = groupMembershipRepository.findByGroupAndUser(group, user)
-                .orElseThrow(() -> new GroupException(ExceptionMessage.USER_NOT_IN_GROUP));
+        Group group = findGroupByIdOrThrowGroupException(groupId);
+        User user = findUserByIdOrThrowUserException(userId);
+        GroupMembership membership = findGroupMemberByIdThrowGroupException(group, user);
 
         //만약 관리자가 역할을 변경하고자 할 때, 관리자가 1명이라면 역할을 바꾸지 못하도록 설정
         if(membership.getRole() == GroupRole.ADMIN && role != GroupRole.ADMIN){
@@ -131,25 +125,51 @@ public class GroupService {
 
     }
 
+    //이거 관리자 전용하고 사용자의 자의 탈퇴 구분할지 결정
     @Transactional
     public void removeMemberFromGroup(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(groupId);
+        User user = findUserByIdOrThrowUserException(userId);
+        GroupMembership membership = findGroupMemberByIdThrowGroupException(group, user);
 
-        GroupMembership membership = groupMembershipRepository.findByGroupAndUser(group, user)
-                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_IN_GROUP));
+        groupMembershipRepository.delete(membership);
 
     }
 
     public List<GroupMembershipDto> getGroupMembers(Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(groupId);
 
         return groupMembershipRepository.findByGroup(group).stream()
                 .map(GroupMembershipDto::from)
                 .collect(Collectors.toList());
+    }
+
+
+
+    //예외처리를 포함한 검색 함수들
+
+    private User findUserByIdOrThrowUserException(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() ->{
+                    log.warn(">>>> UserId {} : {} <<<<", userId, ExceptionMessage.USER_NOT_FOUND);
+                            return new UserException(ExceptionMessage.USER_NOT_FOUND);
+                });
+    }
+
+    private Group findGroupByIdOrThrowGroupException(Long groupId){
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> GroupId {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
+                    return new GroupException(ExceptionMessage.GROUP_NOT_FOUND);
+                });
+    }
+
+    private GroupMembership findGroupMemberByIdThrowGroupException(Group group, User user) {
+        return groupMembershipRepository.findByGroupAndUser(group, user)
+                .orElseThrow(() -> {
+                    log.warn(">>>> User{} not in Group {} : {}", user.getUserId(), group.getGroupId(), ExceptionMessage.USER_NOT_FOUND);
+                    return new GroupException(ExceptionMessage.USER_NOT_IN_GROUP);
+                });
     }
 
 

@@ -11,12 +11,14 @@ import com.grepp.nbe1_2_team09.domain.entity.Group;
 import com.grepp.nbe1_2_team09.domain.repository.event.EventRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,8 +29,7 @@ public class EventService {
     @Transactional
     public EventDto createEvent(CreateEventRequest request){
         //요청에 있는 groupId로 group을 찾음
-        Group group = groupRepository.findById(request.groupId())
-                .orElseThrow(() -> new EventException(ExceptionMessage.GROUP_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(request.groupId());
         // 내일 여기에 시작일이 종료일보다 앞인지 확인하는 검사 포함 -> 완료
         // 당일치기 가능성도 있으니까 시작일이 종료일보다 늦지 않은지만 체크
         if(request.startDateTime().isAfter(request.endDateTime())){
@@ -50,15 +51,13 @@ public class EventService {
 
 
     public EventDto getEventById(Long id){
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
+        Event event = findByIdOrThrowEventException(id);
         return EventDto.from(event);
     }
 
     @Transactional
     public EventDto updateEvent(Long eventId, UpdateEventRequest request) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventException(ExceptionMessage.EVENT_NOT_FOUND));
+        Event event = findByIdOrThrowEventException(eventId);
 
         // 내일 여기에 시작일이 종료일보다 앞인지 확인하는 검사 포함
         if(request.startDateTime().isAfter(request.endDateTime())){
@@ -79,11 +78,29 @@ public class EventService {
 
 
     public List<EventDto> getEventsByGroup(Long groupId){
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
+        Group group = findGroupByIdOrThrowGroupException(groupId);
         return eventRepository.findByGroup(group).stream()
                 .map(EventDto::from)
                 .collect(Collectors.toList());
+    }
+
+
+    //예외처리
+
+    private Event findByIdOrThrowEventException(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> EventId {} : {} <<<<", eventId, ExceptionMessage.EVENT_NOT_FOUND);
+                    return new EventException(ExceptionMessage.EVENT_NOT_FOUND);
+                });
+    }
+
+    private Group findGroupByIdOrThrowGroupException(Long groupId) {
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> {
+                    log.warn(">>>> GroupId {} : {} <<<<", groupId, ExceptionMessage.GROUP_NOT_FOUND);
+                    return new GroupException(ExceptionMessage.GROUP_NOT_FOUND);
+                });
     }
 
 
