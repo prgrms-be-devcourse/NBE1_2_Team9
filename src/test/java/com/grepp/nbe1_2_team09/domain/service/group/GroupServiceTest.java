@@ -6,10 +6,7 @@ import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
-import com.grepp.nbe1_2_team09.domain.entity.Group;
-import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
-import com.grepp.nbe1_2_team09.domain.entity.Role;
-import com.grepp.nbe1_2_team09.domain.entity.User;
+import com.grepp.nbe1_2_team09.domain.entity.*;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
@@ -46,7 +43,7 @@ class GroupServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = userRepository.save(new User("testUser", "test@example.com", "password"));
+        testUser = userRepository.save(new User("testUser", "test@example.com", "password", Role.MEMBER));
     }
 
     @Test
@@ -143,7 +140,7 @@ class GroupServiceTest {
     void addMemberToGroup_Success() {
         // given
         Group group = groupRepository.save(Group.builder().groupName("Test Group").build());
-        User newMember = userRepository.save(new User("newMember", "new@example.com", "password"));
+        User newMember = userRepository.save(new User("newMember", "new@example.com", "password",Role.MEMBER));
 
         // when
         groupService.addMemberToGroup(group.getGroupId(), newMember.getUserId());
@@ -171,7 +168,7 @@ class GroupServiceTest {
         groupService.addMemberToGroup(group.getGroupId(), testUser.getUserId());
 
         // when
-        groupService.changeGroupMemberRole(group.getGroupId(), testUser.getUserId(), Role.ADMIN);
+        groupService.changeGroupMemberRole(group.getGroupId(), testUser.getUserId(), GroupRole.ADMIN);
 
         // then
         Optional<GroupMembership> membership = groupMembershipRepository.findByGroupAndUser(group, testUser);
@@ -187,7 +184,7 @@ class GroupServiceTest {
 
         // when & then
         assertThrows(GroupException.class, () ->
-                groupService.changeGroupMemberRole(groupDto.groupId(), testUser.getUserId(), Role.MEMBER)
+                groupService.changeGroupMemberRole(groupDto.groupId(), testUser.getUserId(), GroupRole.MEMBER)
         );
     }
 
@@ -195,8 +192,8 @@ class GroupServiceTest {
     void getGroupMembers_Success() {
         // given
         Group group = groupRepository.save(Group.builder().groupName("Test Group").build());
-        User member1 = userRepository.save(new User("member1", "member1@example.com", "password"));
-        User member2 = userRepository.save(new User("member2", "member2@example.com", "password"));
+        User member1 = userRepository.save(new User("member1", "member1@example.com", "password",Role.MEMBER));
+        User member2 = userRepository.save(new User("member2", "member2@example.com", "password",Role.MEMBER));
 
         groupService.addMemberToGroup(group.getGroupId(), member1.getUserId());
         groupService.addMemberToGroup(group.getGroupId(), member2.getUserId());

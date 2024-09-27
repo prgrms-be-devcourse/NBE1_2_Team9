@@ -4,7 +4,7 @@ import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
-import com.grepp.nbe1_2_team09.domain.entity.Role;
+import com.grepp.nbe1_2_team09.domain.entity.GroupRole;
 import com.grepp.nbe1_2_team09.domain.service.group.GroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +73,7 @@ public class GroupController {
     }
 
     @PutMapping("/{groupId}/members/{userId}/role")
-    public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestParam Role role) { //userId 변경해야하는 부분
+    public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestParam GroupRole role) { //userId 변경해야하는 부분
         groupService.changeGroupMemberRole(groupId,userId,role);
         return ResponseEntity.ok().build();
     }

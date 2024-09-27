@@ -7,10 +7,7 @@ import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
-import com.grepp.nbe1_2_team09.domain.entity.Group;
-import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
-import com.grepp.nbe1_2_team09.domain.entity.Role;
-import com.grepp.nbe1_2_team09.domain.entity.User;
+import com.grepp.nbe1_2_team09.domain.entity.*;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
@@ -44,7 +41,7 @@ public class GroupService {
         GroupMembership membership = GroupMembership.builder()
                 .group(savedGroup)
                 .user(creator)
-                .role(Role.ADMIN)//만든 사람은 처음에 관리자로 설정됨
+                .role(GroupRole.ADMIN)//만든 사람은 처음에 관리자로 설정됨
                 .build();
         groupMembershipRepository.save(membership);
 
@@ -100,13 +97,13 @@ public class GroupService {
         GroupMembership membership = GroupMembership.builder()
                 .group(group)
                 .user(user)
-                .role(Role.MEMBER) // 추가되는 사람은 처음에는 MEMBER로 고정 이후에 변경 가능
+                .role(GroupRole.MEMBER) // 추가되는 사람은 처음에는 MEMBER로 고정 이후에 변경 가능
                 .build();
         groupMembershipRepository.save(membership);
     }
 
     @Transactional
-    public void changeGroupMemberRole(Long groupId, Long userId, Role role) {
+    public void changeGroupMemberRole(Long groupId, Long userId, GroupRole role) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
 
@@ -117,11 +114,11 @@ public class GroupService {
                 .orElseThrow(() -> new GroupException(ExceptionMessage.USER_NOT_IN_GROUP));
 
         //만약 관리자가 역할을 변경하고자 할 때, 관리자가 1명이라면 역할을 바꾸지 못하도록 설정
-        if(membership.getRole() == Role.ADMIN && role != Role.ADMIN){
+        if(membership.getRole() == GroupRole.ADMIN && role != GroupRole.ADMIN){
 
             List<GroupMembership> memberships = groupMembershipRepository.findByGroup(group);
             long adminCount = memberships.stream()
-                    .filter(m -> m.getRole() == Role.ADMIN)
+                    .filter(m -> m.getRole() == GroupRole.ADMIN)
                     .count();
             if (adminCount == 1) {
                 throw new GroupException(ExceptionMessage.CANNOT_REMOVE_LAST_ADMIN);
