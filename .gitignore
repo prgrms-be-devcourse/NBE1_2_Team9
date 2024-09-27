@@ -16,6 +16,9 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+/src/main/generated/
+/src/main/resources/application.properties
+/src/main/resources/database.properties
 
 ### IntelliJ IDEA ###
 .idea
@@ -35,3 +38,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Secret ###
+application.properties
