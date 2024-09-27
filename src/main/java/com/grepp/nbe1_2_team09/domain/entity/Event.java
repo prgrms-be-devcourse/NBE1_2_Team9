@@ -30,6 +30,9 @@ public class Event {
     private String description;
 
     @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
     private LocalDateTime startDateTime;
 
     @Column(nullable = false)
@@ -43,9 +46,10 @@ public class Event {
     //비즈니스 메서드
 
     @Builder
-    public Event(String eventName, String description, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
+    public Event(String eventName, String description, String city, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
         this.eventName = eventName;
         this.description = description;
+        this.city = city;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.group = group;

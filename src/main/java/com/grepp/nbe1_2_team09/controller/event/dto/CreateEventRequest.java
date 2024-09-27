@@ -12,6 +12,9 @@ public record CreateEventRequest(
         @Size(max = 500, message = "설명은 최대 500자까지 허용됩니다")
         String description,
 
+        @NotBlank(message = "여행 도시 선택 필수")
+        String city,
+
         @NotNull(message = "시작 날짜 선택 필수")
         @FutureOrPresent(message = "시작일은 오늘날짜 이후부터 가능합니다")
         LocalDateTime startDateTime,

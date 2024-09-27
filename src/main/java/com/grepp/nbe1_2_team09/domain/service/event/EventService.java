@@ -40,6 +40,7 @@ public class EventService {
         Event event = Event.builder()
                 .eventName(request.eventName())
                 .description(request.description())
+                .city(request.city())
                 .startDateTime(request.startDateTime())
                 .endDateTime(request.endDateTime())
                 .group(group)
