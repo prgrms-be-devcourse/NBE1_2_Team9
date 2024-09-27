@@ -1,5 +1,6 @@
 package com.grepp.nbe1_2_team09.controller.group;
 
+import com.grepp.nbe1_2_team09.admin.service.CustomUserDetails;
 import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +23,11 @@ public class GroupController {
     private final GroupService groupService;
 
 
+
     //먼저 CRUD 4종 세트 구현 시작
     //jwt 적용시 HttpServletRequest에서 jwtUtil.getUserId(jwtUtil.extractToken(httpRequest))로 userId 추출
-    public ResponseEntity<GroupDto> createGroup(@Valid @RequestBody CreateGroupRequest request, Long userId) {
+    public ResponseEntity<GroupDto> createGroup(@Valid @RequestBody CreateGroupRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUser().getUserId();
         GroupDto groupDto = groupService.createGroup(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(groupDto); // 201 리턴
     }
@@ -48,7 +52,8 @@ public class GroupController {
 
     //userId에 대한 정보를 받아서 해당 사용자가 속한 group들을 보내준다(이때 아마 local storage에 있던게 헤더를 통해서 들어올건지 내일 물어보기
     @GetMapping("/user")
-    public ResponseEntity<List<GroupDto>> getUserGroups(Long userId){ //userId 변경해야하는 부분
+    public ResponseEntity<List<GroupDto>> getUserGroups(@AuthenticationPrincipal CustomUserDetails userDetails){ //userId 변경해야하는 부분
+        Long userId = userDetails.getUser().getUserId();
         List<GroupDto> groups = groupService.getUserGroups(userId);
         return ResponseEntity.ok(groups);
     }
@@ -77,4 +82,6 @@ public class GroupController {
         groupService.changeGroupMemberRole(groupId,userId,role);
         return ResponseEntity.ok().build();
     }
+
+
 }
