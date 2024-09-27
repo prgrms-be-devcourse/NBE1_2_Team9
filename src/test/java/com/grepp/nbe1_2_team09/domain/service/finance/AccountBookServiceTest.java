@@ -7,19 +7,21 @@ import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
 import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Group;
+import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
+import com.grepp.nbe1_2_team09.domain.entity.Role;
+import com.grepp.nbe1_2_team09.domain.entity.User;
 import com.grepp.nbe1_2_team09.domain.repository.finance.AccountBookRepository;
+import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
-import jakarta.transaction.Transactional;
+import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,11 +38,17 @@ class AccountBookServiceTest {
 
     Group group;
     Group groupResult;
+    @Autowired
+    private GroupMembershipRepository groupMembershipRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @AfterEach
     public void after(){
         accountBookRepository.deleteAll();
         groupRepository.deleteAll();
+        userRepository.deleteAll();
+        groupMembershipRepository.deleteAll();
     }
 
     @BeforeEach
@@ -60,8 +68,14 @@ class AccountBookServiceTest {
                 .paidByUserId("유저1")
                 .build();
 
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
+        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        groupMembershipRepository.save(groupMembership);
+
         //when
-        accountBookService.addAccountBook(groupResult.getGroupId(), req);
+        accountBookService.addAccountBook(groupResult.getGroupId(), req, saveUser.getUserId().toString());
 
         //then
         Expense expense = accountBookRepository.findAll().get(0);
@@ -81,13 +95,39 @@ class AccountBookServiceTest {
                 .paidByUserId("유저1")
                 .build();
 
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
         try {
-            accountBookService.addAccountBook(groupResult.getGroupId() + 12345678, req);
+            accountBookService.addAccountBook(groupResult.getGroupId() + 12345678, req, saveUser.getUserId().toString());
         } catch (Exception e) {
             org.junit.jupiter.api.Assertions.assertEquals(ExceptionMessage.GROUP_NOT_FOUND.getText(), e.getMessage());
         }
     }
 
+    @Test
+    @DisplayName("그룹에 유저가 존재하지 않아 삽입에 실패한다.")
+    public void insert_MEMBER_ACCESS_ONLY_test() {
+        AccountBookReq req = AccountBookReq.builder()
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal(1000))
+                .paidByUserId("유저1")
+                .build();
+
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
+//        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+//        groupMembershipRepository.save(groupMembership);
+        //그룹 - 유저를 매핑하지 않음 => 그룹에 유저가 들어가있지 않음
+
+        try {
+            accountBookService.addAccountBook(groupResult.getGroupId(), req, saveUser.getUserId().toString());
+        } catch (Exception e) {
+            org.junit.jupiter.api.Assertions.assertEquals(ExceptionMessage.MEMBER_ACCESS_ONLY.getText(), e.getMessage());
+        }
+    }
 
     @Test
     @DisplayName("가계부 목록 전체 조회에 성공한다.")
@@ -114,15 +154,66 @@ class AccountBookServiceTest {
                 .paidByUserId("유저2")
                 .build();
 
-        accountBookService.addAccountBook(groupResult.getGroupId(), req1);
-        accountBookService.addAccountBook(groupResult.getGroupId(), req2);
-        accountBookService.addAccountBook(groupResult.getGroupId(), req3);
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
+        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        groupMembershipRepository.save(groupMembership);
+
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
+        accountBookService.addAccountBook(groupResult.getGroupId(), req2, saveUser.getUserId().toString());
+        accountBookService.addAccountBook(groupResult.getGroupId(), req3, saveUser.getUserId().toString());
 
         //then
-        List<AccountBookAllResp> results = accountBookService.findAllAccountBooks(groupResult.getGroupId());
+        List<AccountBookAllResp> results = accountBookService.findAllAccountBooks(groupResult.getGroupId(), saveUser.getUserId().toString());
         Assertions.assertThat(results.size()).isEqualTo(3);
         Assertions.assertThat(results.get(0).getItemName()).isEqualTo("food");
         Assertions.assertThat(results.get(1).getItemName()).isEqualTo("food");
+    }
+
+    @Test
+    @DisplayName("그룹에 유저가 존재하지 않아 가계부 목록 전체 조회에 실패한다.")
+    void findAll_MEMBER_ACCESS_ONLY_test() {
+        //given
+        AccountBookReq req1 = AccountBookReq.builder()
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal(1000))
+                .paidByUserId("유저1")
+                .build();
+
+        AccountBookReq req2 = AccountBookReq.builder()
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal("1000.6"))
+                .paidByUserId("유저2")
+                .build();
+
+        AccountBookReq req3 = AccountBookReq.builder()
+                .expenseDate(LocalDateTime.now())
+                .itemName("food")
+                .amount(new BigDecimal("1000.6"))
+                .paidByUserId("유저2")
+                .build();
+
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
+        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        groupMembershipRepository.save(groupMembership); //일단 가계부에 정보를 넣기 위해 유저 하나는 그룹에 넣어놓음
+
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
+
+
+        User user2=new User("테스트2", "aaa2@bbb.com", "1234", Role.MEMBER);
+        User saveUser2 = userRepository.save(user2);
+
+        //then
+        try {
+            accountBookService.findAllAccountBooks(groupResult.getGroupId(), saveUser2.getUserId().toString());
+        } catch (Exception e) {
+            org.junit.jupiter.api.Assertions.assertEquals(ExceptionMessage.MEMBER_ACCESS_ONLY.getText(), e.getMessage());
+        }
     }
 
     @Test
@@ -155,14 +246,20 @@ class AccountBookServiceTest {
                 .receiptImage(image)
                 .build();
 
-        accountBookService.addAccountBook(groupResult.getGroupId(), req1);
-        accountBookService.addAccountBook(groupResult.getGroupId(), req2);
-        accountBookService.addAccountBook(groupResult.getGroupId(), req3);
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
+        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        groupMembershipRepository.save(groupMembership);
+
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
+        accountBookService.addAccountBook(groupResult.getGroupId(), req2, saveUser.getUserId().toString());
+        accountBookService.addAccountBook(groupResult.getGroupId(), req3, saveUser.getUserId().toString());
 
         //when
         List<Expense> all = accountBookRepository.findAll();
-        AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId());
-        AccountBookOneResp res2 = accountBookService.findAccountBook(all.get(1).getExpenseId());
+        AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId(), saveUser.getUserId().toString());
+        AccountBookOneResp res2 = accountBookService.findAccountBook(all.get(1).getExpenseId(), saveUser.getUserId().toString());
 
         //then
         Assertions.assertThat(res1.getExpensesDate()).isEqualTo(req1.getExpenseDate());
@@ -194,10 +291,16 @@ class AccountBookServiceTest {
                 .receiptImage(image)
                 .build();
 
-        accountBookService.addAccountBook(groupResult.getGroupId(), req1);
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
+
+        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        groupMembershipRepository.save(groupMembership);
+
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
 
         List<Expense> all = accountBookRepository.findAll();
-        AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId()); //update 전 원본
+        AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId(), saveUser.getUserId().toString()); //update 전 원본
         Assertions.assertThat(res1.getExpensesDate()).isEqualTo(req1.getExpenseDate());
         Assertions.assertThat(res1.getItemName()).isEqualTo(req1.getItemName());
         Assertions.assertThat(res1.getAmount().compareTo(req1.getAmount())).isEqualTo(0);
@@ -214,8 +317,8 @@ class AccountBookServiceTest {
                 .receiptImage(updateimage)
                 .build();
 
-        accountBookService.updateAccountBook(updateReq);
-        AccountBookOneResp result = accountBookService.findAccountBook(updateReq.getExpenseId());
+        accountBookService.updateAccountBook(updateReq, saveUser.getUserId().toString());
+        AccountBookOneResp result = accountBookService.findAccountBook(updateReq.getExpenseId(), saveUser.getUserId().toString());
 
         //then
         Assertions.assertThat(result.getExpensesId()).isEqualTo(res1.getExpensesId()); //update 전/후 아이디가 같은지 확인
@@ -238,17 +341,25 @@ class AccountBookServiceTest {
                 .paidByUserId("유저1")
                 .build();
 
-        accountBookService.addAccountBook(groupResult.getGroupId(), req1);
+        User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
+        User saveUser = userRepository.save(user);
 
-        List<AccountBookAllResp> before = accountBookService.findAllAccountBooks(groupResult.getGroupId());
+        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        groupMembershipRepository.save(groupMembership);
+
+        accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
+
+        List<AccountBookAllResp> before = accountBookService.findAllAccountBooks(groupResult.getGroupId(),
+                saveUser.getUserId().toString());
         Assertions.assertThat(before.size()).isEqualTo(1);
         Assertions.assertThat(before.get(0).getItemName()).isEqualTo("food");
 
         //when
-        accountBookService.deleteAccountBook(before.get(0).getExpensesId());
+        accountBookService.deleteAccountBook(before.get(0).getExpensesId(), saveUser.getUserId().toString());
 
         //then
-        List<AccountBookAllResp> after = accountBookService.findAllAccountBooks(groupResult.getGroupId());
+        List<AccountBookAllResp> after = accountBookService.findAllAccountBooks(groupResult.getGroupId(),
+                saveUser.getUserId().toString());
         Assertions.assertThat(after.size()).isEqualTo(0);
     }
 }
