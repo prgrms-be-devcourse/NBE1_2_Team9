@@ -255,9 +255,9 @@ class AccountBookServiceTest {
         accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
         accountBookService.addAccountBook(groupResult.getGroupId(), req2, saveUser.getUserId().toString());
         accountBookService.addAccountBook(groupResult.getGroupId(), req3, saveUser.getUserId().toString());
+        List<Expense> all = accountBookRepository.findAll();
 
         //when
-        List<Expense> all = accountBookRepository.findAll();
         AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId(), saveUser.getUserId().toString());
         AccountBookOneResp res2 = accountBookService.findAccountBook(all.get(1).getExpenseId(), saveUser.getUserId().toString());
 

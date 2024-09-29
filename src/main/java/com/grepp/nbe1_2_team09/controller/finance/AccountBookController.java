@@ -7,15 +7,23 @@ import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
 import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.entity.User;
 import com.grepp.nbe1_2_team09.domain.service.finance.AccountBookService;
+import com.grepp.nbe1_2_team09.domain.service.finance.OCRService;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountBookController {
 
     private final AccountBookService accountBookService;
+    private final OCRService ocrService;
 
     //가계부 지출 기록
     @PostMapping("/{groupId}")
@@ -67,6 +76,11 @@ public class AccountBookController {
     public void deleteAccountBook(@RequestParam Long expenseId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userId= customUserDetails.getUsername();
         accountBookService.deleteAccountBook(expenseId, userId);
+    }
+
+    @GetMapping("/receipt")
+    public Map<Integer, String> receiptOCR(@RequestBody Map<String, String> image) throws Exception {
+        return ocrService.extractTextFromImageUrl(image.get("image"));
     }
 
 }

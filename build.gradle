@@ -47,6 +47,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-vision
+    implementation group: 'com.google.cloud', name: 'google-cloud-vision', version: '3.47.0'
+
 }
 
 tasks.named('test') {
