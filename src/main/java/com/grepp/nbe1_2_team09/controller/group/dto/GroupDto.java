@@ -1,6 +1,6 @@
 package com.grepp.nbe1_2_team09.controller.group.dto;
 
-import com.grepp.nbe1_2_team09.domain.entity.Group;
+import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 
 import java.time.LocalDateTime;
 

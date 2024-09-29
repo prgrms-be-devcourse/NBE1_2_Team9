@@ -1,5 +1,8 @@
-package com.grepp.nbe1_2_team09.domain.entity;
+package com.grepp.nbe1_2_team09.domain.entity.group;
 
+import com.grepp.nbe1_2_team09.domain.entity.event.Event;
+import com.grepp.nbe1_2_team09.domain.entity.Expense;
+import com.grepp.nbe1_2_team09.domain.entity.Task;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,6 +24,10 @@ public class Group {
 
     @Column(nullable = false, length = 100)
     private String groupName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GroupStatus groupStatus;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -47,11 +54,16 @@ public class Group {
     @Builder
     public Group(String groupName) {
         this.groupName = groupName;
+        this.groupStatus = GroupStatus.ACTIVE;
     }
 
     //그룹 이름 변경
     public void updateGroupName(String newName){
         this.groupName = newName;
+    }
+
+    public void updateStatus(GroupStatus newStatus){
+        this.groupStatus = newStatus;
     }
 
 

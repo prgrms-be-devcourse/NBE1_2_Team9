@@ -1,7 +1,7 @@
 package com.grepp.nbe1_2_team09.domain.repository.event;
 
-import com.grepp.nbe1_2_team09.domain.entity.Event;
-import com.grepp.nbe1_2_team09.domain.entity.Group;
+import com.grepp.nbe1_2_team09.domain.entity.event.Event;
+import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,5 +1,6 @@
-package com.grepp.nbe1_2_team09.domain.entity;
+package com.grepp.nbe1_2_team09.domain.entity.event;
 
+import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,10 @@ public class Event {
     @Column(nullable = false)
     private String city;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventStatus status;
+
     @Column(nullable = false)
     private LocalDateTime startDateTime;
 
@@ -50,6 +55,7 @@ public class Event {
         this.eventName = eventName;
         this.description = description;
         this.city = city;
+        this.status = EventStatus.UPCOMING;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.group = group;
@@ -60,6 +66,10 @@ public class Event {
         this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+    }
+
+    public void updateStatus(EventStatus status){
+        this.status = status;
     }
 
 
