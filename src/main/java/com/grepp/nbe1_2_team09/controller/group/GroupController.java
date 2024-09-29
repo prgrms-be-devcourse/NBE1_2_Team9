@@ -5,7 +5,7 @@ import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
-import com.grepp.nbe1_2_team09.domain.entity.GroupRole;
+import com.grepp.nbe1_2_team09.domain.entity.group.GroupRole;
 import com.grepp.nbe1_2_team09.domain.service.group.GroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,10 +58,26 @@ public class GroupController {
         return ResponseEntity.ok(groups);
     }
 
-    //관리자가 그룹에 멤버 추가 -> Role은 받을 필요 없음 그냥 처음에는 무조건 MEMBER로 하도록 변경할것 내일 -> 변경 완료
+    //관리자가 그룹에 멤버 추가 시도(초대)
     @PostMapping("/{groupId}/members")
-    public ResponseEntity<Void> addMemberToGroup(@PathVariable Long groupId, @RequestParam Long userId) {
-        groupService.addMemberToGroup(groupId,userId);
+    public ResponseEntity<Void> addMemberToGroup(@PathVariable Long groupId, @RequestParam String email, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long adminId = userDetails.getUser().getUserId();
+        groupService.addMemberToGroup(groupId,email, adminId);
+        return ResponseEntity.ok().build();
+    }
+
+    //초대 수락
+    @PostMapping("/invitations/{invitationId}/accept")
+    public ResponseEntity<Void> acceptInvitation(@PathVariable Long invitationId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUser().getUserId();
+        groupService.acceptInvitation(userId, invitationId);
+        return ResponseEntity.ok().build();
+    }
+    //초대 거절
+    @PostMapping("/invitations/{invitationId}/reject")
+    public ResponseEntity<Void> rejectInvitation(@PathVariable Long invitationId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUser().getUserId();
+        groupService.rejectInvitation(userId, invitationId);
         return ResponseEntity.ok().build();
     }
 
