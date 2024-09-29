@@ -5,33 +5,15 @@ import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
 import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
-import com.grepp.nbe1_2_team09.domain.entity.User;
 import com.grepp.nbe1_2_team09.domain.service.finance.AccountBookService;
 import com.grepp.nbe1_2_team09.domain.service.finance.OCRService;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -59,9 +41,9 @@ public class AccountBookController {
 
     //가계부 목록 상세 조회
     @GetMapping
-    public AccountBookOneResp findAccountBook(@RequestParam Long expenseId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public AccountBookOneResp findAccountBook(@RequestBody Map<String, String> expenseId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userId= customUserDetails.getUsername();
-        return accountBookService.findAccountBook(expenseId, userId);
+        return accountBookService.findAccountBook(Long.parseLong(expenseId.get("expenseId")), userId);
     }
 
     //가계부 지출 기록 수정
@@ -73,9 +55,9 @@ public class AccountBookController {
 
     //가계부 지출 삭제
     @DeleteMapping
-    public void deleteAccountBook(@RequestParam Long expenseId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public void deleteAccountBook(@RequestBody Map<String, String> expenseId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userId= customUserDetails.getUsername();
-        accountBookService.deleteAccountBook(expenseId, userId);
+        accountBookService.deleteAccountBook(Long.parseLong(expenseId.get("expenseId")), userId);
     }
 
     @GetMapping("/receipt")
