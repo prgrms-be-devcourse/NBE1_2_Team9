@@ -9,6 +9,11 @@ import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.protobuf.ByteString;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
+import com.grepp.nbe1_2_team09.controller.finance.dto.ReceiptDTO;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,5 +81,37 @@ public class OCRService {
             }
         }
         return results;
+    }
+
+    public ReceiptDTO ReceiptFormatting(ReceiptDTO receipt) {
+        String date=receipt.getExpenseDate();
+        String amount=receipt.getAmount();
+
+        //앞 문자 제거
+        date = date.replaceFirst("^.*?(\\d)", "$1");
+        //숫자만 남기고 문자 다 제거
+        amount = amount.replaceAll("[^\\d]", "");
+
+        // 다양한 날짜 포맷 지원을 위한 포매터 구성
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH시 mm분 ss초"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy.M.d HH:mm:ss"))
+                .toFormatter();
+
+        // 출력 포맷
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        ReceiptDTO resultReceiptDTO=new ReceiptDTO();
+        try {
+            LocalDateTime resultDate = LocalDateTime.parse(date, formatter);
+            resultDate.format(outputFormatter);
+            resultReceiptDTO.setExpenseDate(String.valueOf(resultDate));
+            resultReceiptDTO.setAmount(amount);
+        } catch (Exception e) {
+            log.warn(">>>> {} : {} <<<<", date, new AccountBookException(ExceptionMessage.FORMAT_ERROR));
+            throw  new AccountBookException(ExceptionMessage.FORMAT_ERROR);
+        }
+        return resultReceiptDTO;
     }
 }

@@ -4,11 +4,13 @@ import com.grepp.nbe1_2_team09.admin.service.CustomUserDetails;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
+import com.grepp.nbe1_2_team09.controller.finance.dto.ReceiptDTO;
 import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.service.finance.AccountBookService;
 import com.grepp.nbe1_2_team09.domain.service.finance.OCRService;
 import java.util.List;
 import java.util.Map;
+import jdk.management.jfr.RecordingInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -63,6 +65,13 @@ public class AccountBookController {
     @GetMapping("/receipt")
     public Map<Integer, String> receiptOCR(@RequestBody Map<String, String> image) throws Exception {
         return ocrService.extractTextFromImageUrl(image.get("image"));
+    }
+
+    //받은 문자열 포매팅
+    @GetMapping("/receipt/formatting")
+    public ReceiptDTO receiptFormatting(@RequestBody ReceiptDTO receipt) {
+        System.out.println(receipt.toString());
+        return ocrService.ReceiptFormatting(receipt);
     }
 
 }

@@ -26,7 +26,8 @@ public enum ExceptionMessage {
     DB_ERROR("저장 실패"),
     EXPENSE_NOT_FOUND("해당 지출 목록을 찾을 수 없습니다."),
     OCR_ERROR("이미지 추출 오류"),
-    IMAGE_NOT_FOUND("이미지가 존재하지 않음")
+    IMAGE_NOT_FOUND("이미지가 존재하지 않음"),
+    FORMAT_ERROR("문자열 포매팅 실패")
 
 
     ;
