@@ -2,7 +2,6 @@ package com.grepp.nbe1_2_team09.domain.service.finance;
 
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
-import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
@@ -44,7 +43,7 @@ public class AccountBookService {
         }
 
         if (accountBookReq.getExpenseDate() == null) {
-            accountBookReq.setExpenseDate(LocalDateTime.now());
+            accountBookReq.setExpenseDate(LocalDateTime.now().toString());
         }
 
         Expense expense = AccountBookReq.toEntity(accountBookReq);

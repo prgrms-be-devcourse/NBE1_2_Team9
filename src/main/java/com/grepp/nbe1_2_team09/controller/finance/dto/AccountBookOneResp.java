@@ -3,6 +3,7 @@ package com.grepp.nbe1_2_team09.controller.finance.dto;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,10 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountBookOneResp {
 
-    private long expensesId;
-    private LocalDateTime expensesDate;
+    private Long expensesId;
+    private String expensesDate;
     private String itemName;
-    private BigDecimal amount;
+    private String amount;
     private String paidByUserId;
     private String receiptImage;
 
@@ -25,9 +26,14 @@ public class AccountBookOneResp {
         Expense expense = new Expense();
 
         expense.setExpenseId(accountBookDTO.getExpensesId());
-        expense.setExpenseDate(accountBookDTO.getExpensesDate());
+        expense.setExpenseDate(LocalDateTime.parse(accountBookDTO.getExpensesDate(), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         expense.setItemName(accountBookDTO.getItemName());
-        expense.setAmount(accountBookDTO.getAmount());
+        if (accountBookDTO.getAmount() != null && !accountBookDTO.getAmount().isEmpty()) {
+            expense.setAmount(new BigDecimal(accountBookDTO.getAmount()));
+        } else {
+            // amount 값이 null인 경우 = 0
+            expense.setAmount(BigDecimal.ZERO);
+        }
         expense.setPaidBy(accountBookDTO.getPaidByUserId());
 
         return expense;
@@ -36,9 +42,9 @@ public class AccountBookOneResp {
     public static AccountBookOneResp toDTO(Expense expense) {
         return AccountBookOneResp.builder()
                 .expensesId(expense.getExpenseId())
-                .expensesDate(expense.getExpenseDate())
+                .expensesDate(expense.getExpenseDate().toString())
                 .itemName(expense.getItemName())
-                .amount(expense.getAmount())
+                .amount(expense.getAmount().toString())
                 .paidByUserId(expense.getPaidBy())
                 .build();
     }
