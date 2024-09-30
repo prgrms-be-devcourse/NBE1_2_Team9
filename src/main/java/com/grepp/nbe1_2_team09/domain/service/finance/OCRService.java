@@ -109,6 +109,12 @@ public class OCRService {
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH시 mm분 ss초"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"))
 
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 d일 HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 dd일 HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"))
+
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.d HH:mm:ss"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy.M.dd HH:mm:ss"))
