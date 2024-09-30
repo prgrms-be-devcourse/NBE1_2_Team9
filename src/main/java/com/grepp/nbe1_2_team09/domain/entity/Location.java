@@ -29,18 +29,14 @@ public class Location {
 
     private String address;
 
-    @Column(length = 100)
-    private String city;
-
-    @Column(length = 100)
-    private String country;
-
     @Column(precision = 3, scale = 2)
     private BigDecimal rating;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LocationType type;
+
+    private String photo;
 
     @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -57,22 +53,20 @@ public class Location {
     //비즈니스 메서드
 
     @Builder
-    public Location(String placeName, BigDecimal latitude, BigDecimal longitude, String address, String city, String country, LocationType type) {
+    public Location(String placeName, BigDecimal latitude, BigDecimal longitude, String address, BigDecimal rating, LocationType type,String photo, EventLocation eventLocation) {
         this.placeName = placeName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.address = address;
-        this.city = city;
-        this.country = country;
+        this.rating = rating;
         this.type = type;
+        this.photo = photo;
 
     }
 
-    public void updateDetails(String placeName, String address, String city, String country) {
-        this.placeName = placeName;
+    public void updateLocationDetails(String address, BigDecimal rating) {
         this.address = address;
-        this.city = city;
-        this.country = country;
+        this.rating = rating;
     }
 
     public void updateCoordinates(BigDecimal latitude, BigDecimal longitude) {
