@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ExchangeRateRepository extends JpaRepository<ExchangeRate, Long> {
 
-    @Query("SELECT conversionRate FROM ExchangeRate WHERE fromCountry =:fromCounty AND toCountry =:toCountry")
+    @Query("SELECT conversionRate FROM ExchangeRate WHERE fromCountry =:fromCountry AND toCountry =:toCountry")
     BigDecimal findConversionRate (String toCountry, String fromCountry);
+
+    @Query("SELECT exchangeRateId FROM ExchangeRate WHERE fromCountry =:fromCountry AND toCountry =:toCountry")
+    Long findIdByFromCountryAndToCountry(String fromCountry, String toCountry);
 }

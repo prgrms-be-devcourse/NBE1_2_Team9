@@ -27,7 +27,10 @@ public enum ExceptionMessage {
     EXPENSE_NOT_FOUND("해당 지출 목록을 찾을 수 없습니다."),
     OCR_ERROR("이미지 추출 오류"),
     IMAGE_NOT_FOUND("이미지가 존재하지 않음"),
-    FORMAT_ERROR("문자열 포매팅 실패")
+    FORMAT_ERROR("문자열 포매팅 실패"),
+
+    //Exchange
+    EXCHANGE_ERROR("환전하는 중 오류 발생")
 
 
     ;
