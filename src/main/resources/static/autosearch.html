@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자동완성 장소 검색</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #suggestions {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            position: absolute;
+            background: white;
+            z-index: 1000;
+        }
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+<h1>장소 자동완성 검색</h1>
+<input type="text" id="searchInput" placeholder="장소를 입력하세요...">
+<div id="suggestions"></div>
+
+<script>
+    $(document).ready(function() {
+        const eventId = 1; // 예시로 eventId를 1로 설정, 실제로는 동적으로 설정해야 함
+
+        $('#searchInput').on('input', function() {
+            const input = $(this).val();
+            if (input.length > 0) {
+                $.ajax({
+                    url: `http://localhost:8080/api/locations/${eventId}/autocomplete?input=${input}`,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#suggestions').empty();
+                        if (data.length > 0) {
+                            data.forEach(place => {
+                                $('#suggestions').append(`
+                                        <div class="suggestion-item" data-place-id="${place.placeId}">
+                                            ${place.name}
+                                        </div>
+                                    `);
+                            });
+                            $('#suggestions').show();
+                        } else {
+                            $('#suggestions').hide();
+                        }
+                    },
+                    error: function() {
+                        $('#suggestions').hide();
+                    }
+                });
+            } else {
+                $('#suggestions').hide();
+            }
+        });
+
+        // 사용자 클릭 시 장소 선택
+        $(document).on('click', '.suggestion-item', function() {
+            const placeId = $(this).data('place-id');
+            $('#searchInput').val($(this).text());
+            $('#suggestions').hide();
+            console.log('선택된 장소 ID:', placeId); // 선택된 장소 ID를 콘솔에 출력
+        });
+
+        // 클릭 시 자동완성 목록 숨기기
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#suggestions').length) {
+                $('#suggestions').hide();
+            }
+        });
+    });
+</script>
+</body>
+</html>
