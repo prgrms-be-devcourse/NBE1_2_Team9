@@ -43,7 +43,7 @@ public class AccountBookService {
         }
 
         if (accountBookReq.getExpenseDate() == null) {
-            accountBookReq.setExpenseDate(LocalDateTime.now().toString());
+            accountBookReq.setExpenseDate(LocalDateTime.now());
         }
 
         Expense expense = AccountBookReq.toEntity(accountBookReq);

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AccountBookOneResp {
 
     private Long expensesId;
-    private String expensesDate;
+    private LocalDateTime expensesDate;
     private String itemName;
     private String amount;
     private String paidByUserId;
@@ -26,7 +26,7 @@ public class AccountBookOneResp {
         Expense expense = new Expense();
 
         expense.setExpenseId(accountBookDTO.getExpensesId());
-        expense.setExpenseDate(LocalDateTime.parse(accountBookDTO.getExpensesDate(), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        expense.setExpenseDate(accountBookDTO.getExpensesDate());
         expense.setItemName(accountBookDTO.getItemName());
         if (accountBookDTO.getAmount() != null && !accountBookDTO.getAmount().isEmpty()) {
             expense.setAmount(new BigDecimal(accountBookDTO.getAmount()));
@@ -42,7 +42,7 @@ public class AccountBookOneResp {
     public static AccountBookOneResp toDTO(Expense expense) {
         return AccountBookOneResp.builder()
                 .expensesId(expense.getExpenseId())
-                .expensesDate(expense.getExpenseDate().toString())
+                .expensesDate(expense.getExpenseDate())
                 .itemName(expense.getItemName())
                 .amount(expense.getAmount().toString())
                 .paidByUserId(expense.getPaidBy())

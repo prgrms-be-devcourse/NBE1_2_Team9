@@ -64,7 +64,7 @@ class AccountBookServiceTest {
         AccountBookReq req = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal(1000))
+                .amount(new BigDecimal(1000).toString())
                 .paidByUserId("유저1")
                 .build();
 
@@ -91,7 +91,7 @@ class AccountBookServiceTest {
         AccountBookReq req = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal(1000))
+                .amount(new BigDecimal(1000).toString())
                 .paidByUserId("유저1")
                 .build();
 
@@ -111,7 +111,7 @@ class AccountBookServiceTest {
         AccountBookReq req = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal(1000))
+                .amount(new BigDecimal(1000).toString())
                 .paidByUserId("유저1")
                 .build();
 
@@ -136,21 +136,21 @@ class AccountBookServiceTest {
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal(1000))
+                .amount(new BigDecimal(1000).toString())
                 .paidByUserId("유저1")
                 .build();
 
         AccountBookReq req2 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000.6"))
+                .amount(new BigDecimal("1000.6").toString())
                 .paidByUserId("유저2")
                 .build();
 
         AccountBookReq req3 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000.6"))
+                .amount(new BigDecimal("1000.6").toString())
                 .paidByUserId("유저2")
                 .build();
 
@@ -178,21 +178,21 @@ class AccountBookServiceTest {
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal(1000))
+                .amount(new BigDecimal(1000).toString())
                 .paidByUserId("유저1")
                 .build();
 
         AccountBookReq req2 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000.6"))
+                .amount(new BigDecimal("1000.6").toString())
                 .paidByUserId("유저2")
                 .build();
 
         AccountBookReq req3 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000.6"))
+                .amount(new BigDecimal("1000.6").toString())
                 .paidByUserId("유저2")
                 .build();
 
@@ -225,7 +225,7 @@ class AccountBookServiceTest {
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000"))
+                .amount(new BigDecimal("1000").toString())
                 .paidByUserId("유저1")
                 .receiptImage(image)
                 .build();
@@ -233,7 +233,7 @@ class AccountBookServiceTest {
         AccountBookReq req2 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000.6"))
+                .amount(new BigDecimal("1000.6").toString())
                 .paidByUserId("유저2")
                 .receiptImage(image)
                 .build();
@@ -241,7 +241,7 @@ class AccountBookServiceTest {
         AccountBookReq req3 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000.6"))
+                .amount(new BigDecimal("1000.6").toString())
                 .paidByUserId("유저2")
                 .receiptImage(image)
                 .build();
@@ -264,13 +264,12 @@ class AccountBookServiceTest {
         //then
         Assertions.assertThat(res1.getExpensesDate()).isEqualTo(req1.getExpenseDate());
         Assertions.assertThat(res1.getItemName()).isEqualTo(req1.getItemName());
-        Assertions.assertThat(res1.getAmount().compareTo(req1.getAmount())).isEqualTo(0);
+        Assertions.assertThat(new BigDecimal(res1.getAmount()).compareTo(new BigDecimal(req1.getAmount()))).isEqualTo(0);
         Assertions.assertThat(res1.getPaidByUserId()).isEqualTo(req1.getPaidByUserId());
         Assertions.assertThat(res1.getReceiptImage()).isEqualTo(req1.getReceiptImage());
-
         Assertions.assertThat(res2.getExpensesDate()).isEqualTo(req2.getExpenseDate());
         Assertions.assertThat(res2.getItemName()).isEqualTo(req2.getItemName());
-        Assertions.assertThat(res2.getAmount().compareTo(req2.getAmount())).isEqualTo(0);
+        Assertions.assertThat(new BigDecimal(res2.getAmount()).compareTo(new BigDecimal(req2.getAmount()))).isEqualTo(0);
         Assertions.assertThat(res2.getPaidByUserId()).isEqualTo(req2.getPaidByUserId());
         Assertions.assertThat(res2.getReceiptImage()).isEqualTo(req2.getReceiptImage());
 
@@ -286,7 +285,7 @@ class AccountBookServiceTest {
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal("1000"))
+                .amount(new BigDecimal("1000").toString())
                 .paidByUserId("유저1")
                 .receiptImage(image)
                 .build();
@@ -303,7 +302,7 @@ class AccountBookServiceTest {
         AccountBookOneResp res1 = accountBookService.findAccountBook(all.get(0).getExpenseId(), saveUser.getUserId().toString()); //update 전 원본
         Assertions.assertThat(res1.getExpensesDate()).isEqualTo(req1.getExpenseDate());
         Assertions.assertThat(res1.getItemName()).isEqualTo(req1.getItemName());
-        Assertions.assertThat(res1.getAmount().compareTo(req1.getAmount())).isEqualTo(0);
+        Assertions.assertThat(new BigDecimal(res1.getAmount()).compareTo(new BigDecimal(req1.getAmount()))).isEqualTo(0);
         Assertions.assertThat(res1.getPaidByUserId()).isEqualTo(req1.getPaidByUserId());
         Assertions.assertThat(res1.getReceiptImage()).isEqualTo(req1.getReceiptImage());
 
@@ -325,7 +324,7 @@ class AccountBookServiceTest {
         //바뀐게 잘 들어갔는지 확인
         Assertions.assertThat(result.getExpensesDate()).isEqualTo(updateReq.getExpenseDate());
         Assertions.assertThat(result.getItemName()).isEqualTo(updateReq.getItemName());
-        Assertions.assertThat(result.getAmount().compareTo(updateReq.getAmount())).isEqualTo(0);
+        Assertions.assertThat(new BigDecimal(result.getAmount()).compareTo(new BigDecimal(updateReq.getAmount().toString()))).isEqualTo(0);
         Assertions.assertThat(result.getPaidByUserId()).isEqualTo(updateReq.getPaidByUserId());
         Assertions.assertThat(result.getReceiptImage()).isEqualTo(updateReq.getReceiptImage());
     }
@@ -337,7 +336,7 @@ class AccountBookServiceTest {
         AccountBookReq req1 = AccountBookReq.builder()
                 .expenseDate(LocalDateTime.now())
                 .itemName("food")
-                .amount(new BigDecimal(1000))
+                .amount(new BigDecimal(1000).toString())
                 .paidByUserId("유저1")
                 .build();
 

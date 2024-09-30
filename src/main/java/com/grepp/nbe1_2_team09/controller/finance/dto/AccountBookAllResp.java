@@ -2,6 +2,7 @@ package com.grepp.nbe1_2_team09.controller.finance.dto;
 
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import org.springframework.data.convert.Jsr310Converters.StringToLocalDateConver
 public class AccountBookAllResp {
 
     private Long expensesId;
-    private String expensesDate;
+    private LocalDateTime expensesDate;
     private String itemName;
     private String amount;
     private String paidByUserId;
@@ -26,7 +27,7 @@ public class AccountBookAllResp {
         Expense expense = new Expense();
 
         expense.setExpenseId(accountBookDTO.getExpensesId());
-        expense.setExpenseDate(LocalDateTime.parse(accountBookDTO.getExpensesDate(), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        expense.setExpenseDate(accountBookDTO.getExpensesDate());
         expense.setItemName(accountBookDTO.getItemName());
         if (accountBookDTO.getAmount() != null && !accountBookDTO.getAmount().isEmpty()) {
             expense.setAmount(new BigDecimal(accountBookDTO.getAmount()));
@@ -42,7 +43,7 @@ public class AccountBookAllResp {
     public static AccountBookAllResp toDTO(Expense expense) {
         return AccountBookAllResp.builder()
                 .expensesId(expense.getExpenseId())
-                .expensesDate(expense.getExpenseDate().toString())
+                .expensesDate(expense.getExpenseDate())
                 .itemName(expense.getItemName())
                 .amount(expense.getAmount().toString())
                 .paidByUserId(expense.getPaidBy())
