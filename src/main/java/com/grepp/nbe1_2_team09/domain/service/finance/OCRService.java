@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -89,15 +90,41 @@ public class OCRService {
 
         //앞 문자 제거
         date = date.replaceFirst("^.*?(\\d)", "$1");
+        //중간에 (요일) 제거
+        date = date.replaceAll("\\s*\\(.*?\\)\\s*", " ");
         //숫자만 남기고 문자 다 제거
         amount = amount.replaceAll("[^\\d]", "");
 
         // 다양한 날짜 포맷 지원을 위한 포매터 구성
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/d HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy/M/dd HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy/M/d HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"))
+
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 d일 HH시 mm분 ss초"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 dd일 HH시 mm분 ss초"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH시 mm분 ss초"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"))
+
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.d HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy.M.dd HH:mm:ss"))
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy.M.d HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
+
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-d HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-M-dd HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+
+
                 .toFormatter();
+
+        //2020-04-22 (수) 20:12:11
 
         // 출력 포맷
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
