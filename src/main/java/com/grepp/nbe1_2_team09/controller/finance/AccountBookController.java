@@ -73,5 +73,4 @@ public class AccountBookController {
         System.out.println(receipt.toString());
         return ocrService.ReceiptFormatting(receipt);
     }
-
 }
