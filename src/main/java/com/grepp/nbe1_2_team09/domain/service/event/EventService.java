@@ -30,19 +30,14 @@ public class EventService {
     public EventDto createEvent(CreateEventRequest request){
         //요청에 있는 groupId로 group을 찾음
         Group group = findGroupByIdOrThrowGroupException(request.groupId());
-        // 내일 여기에 시작일이 종료일보다 앞인지 확인하는 검사 포함 -> 완료
-        // 당일치기 가능성도 있으니까 시작일이 종료일보다 늦지 않은지만 체크
-        if(request.startDateTime().isAfter(request.endDateTime())){
-            throw new EventException(ExceptionMessage.EVENT_DATE_INVALID);
-        }
 
         //요청 데이터를 기반으로 새로운 event 객체 생성 후 저장
         Event event = Event.builder()
                 .eventName(request.eventName())
                 .description(request.description())
                 .city(request.city())
-                .startDateTime(request.startDateTime())
-                .endDateTime(request.endDateTime())
+                .startDate(request.startDate())
+                .endDate(request.endDate())
                 .group(group)
                 .build();
 
@@ -60,11 +55,7 @@ public class EventService {
     public EventDto updateEvent(Long eventId, UpdateEventRequest request) {
         Event event = findByIdOrThrowEventException(eventId);
 
-        // 내일 여기에 시작일이 종료일보다 앞인지 확인하는 검사 포함
-        if(request.startDateTime().isAfter(request.endDateTime())){
-            throw new EventException(ExceptionMessage.EVENT_DATE_INVALID);
-        }
-        event.updateEventDetails(request.eventName(), request.description(), request.startDateTime(), request.endDateTime());
+        event.updateEventDetails(request.eventName(), request.description(), request.startDate(), request.endDate());
 
         return EventDto.from(event);
     }

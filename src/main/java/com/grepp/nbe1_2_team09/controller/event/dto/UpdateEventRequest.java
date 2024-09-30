@@ -2,7 +2,7 @@ package com.grepp.nbe1_2_team09.controller.event.dto;
 
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record UpdateEventRequest(
         @NotBlank(message = "일정 이름 필수 입력") // 빈 문자열 허용X
@@ -14,10 +14,15 @@ public record UpdateEventRequest(
 
         @NotNull(message = "시작 날짜 선택 필수")
         @FutureOrPresent(message = "시작일은 오늘날짜 이후부터 가능합니다")
-        LocalDateTime startDateTime,
+        LocalDate startDate,
 
         @NotNull(message = "종료 날짜 선택 필수")
         @Future(message = "종료일은 오늘이 지난 날부터 가능합니다.")
-        LocalDateTime endDateTime
-) {}
+        LocalDate endDate
+) {
+        @AssertTrue(message = "종료일은 시작일과 같거나 이후여야 합니다")
+        private boolean isEndDateValid(){
+                return endDate != null && startDate != null && endDate.isAfter(startDate);
+        }
+}
 

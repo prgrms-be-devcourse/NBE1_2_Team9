@@ -3,11 +3,13 @@ package com.grepp.nbe1_2_team09.domain.service.event;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.EventException;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.LocationException;
+import com.grepp.nbe1_2_team09.controller.event.dto.AddEventLocationReq;
 import com.grepp.nbe1_2_team09.controller.event.dto.EventLocationDto;
 import com.grepp.nbe1_2_team09.controller.event.dto.EventLocationInfoDto;
+import com.grepp.nbe1_2_team09.controller.event.dto.UpdateEventLocationReq;
+import com.grepp.nbe1_2_team09.domain.entity.Location;
 import com.grepp.nbe1_2_team09.domain.entity.event.Event;
 import com.grepp.nbe1_2_team09.domain.entity.event.EventLocation;
-import com.grepp.nbe1_2_team09.domain.entity.Location;
 import com.grepp.nbe1_2_team09.domain.repository.event.EventLocationRepository;
 import com.grepp.nbe1_2_team09.domain.repository.event.EventRepository;
 import com.grepp.nbe1_2_team09.domain.repository.location.LocationRepository;
@@ -31,13 +33,16 @@ public class EventLocationService {
 
     //일정에 장소 추가
     @Transactional
-    public EventLocationDto addLocationToEvent(Long eventId, Long locationId){
+    public EventLocationDto addLocationToEvent(Long eventId, AddEventLocationReq req){
         Event event = findEventByIdOrThrowEventException(eventId);
-        Location location = findLocationByIdOrThrowLocationException(locationId);
+        Location location = findLocationByIdOrThrowLocationException(req.locationId());
 
         EventLocation eventLocation = EventLocation.builder()
                 .event(event)
                 .location(location)
+                .description(req.description())
+                .visitStartTime(req.visitStartTime())
+                .visitEndTime(req.visitEndTime())
                 .build();
 
         EventLocation savedEventLocation = eventLocationRepository.save(eventLocation);
@@ -59,17 +64,21 @@ public class EventLocationService {
         return infos;
     }
 
-
-
-    //일정에 추가된 장소에 대한 description 추가
     @Transactional
-    public EventLocationDto updateDescription(Long eventId, Long locationId, String description){
+    public EventLocationDto updateEventLocation(Long eventId, Long locationId, UpdateEventLocationReq req){
         Event event = findEventByIdOrThrowEventException(eventId);
         Location location = findLocationByIdOrThrowLocationException(locationId);
 
         EventLocation eventLocation = findEventLocationOrThrowException(event, location);
 
-        eventLocation.updateDescription(description);
+        if(req.description() != null){
+            eventLocation.updateDescription(req.description());
+        }
+        if(req.visitStartTime() != null && req.visitEndTime() != null){
+            eventLocation.updateVisitTime(req.visitStartTime(), req.visitEndTime());
+        }
+
+
         return EventLocationDto.from(eventLocation);
     }
 

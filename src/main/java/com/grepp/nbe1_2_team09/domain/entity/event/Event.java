@@ -4,7 +4,7 @@ import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +38,10 @@ public class Event {
     private EventStatus status;
 
     @Column(nullable = false)
-    private LocalDateTime startDateTime;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDateTime;
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -51,21 +51,21 @@ public class Event {
     //비즈니스 메서드
 
     @Builder
-    public Event(String eventName, String description, String city, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
+    public Event(String eventName, String description, String city, LocalDate startDate, LocalDate endDate, Group group) {
         this.eventName = eventName;
         this.description = description;
         this.city = city;
         this.status = EventStatus.UPCOMING;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.group = group;
     }
 
-    public void updateEventDetails(String eventName, String description, LocalDateTime startDateTime, LocalDateTime endDateTime ){
+    public void updateEventDetails(String eventName, String description, LocalDate startDate, LocalDate endDate ){
         this.eventName = eventName;
         this.description = description;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public void updateStatus(EventStatus status){

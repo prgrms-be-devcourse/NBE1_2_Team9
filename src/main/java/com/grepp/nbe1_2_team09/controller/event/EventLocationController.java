@@ -1,8 +1,11 @@
 package com.grepp.nbe1_2_team09.controller.event;
 
+import com.grepp.nbe1_2_team09.controller.event.dto.AddEventLocationReq;
 import com.grepp.nbe1_2_team09.controller.event.dto.EventLocationDto;
 import com.grepp.nbe1_2_team09.controller.event.dto.EventLocationInfoDto;
+import com.grepp.nbe1_2_team09.controller.event.dto.UpdateEventLocationReq;
 import com.grepp.nbe1_2_team09.domain.service.event.EventLocationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +20,11 @@ public class EventLocationController {
 
     private final EventLocationService eventLocationService;
 
-    @PostMapping("/{eventId}/locations/{locationId}")
-    public ResponseEntity<EventLocationDto> addLocationToEvent(@PathVariable Long eventId, @PathVariable Long locationId) {
-        EventLocationDto result = eventLocationService.addLocationToEvent(eventId, locationId);
+    @PostMapping("/{eventId}/locations")
+    public ResponseEntity<EventLocationDto> addLocationToEvent(
+            @PathVariable Long eventId,
+            @Valid @RequestBody AddEventLocationReq request) {
+        EventLocationDto result = eventLocationService.addLocationToEvent(eventId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
@@ -29,10 +34,12 @@ public class EventLocationController {
         return ResponseEntity.ok(locations);
     }
 
-    //description에 대한 정보만 변경하면 되니까 description
     @PatchMapping("/{eventId}/locations/{locationId}")
-    public ResponseEntity<EventLocationDto> updateDescription(@PathVariable Long eventId, @PathVariable Long locationId, @RequestBody String description) {
-        EventLocationDto result = eventLocationService.updateDescription(eventId, locationId, description);
+    public ResponseEntity<EventLocationDto> updateEventLocation(
+            @PathVariable Long eventId,
+            @PathVariable Long locationId,
+            @Valid @RequestBody UpdateEventLocationReq request) {
+        EventLocationDto result = eventLocationService.updateEventLocation(eventId, locationId, request);
         return ResponseEntity.ok(result);
     }
 

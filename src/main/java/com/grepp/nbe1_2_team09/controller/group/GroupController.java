@@ -23,7 +23,6 @@ public class GroupController {
     private final GroupService groupService;
 
 
-
     //먼저 CRUD 4종 세트 구현 시작
     //jwt 적용시 HttpServletRequest에서 jwtUtil.getUserId(jwtUtil.extractToken(httpRequest))로 userId 추출
     public ResponseEntity<GroupDto> createGroup(@Valid @RequestBody CreateGroupRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -39,7 +38,7 @@ public class GroupController {
     }
 
     @PutMapping("/{groupId}")
-    public ResponseEntity<GroupDto> updateGroup(@PathVariable Long groupId, UpdateGroupRequest request) {
+    public ResponseEntity<GroupDto> updateGroup(@PathVariable Long groupId, @Valid @RequestBody UpdateGroupRequest request) {
         GroupDto groupDto = groupService.updateGroup(groupId, request);
         return ResponseEntity.ok(groupDto);
     }
@@ -52,7 +51,7 @@ public class GroupController {
 
     //userId에 대한 정보를 받아서 해당 사용자가 속한 group들을 보내준다(이때 아마 local storage에 있던게 헤더를 통해서 들어올건지 내일 물어보기
     @GetMapping("/user")
-    public ResponseEntity<List<GroupDto>> getUserGroups(@AuthenticationPrincipal CustomUserDetails userDetails){ //userId 변경해야하는 부분
+    public ResponseEntity<List<GroupDto>> getUserGroups(@AuthenticationPrincipal CustomUserDetails userDetails) { //userId 변경해야하는 부분
         Long userId = userDetails.getUser().getUserId();
         List<GroupDto> groups = groupService.getUserGroups(userId);
         return ResponseEntity.ok(groups);
@@ -62,7 +61,7 @@ public class GroupController {
     @PostMapping("/{groupId}/members")
     public ResponseEntity<Void> addMemberToGroup(@PathVariable Long groupId, @RequestParam String email, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long adminId = userDetails.getUser().getUserId();
-        groupService.addMemberToGroup(groupId,email, adminId);
+        groupService.addMemberToGroup(groupId, email, adminId);
         return ResponseEntity.ok().build();
     }
 
@@ -73,6 +72,7 @@ public class GroupController {
         groupService.acceptInvitation(userId, invitationId);
         return ResponseEntity.ok().build();
     }
+
     //초대 거절
     @PostMapping("/invitations/{invitationId}/reject")
     public ResponseEntity<Void> rejectInvitation(@PathVariable Long invitationId, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -83,19 +83,19 @@ public class GroupController {
 
     @DeleteMapping("/{groupId}/members/{userId}")
     public ResponseEntity<Void> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {//여기는 다른 사람
-        groupService.removeMemberFromGroup(groupId,userId);
+        groupService.removeMemberFromGroup(groupId, userId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{groupId}/members")
-    public ResponseEntity<List<GroupMembershipDto>> getGroupMembers(@PathVariable Long groupId){
+    public ResponseEntity<List<GroupMembershipDto>> getGroupMembers(@PathVariable Long groupId) {
         List<GroupMembershipDto> groupMembers = groupService.getGroupMembers(groupId);
         return ResponseEntity.ok(groupMembers);
     }
 
     @PutMapping("/{groupId}/members/{userId}/role")
     public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestParam GroupRole role) { //userId 변경해야하는 부분
-        groupService.changeGroupMemberRole(groupId,userId,role);
+        groupService.changeGroupMemberRole(groupId, userId, role);
         return ResponseEntity.ok().build();
     }
 

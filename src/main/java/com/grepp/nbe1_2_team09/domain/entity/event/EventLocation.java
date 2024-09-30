@@ -4,6 +4,8 @@ import com.grepp.nbe1_2_team09.domain.entity.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "event_location_tb")
 @Getter
@@ -28,13 +30,21 @@ public class EventLocation {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false)
+    private LocalDateTime visitStartTime;
+
+    @Column(nullable = false)
+    private LocalDateTime visitEndTime;
+
     //기본 비즈니스 메서드
 
     @Builder
-    public EventLocation(Event event, Location location, String description) {
+    public EventLocation(Event event, Location location, String description, LocalDateTime visitStartTime, LocalDateTime visitEndTime) {
         this.event = event;
         this.location = location;
         this.description = description;
+        this.visitStartTime = LocalDateTime.now();
+        this.visitEndTime = LocalDateTime.now();
     }
 
     public void updateDescription(String description) {
@@ -46,5 +56,10 @@ public class EventLocation {
     }
     public void assignToEvent(Event event) {
         this.event = event;
+    }
+
+    public void updateVisitTime(LocalDateTime visitStartTime, LocalDateTime visitEndTime) {
+        this.visitStartTime = visitStartTime;
+        this.visitEndTime = visitEndTime;
     }
 }
