@@ -49,13 +49,13 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-vision
-    implementation group: 'com.google.cloud', name: 'google-cloud-vision', version: '3.47.0'
+    implementation 'com.google.cloud:google-cloud-vision:3.47.0'
 
     // https://mvnrepository.com/artifact/org.json/json
-    implementation group: 'org.json', name: 'json', version: '20231013'
+    implementation 'org.json:json:20231013'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
 
 
 }
