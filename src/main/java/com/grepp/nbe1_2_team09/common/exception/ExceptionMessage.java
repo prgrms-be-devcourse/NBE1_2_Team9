@@ -40,7 +40,6 @@ public enum ExceptionMessage {
     // Location
     LOCATION_NOT_FOUND("해당 장소를 찾을 수 없습니다."),
 
-    ;
 
     private final String text;
 }

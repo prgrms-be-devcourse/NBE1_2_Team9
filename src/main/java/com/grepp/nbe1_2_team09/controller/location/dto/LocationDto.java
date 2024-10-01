@@ -5,28 +5,26 @@ import com.grepp.nbe1_2_team09.domain.entity.LocationType;
 
 import java.math.BigDecimal;
 
-public record LocationEventDto(
+public record LocationDto(
         Long locationId,
         String placeName,
         BigDecimal latitude,
         BigDecimal longitude,
         String address,
-     /*   String city,
-        String country,*/
         BigDecimal rating,
-        LocationType type
+        LocationType type,
+        String photo
 ) {
-    public static LocationEventDto from(Location location) {
-        return new LocationEventDto(
+    public static LocationDto fromEntity(Location location){
+        return new LocationDto(
                 location.getLocationId(),
                 location.getPlaceName(),
                 location.getLatitude(),
                 location.getLongitude(),
                 location.getAddress(),
-      /*          location.getCity(),
-                location.getCountry(),*/
                 location.getRating(),
-                location.getType()
+                location.getType(),
+                location.getPhoto()
         );
     }
 }
