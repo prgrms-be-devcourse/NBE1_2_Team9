@@ -25,6 +25,7 @@ public class GroupController {
 
     //먼저 CRUD 4종 세트 구현 시작
     //jwt 적용시 HttpServletRequest에서 jwtUtil.getUserId(jwtUtil.extractToken(httpRequest))로 userId 추출
+    @PostMapping
     public ResponseEntity<GroupDto> createGroup(@Valid @RequestBody CreateGroupRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUser().getUserId();
         GroupDto groupDto = groupService.createGroup(request, userId);
