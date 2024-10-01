@@ -1,40 +1,62 @@
 package com.grepp.nbe1_2_team09.admin.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grepp.nbe1_2_team09.admin.dto.CustomUserInfoDTO;
+import com.grepp.nbe1_2_team09.admin.redis.entity.RefreshToken;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.JwtException;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
     private final Key key;
     private final long accessTokenExpTime;
+    private final long refreshTokenExpTime;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();   // JSON 직렬화/역직렬화용
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time}") long accessTokenExpTime
+            @Value("${jwt.access_expiration_time}") long accessTokenExpTime,
+            @Value("${jwt.refresh_expiration_time}") long refreshTokenExpTime,
+            RedisTemplate<String, String> redisTemplate
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.refreshTokenExpTime = refreshTokenExpTime;
+        this.redisTemplate = redisTemplate;
     }
 
-    // AccessToken 생성
+    // AccessToken 생성 (쿠키로 관리)
     public String createAccessToken(CustomUserInfoDTO user) {
         return createToken(user, accessTokenExpTime);
+    }
+
+    // RefreshToken 생성 후 Redis에 저장
+    public String createRefreshToken(CustomUserInfoDTO user) {
+        String token = createToken(user, refreshTokenExpTime);
+        RefreshToken refreshToken = new RefreshToken(user.getEmail(), token);
+        try {
+            String refreshTokenJson = objectMapper.writeValueAsString(refreshToken);    // 객체를 JSON으로 변호나
+            redisTemplate.opsForValue().set(user.getEmail(), refreshTokenJson, refreshTokenExpTime, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return token;
     }
 
     // JWT 생성
@@ -53,6 +75,22 @@ public class JwtUtil {
                 .setExpiration(Date.from(tokenValidity.toInstant()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    // Redis에서 RefreshToken 가져오기
+    public RefreshToken getRefreshToken(String email) {
+        String refreshTokenJson = redisTemplate.opsForValue().get(email);
+        try {
+            return objectMapper.readValue(refreshTokenJson, RefreshToken.class);    // JSON을 객체로 변환
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Redis에서 RefreshToken 삭제
+    public void deleteRefreshToken(String email) {
+        redisTemplate.delete(email);
     }
 
     // Token에서 User ID 추출
@@ -84,6 +122,5 @@ public class JwtUtil {
             return e.getClaims();
         }
     }
-
 
 }

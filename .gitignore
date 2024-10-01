@@ -17,8 +17,7 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 /src/main/generated/
-/src/main/resources/application.properties
-/src/main/resources/database.properties
+/src/main/resources/application.yaml
 
 ### IntelliJ IDEA ###
 .idea
@@ -38,6 +37,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Redis ###
+dump.rdb
 
 ### Secret ###
 application.properties

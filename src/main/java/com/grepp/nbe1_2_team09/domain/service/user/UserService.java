@@ -1,6 +1,7 @@
 package com.grepp.nbe1_2_team09.domain.service.user;
 
 import com.grepp.nbe1_2_team09.admin.dto.CustomUserInfoDTO;
+import com.grepp.nbe1_2_team09.admin.jwt.CookieUtil;
 import com.grepp.nbe1_2_team09.admin.jwt.JwtUtil;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
@@ -10,6 +11,7 @@ import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
 import com.grepp.nbe1_2_team09.domain.entity.Role;
 import com.grepp.nbe1_2_team09.domain.entity.User;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,7 +50,7 @@ public class UserService  {
     }
 
     // 로그인
-    public String signIn(SignInReq signInReq) {
+    public String signIn(SignInReq signInReq, HttpServletResponse response) {
         User user = findByEmailOrThrowUserException(signInReq.getEmail());
 
         if (!passwordEncoder.matches(signInReq.getPassword(), user.getPassword())) {
@@ -66,12 +68,26 @@ public class UserService  {
                 user.getRole()
         );
 
+        // AccessToken, RefreshToken 생성 및 쿠키 저장
+        String accessToken = jwtUtil.createAccessToken(customUserInfoDTO);
+        String refreshToken = jwtUtil.createRefreshToken(customUserInfoDTO);
+
+        CookieUtil.createAccessTokenCookie(accessToken, response);
+        CookieUtil.createRefreshTokenCookie(refreshToken, response);
+
         return jwtUtil.createAccessToken(customUserInfoDTO);
     }
 
+    // 로그아웃
+    public void logout(String email, HttpServletResponse response) {
+        jwtUtil.deleteRefreshToken(email);
+        CookieUtil.deleteAccessTokenCookie(response);
+        CookieUtil.deleteRefreshTokenCookie(response);
+    }
+
     // 회원 정보 조회
-    public User getUser(String email) {
-        return findByEmailOrThrowUserException(email);
+    public User getUser(Long userId) {
+        return findByIdOrThrowUserException(userId);
     }
 
     // 회원 정보 수정
@@ -98,7 +114,7 @@ public class UserService  {
     }
 
     // ID로 찾기
-    public User findByIdOrThrowUserException(Long userId) {
+    private User findByIdOrThrowUserException(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn(">>>> {} : {} <<<<", userId, ExceptionMessage.USER_NOT_FOUND);
@@ -107,7 +123,7 @@ public class UserService  {
     }
 
     // Email로 찾기
-    public User findByEmailOrThrowUserException(String email) {
+    private User findByEmailOrThrowUserException(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.warn(">>>> {} : {} <<<<", email, ExceptionMessage.USER_NOT_FOUND);
@@ -115,6 +131,4 @@ public class UserService  {
                 });
     }
 
-    public void logout(String token) {
-    }
 }

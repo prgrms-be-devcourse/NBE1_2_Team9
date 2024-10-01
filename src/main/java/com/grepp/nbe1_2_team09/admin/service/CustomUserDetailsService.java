@@ -20,10 +20,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        User user = userRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String userId) {
+        User user = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", email, ExceptionMessage.USER_NOT_FOUND);
+                    log.warn(">>>> {} : {} <<<<", userId, ExceptionMessage.USER_NOT_FOUND);
                     return new UserException(ExceptionMessage.USER_NOT_FOUND);
                 });
 

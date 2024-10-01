@@ -1,6 +1,8 @@
 package com.grepp.nbe1_2_team09.admin.jwt;
 
+import com.grepp.nbe1_2_team09.admin.dto.CustomUserInfoDTO;
 import com.grepp.nbe1_2_team09.admin.service.CustomUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,20 +34,38 @@ public class JwtFilter extends OncePerRequestFilter {   // OncePerRequestFilter 
         String jwt = resolveToken(request);
 
         // 토큰이 유효하고, JWT 유효성 검증 통과 시
-        if (StringUtils.hasText(jwt) && jwtUtil.validateToken(jwt)) {
-            // 사용자 ID 추출해서 UserDetails 로드
-            Long userId = jwtUtil.getUserId(jwt);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
+        if (StringUtils.hasText(jwt)) {
+            try {
+                // 토큰 검증
+                if (jwtUtil.validateToken(jwt)) {
+                    // 유효한 AccessToken일 경우 사용자 인증 처리
+                    Long userId = jwtUtil.getUserId(jwt);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
 
-            // UserDetails가 유효한 경우
-            if (userDetails != null) {
-                // 인증 객체 생성 후 SpringContext에 설정
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    if (userDetails != null) {
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    }
+                }
+            } catch (ExpiredJwtException e) {
+                // AccessToken이 만료된 경우 RefreshToken으로 재발급
+                String refreshToken = CookieUtil.getRefreshTokenFromCookies(request);
+                if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
+                    Long userId = jwtUtil.getUserId(refreshToken);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
+                    if (userDetails != null) {
+                        // 새로 발급한 AccessToken을 쿠키에 저장
+                        String newAccessToken = jwtUtil.createAccessToken((CustomUserInfoDTO) userDetails);
+                        CookieUtil.createAccessTokenCookie(newAccessToken, response);
 
-                // 세부 정보 설정 (IP, 세션 정보)
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("JWT 검증 오류", e);
             }
         }
 
@@ -54,15 +74,18 @@ public class JwtFilter extends OncePerRequestFilter {   // OncePerRequestFilter 
 
     // HTTP 요청에서 JWT 토큰을 추출
     private String resolveToken(HttpServletRequest request) {
-        // 요청 헤더에서 Authorization 헤더의 값을 가져옴
-        String bearerToken = request.getHeader(ACCESS_HEADER);
+//        // 요청 헤더에서 Authorization 헤더의 값을 가져옴
+//        String bearerToken = request.getHeader(ACCESS_HEADER);
+//
+//        // Authorization 헤더에 Bearer 타입의 토큰이 있는지 확인
+//        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
+//            // Bearer 이후의 실제 토큰만 반환
+//            return bearerToken.substring(7);
+//        }
 
-        // Authorization 헤더에 Bearer 타입의 토큰이 있는지 확인
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
-            // Bearer 이후의 실제 토큰만 반환
-            return bearerToken.substring(7);
-        }
+        String token = CookieUtil.getAccessTokenFromCookies(request);
+        log.info("AccessToken이 쿠키에서 추출되었습니다: {}", token);
 
-        return null;
+        return token;
     }
 }
