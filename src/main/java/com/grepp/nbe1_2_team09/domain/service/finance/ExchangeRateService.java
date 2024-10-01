@@ -39,17 +39,23 @@ public class ExchangeRateService {
     private final String[] currencyCode={"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "FOK", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KID", "KMF", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLE", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TVD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMW", "ZWL"};
 
     public ExchangeRateResDTO exchangeRate(ExchangeRateReqDTO exchangeRateReqDTO){
-        BigDecimal conversionRate=exchangeRateRepository.findConversionRate(exchangeRateReqDTO.getToCountry(), exchangeRateReqDTO.getFromCountry());
+        try {
+            BigDecimal conversionRate = exchangeRateRepository.findConversionRate(exchangeRateReqDTO.getToCountry(),
+                    exchangeRateReqDTO.getFromCountry());
 
-        ExchangeRateResDTO result=new ExchangeRateResDTO();
-        result.setTime(exchangeRateTime);
-        result.setToCountry(exchangeRateReqDTO.getToCountry());
-        result.setFromCountry(exchangeRateReqDTO.getFromCountry());
-        result.setToAmount(new BigDecimal(exchangeRateReqDTO.getAmount()));
-        result.setConversionRate(conversionRate);
-        result.setFromAmount(conversionRate.multiply(new BigDecimal(exchangeRateReqDTO.getAmount())));
+            ExchangeRateResDTO result = new ExchangeRateResDTO();
+            result.setTime(exchangeRateTime);
+            result.setToCountry(exchangeRateReqDTO.getToCountry());
+            result.setFromCountry(exchangeRateReqDTO.getFromCountry());
+            result.setToAmount(new BigDecimal(exchangeRateReqDTO.getAmount()));
+            result.setConversionRate(conversionRate);
+            result.setFromAmount(conversionRate.multiply(new BigDecimal(exchangeRateReqDTO.getAmount())));
 
-        return result;
+            return result;
+        }catch (Exception e){
+            log.warn(">>>> {} : {} <<<<", e, new ExchangeRateException(ExceptionMessage.EXCHANGE_ERROR));
+            throw new ExchangeRateException(ExceptionMessage.EXCHANGE_ERROR);
+        }
     }
 
     //특정 시간마다 환율 정보 갱신

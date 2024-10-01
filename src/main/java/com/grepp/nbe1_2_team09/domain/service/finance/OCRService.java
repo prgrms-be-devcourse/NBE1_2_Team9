@@ -73,6 +73,8 @@ public class OCRService {
                 stringBuilder.append(res.getFullTextAnnotation().getText());
             }
         }catch (Exception e){
+            e.printStackTrace();
+            log.warn(">>>> {} : {} <<<<", e, new AccountBookException(ExceptionMessage.OCR_ERROR));
             throw new AccountBookException(ExceptionMessage.OCR_ERROR);
         }
         int idx=0;
