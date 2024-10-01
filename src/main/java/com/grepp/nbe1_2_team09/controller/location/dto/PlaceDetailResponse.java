@@ -14,13 +14,3 @@ public record PlaceDetailResponse(
     public record Photo(String photo_reference) {}
 }
 
-/*String placeId,
-        String name,
-        String photoUrl,
-        String address,
-        String phoneNumber,
-        String website,
-        double rating,
-        int userRatingsTotal,
-        double latitude,  // 위도
-        double longitude   // 경도*/
