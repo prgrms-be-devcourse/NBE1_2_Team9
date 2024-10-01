@@ -1,5 +1,6 @@
-package com.grepp.nbe1_2_team09.domain.entity;
+package com.grepp.nbe1_2_team09.domain.entity.group;
 
+import com.grepp.nbe1_2_team09.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,19 +32,19 @@ public class GroupMembership {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.MEMBER;
+    private GroupRole role = GroupRole.MEMBER;
 
     //비즈니스 메서드
 
     @Builder
-    public GroupMembership(Group group, User user, Role role) {
+    public GroupMembership(Group group, User user, GroupRole role) {
         this.group = group;
         this.user = user;
         this.role = role;
     }
 
     //그룹 탈퇴 같은 상황에서 Role 변경 로직
-    public void changeRole(Role newRole){
+    public void changeRole(GroupRole newRole){
         this.role = newRole;
     }
 
