@@ -1,5 +1,6 @@
 package com.grepp.nbe1_2_team09.domain.entity;
 
+import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import jakarta.persistence.*;
 import lombok.*;
 

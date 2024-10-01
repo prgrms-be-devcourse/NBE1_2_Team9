@@ -1,9 +1,10 @@
-package com.grepp.nbe1_2_team09.domain.entity;
+package com.grepp.nbe1_2_team09.domain.entity.event;
 
+import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Table(name = "event_tb")
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Event {
     @Id
@@ -30,10 +31,17 @@ public class Event {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime startDateTime;
+    private String city;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventStatus status;
 
     @Column(nullable = false)
-    private LocalDateTime endDateTime;
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -43,18 +51,25 @@ public class Event {
     //비즈니스 메서드
 
     @Builder
-    public Event(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime, Group group) {
+    public Event(String eventName, String description, String city, LocalDate startDate, LocalDate endDate, Group group) {
         this.eventName = eventName;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.description = description;
+        this.city = city;
+        this.status = EventStatus.UPCOMING;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.group = group;
     }
 
-    public void updateEventDetails(String eventName, String description, LocalDateTime startDateTime, LocalDateTime endDateTime ){
+    public void updateEventDetails(String eventName, String description, LocalDate startDate, LocalDate endDate ){
         this.eventName = eventName;
         this.description = description;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void updateStatus(EventStatus status){
+        this.status = status;
     }
 
 

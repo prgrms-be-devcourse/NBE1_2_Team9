@@ -21,7 +21,6 @@ public enum ExceptionMessage {
     ADMIN_ACCESS_ONLY("관리자만 접근할 수 있습니다."),
 
     //AccountBook
-    GROUP_NOT_FOUND("그룹을 찾을 수 없습니다"),
     MEMBER_ACCESS_ONLY("리소스에 대한 액세스 권한이 없습니다. 해당 유저가 그룹에 속해있지 않습니다."),
     DB_ERROR("저장 실패"),
     EXPENSE_NOT_FOUND("해당 지출 목록을 찾을 수 없습니다."),
@@ -30,8 +29,25 @@ public enum ExceptionMessage {
     FORMAT_ERROR("문자열 포매팅 실패"),
 
     //Exchange
-    EXCHANGE_ERROR("환전하는 중 오류 발생")
+    EXCHANGE_ERROR("환전하는 중 오류 발생"),
 
+    // Group
+    GROUP_NOT_FOUND("해당 그룹을 찾을 수 없습니다."),
+    USER_ALREADY_IN_GROUP("해당 사용자는 이미 그룹의 멤버입니다."),
+    USER_NOT_IN_GROUP("해당 사용자는 그룹의 멤버가 아닙니다."),
+    CANNOT_REMOVE_LAST_ADMIN("그룹에는 최소 한 명의 관리자가 필요합니다."),
+    GROUP_ADMIN_ACCESS_ONLY("그룹 관리자만 접근할 수 있습니다."),
+
+    // Event
+    EVENT_NOT_FOUND("해당 이벤트를 찾을 수 없습니다."),
+    EVENT_DATE_INVALID("이벤트 시작 시간은 종료 시간보다 늦을 수 없습니다."),
+
+    //Invitation
+    NOT_INVITED_USER("초대받은 유저가 아닙니다."),
+    INVITATION_NOT_FOUND("해당 초대를 찾을 수 없습니다."),
+
+    // Location
+    LOCATION_NOT_FOUND("해당 장소를 찾을 수 없습니다.")
 
     ;
 

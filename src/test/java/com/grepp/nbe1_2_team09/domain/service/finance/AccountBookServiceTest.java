@@ -6,10 +6,11 @@ import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
 import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
-import com.grepp.nbe1_2_team09.domain.entity.Group;
-import com.grepp.nbe1_2_team09.domain.entity.GroupMembership;
 import com.grepp.nbe1_2_team09.domain.entity.Role;
 import com.grepp.nbe1_2_team09.domain.entity.User;
+import com.grepp.nbe1_2_team09.domain.entity.group.Group;
+import com.grepp.nbe1_2_team09.domain.entity.group.GroupMembership;
+import com.grepp.nbe1_2_team09.domain.entity.group.GroupRole;
 import com.grepp.nbe1_2_team09.domain.repository.finance.AccountBookRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
@@ -71,7 +72,7 @@ class AccountBookServiceTest {
         User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
         User saveUser = userRepository.save(user);
 
-        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        GroupMembership groupMembership=new GroupMembership(group, user, GroupRole.MEMBER);
         groupMembershipRepository.save(groupMembership);
 
         //when
@@ -157,7 +158,7 @@ class AccountBookServiceTest {
         User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
         User saveUser = userRepository.save(user);
 
-        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        GroupMembership groupMembership=new GroupMembership(group, user, GroupRole.MEMBER);
         groupMembershipRepository.save(groupMembership);
 
         accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
@@ -199,7 +200,7 @@ class AccountBookServiceTest {
         User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
         User saveUser = userRepository.save(user);
 
-        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        GroupMembership groupMembership=new GroupMembership(group, user, GroupRole.MEMBER);
         groupMembershipRepository.save(groupMembership); //일단 가계부에 정보를 넣기 위해 유저 하나는 그룹에 넣어놓음
 
         accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
@@ -249,7 +250,7 @@ class AccountBookServiceTest {
         User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
         User saveUser = userRepository.save(user);
 
-        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        GroupMembership groupMembership=new GroupMembership(group, user, GroupRole.MEMBER);
         groupMembershipRepository.save(groupMembership);
 
         accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
@@ -293,7 +294,7 @@ class AccountBookServiceTest {
         User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
         User saveUser = userRepository.save(user);
 
-        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        GroupMembership groupMembership=new GroupMembership(group, user, GroupRole.MEMBER);
         groupMembershipRepository.save(groupMembership);
 
         accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
@@ -343,7 +344,7 @@ class AccountBookServiceTest {
         User user=new User("테스트", "aaa@bbb.com", "1234", Role.MEMBER);
         User saveUser = userRepository.save(user);
 
-        GroupMembership groupMembership=new GroupMembership(group, user, Role.MEMBER);
+        GroupMembership groupMembership=new GroupMembership(group, user, GroupRole.MEMBER);
         groupMembershipRepository.save(groupMembership);
 
         accountBookService.addAccountBook(groupResult.getGroupId(), req1, saveUser.getUserId().toString());
