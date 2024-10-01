@@ -1,7 +1,6 @@
 package com.grepp.nbe1_2_team09.admin.jwt;
 
 import com.grepp.nbe1_2_team09.admin.dto.CustomUserInfoDTO;
-import com.grepp.nbe1_2_team09.admin.redis.entity.RefreshToken;
 import com.grepp.nbe1_2_team09.admin.service.CustomUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -10,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,6 +64,8 @@ public class JwtFilter extends OncePerRequestFilter {   // OncePerRequestFilter 
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
                 }
+            } catch (Exception e) {
+                log.error("JWT 검증 오류", e);
             }
         }
 
@@ -74,15 +74,18 @@ public class JwtFilter extends OncePerRequestFilter {   // OncePerRequestFilter 
 
     // HTTP 요청에서 JWT 토큰을 추출
     private String resolveToken(HttpServletRequest request) {
-        // 요청 헤더에서 Authorization 헤더의 값을 가져옴
-        String bearerToken = request.getHeader(ACCESS_HEADER);
+//        // 요청 헤더에서 Authorization 헤더의 값을 가져옴
+//        String bearerToken = request.getHeader(ACCESS_HEADER);
+//
+//        // Authorization 헤더에 Bearer 타입의 토큰이 있는지 확인
+//        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
+//            // Bearer 이후의 실제 토큰만 반환
+//            return bearerToken.substring(7);
+//        }
 
-        // Authorization 헤더에 Bearer 타입의 토큰이 있는지 확인
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
-            // Bearer 이후의 실제 토큰만 반환
-            return bearerToken.substring(7);
-        }
+        String token = CookieUtil.getAccessTokenFromCookies(request);
+        log.info("AccessToken이 쿠키에서 추출되었습니다: {}", token);
 
-        return null;
+        return token;
     }
 }

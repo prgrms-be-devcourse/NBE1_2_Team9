@@ -8,8 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,14 +32,20 @@ public class UserController {
     // 로그인
     @PostMapping("/signin")
     public ResponseEntity<String> signIn(@RequestBody SignInReq signInReq, HttpServletResponse response) {
-        userService.signIn(signInReq, response);
-        return ResponseEntity.ok("로그인 성공");
+        String token = userService.signIn(signInReq, response);
+        return ResponseEntity.ok("로그인 성공. 토큰: " + token);
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        String email = request.getUserPrincipal().getName();
+        Principal principal = request.getUserPrincipal();
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자가 로그인되어 있지 않습니다.");
+        }
+
+        String email = principal.getName();
         userService.logout(email, response);
         return ResponseEntity.ok("로그아웃 성공");
     }
