@@ -5,7 +5,7 @@ import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
 import com.grepp.nbe1_2_team09.domain.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,21 +28,23 @@ public class UserController {
 
     // 로그인
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@RequestBody SignInReq signInReq) {
-        String token = userService.signIn(signInReq);
-        return ResponseEntity.ok("로그인 성공. 토큰: " + token);
+    public ResponseEntity<String> signIn(@RequestBody SignInReq signInReq, HttpServletResponse response) {
+        userService.signIn(signInReq, response);
+        return ResponseEntity.ok("로그인 성공");
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        String email = request.getUserPrincipal().getName();
+        userService.logout(email, response);
         return ResponseEntity.ok("로그아웃 성공");
     }
 
     // 회원 정보 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserInfo(@PathVariable String email) {
-        return ResponseEntity.ok(userService.getUser(email));
+    public ResponseEntity<?> getUserInfo(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
     // 회원 정보 수정
