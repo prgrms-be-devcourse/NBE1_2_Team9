@@ -114,7 +114,7 @@ public class UserService  {
     }
 
     // ID로 찾기
-    public User findByIdOrThrowUserException(Long userId) {
+    private User findByIdOrThrowUserException(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn(">>>> {} : {} <<<<", userId, ExceptionMessage.USER_NOT_FOUND);
@@ -123,7 +123,7 @@ public class UserService  {
     }
 
     // Email로 찾기
-    public User findByEmailOrThrowUserException(String email) {
+    private User findByEmailOrThrowUserException(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.warn(">>>> {} : {} <<<<", email, ExceptionMessage.USER_NOT_FOUND);
