@@ -1,5 +1,6 @@
 package com.grepp.nbe1_2_team09.domain.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +28,7 @@ public class ExchangeRate {
 
     private String toCountry;
     private String fromCountry;
+    @Column(nullable = false, precision = 15, scale = 8)
     private BigDecimal conversionRate;
 
 }

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class ExchangeRateReqDTO {
     private String toCountry;
     private String fromCountry;
-    private BigDecimal Amount;
+    private String amount;
 }

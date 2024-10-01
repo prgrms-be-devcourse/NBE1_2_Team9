@@ -18,13 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExchangeRateController {
 
     private final ExchangeRateService exchangeRateService;
-    private LocalDateTime exchangeTime;
 
     @GetMapping
     public ExchangeRateResDTO exchangeRate(@RequestBody ExchangeRateReqDTO exchangeRateReqDTO){
-        ExchangeRateResDTO result= exchangeRateService.exchangeRate(exchangeRateReqDTO);
-        result.setTime(exchangeTime);
-        return result;
+        return exchangeRateService.exchangeRate(exchangeRateReqDTO);
+
     }
 
 }
