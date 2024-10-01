@@ -1,5 +1,7 @@
 package com.grepp.nbe1_2_team09.common.exception;
 
+import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
+import com.grepp.nbe1_2_team09.common.exception.exceptions.ExchangeRateException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -44,4 +46,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(error);
     }
+
+    //클라이언트에 오류 메시지 보내줌. http status는 400
+    @ExceptionHandler(ExchangeRateException.class)
+    public ResponseEntity<ErrorResponse> handleExchangeRateException(ExchangeRateException e) {
+        ErrorResponse error = ErrorResponse.from(BAD_REQUEST.value(), BAD_REQUEST.getReasonPhrase(), e.getMessage());
+        return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(AccountBookException.class)
+    public ResponseEntity<ErrorResponse> handleAccountBookException(AccountBookException e) {
+        ErrorResponse error = ErrorResponse.from(BAD_REQUEST.value(), BAD_REQUEST.getReasonPhrase(), e.getMessage());
+        return ResponseEntity.badRequest().body(error);
+    }
+}

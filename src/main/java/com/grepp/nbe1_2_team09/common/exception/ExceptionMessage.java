@@ -20,7 +20,16 @@ public enum ExceptionMessage {
     USER_LOGIN_FAIL("이메일과 비밀번호를 다시 확인해주세요."),
     ADMIN_ACCESS_ONLY("관리자만 접근할 수 있습니다."),
 
+    //AccountBook
+    MEMBER_ACCESS_ONLY("리소스에 대한 액세스 권한이 없습니다. 해당 유저가 그룹에 속해있지 않습니다."),
+    DB_ERROR("저장 실패"),
+    EXPENSE_NOT_FOUND("해당 지출 목록을 찾을 수 없습니다."),
+    OCR_ERROR("이미지 추출 오류"),
+    IMAGE_NOT_FOUND("이미지가 존재하지 않음"),
+    FORMAT_ERROR("문자열 포맷팅 실패"),
 
+    //Exchange
+    EXCHANGE_ERROR("환전하는 중 오류 발생"),
 
     // Group
     GROUP_NOT_FOUND("해당 그룹을 찾을 수 없습니다."),
@@ -38,8 +47,9 @@ public enum ExceptionMessage {
     INVITATION_NOT_FOUND("해당 초대를 찾을 수 없습니다."),
 
     // Location
-    LOCATION_NOT_FOUND("해당 장소를 찾을 수 없습니다."),
+    LOCATION_NOT_FOUND("해당 장소를 찾을 수 없습니다.")
 
+    ;
 
     private final String text;
 }
