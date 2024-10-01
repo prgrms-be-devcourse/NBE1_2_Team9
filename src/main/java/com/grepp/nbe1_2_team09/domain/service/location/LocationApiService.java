@@ -5,6 +5,7 @@ import com.grepp.nbe1_2_team09.controller.location.dto.*;
 import com.grepp.nbe1_2_team09.controller.location.dto.api.*;
 import com.grepp.nbe1_2_team09.domain.service.event.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,7 +20,8 @@ public class LocationApiService {
     private final RestTemplate restTemplate;
     private final EventService eventService;
 
-    private static final String apiKey = "AIzaSyAquE_9PmI6XbFadiX3Gh8IjSK586ZYCPc";
+    @Value("${google.api.key}")
+    private String apiKey;
 
     //장소 자동 검색
     public List<PlaceResponse> getAutocompletePlaces(Long eventId, String input) {
@@ -27,7 +29,6 @@ public class LocationApiService {
         EventDto eventDto = eventService.getEventById(eventId);
 
         String cityName = eventDto.city();
-        System.out.println("cityname=" + cityName);
 
         // 도시 이름으로 위도/경도 가져오기
         String location = getCoordinatesFromCityName(cityName);
@@ -55,7 +56,7 @@ public class LocationApiService {
         String location = getCoordinatesFromCityName(cityName);
 
         String placeType = (type != null) ? type : "establishment";
-        System.out.println("tytttye"+placeType);
+
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location
                 + "&radius=5000&type=" + placeType + "&key=" + apiKey;
 
