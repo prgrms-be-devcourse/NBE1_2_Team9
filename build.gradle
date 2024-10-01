@@ -38,6 +38,9 @@ dependencies {
     // OAuth 2.0
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // DB
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
