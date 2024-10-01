@@ -1,7 +1,9 @@
 package com.grepp.nbe1_2_team09.domain.service.location;
 
+import com.grepp.nbe1_2_team09.controller.event.dto.EventDto;
 import com.grepp.nbe1_2_team09.controller.location.dto.*;
 import com.grepp.nbe1_2_team09.controller.location.dto.api.*;
+import com.grepp.nbe1_2_team09.domain.service.event.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,18 +17,18 @@ import java.util.stream.Collectors;
 public class LocationApiService {
 
     private final RestTemplate restTemplate;
+    private final EventService eventService;
+
     private static final String apiKey = "AIzaSyAquE_9PmI6XbFadiX3Gh8IjSK586ZYCPc";
 
     //장소 자동 검색
     public List<PlaceResponse> getAutocompletePlaces(Long eventId, String input) {
-        /*// 이벤트 ID로 이벤트 정보가져오기
+       // 이벤트 ID로 이벤트 정보 가져오기
         EventDto eventDto = eventService.getEventById(eventId);
 
-          // 도시 name로 위도와 경도 가져오기
-        String cityname = eventDto.getCityname();*/
+        String cityName = eventDto.city();
+        System.out.println("cityname=" + cityName);
 
-        //임의로
-        String cityName = "seoul";
         // 도시 이름으로 위도/경도 가져오기
         String location = getCoordinatesFromCityName(cityName);
 
@@ -44,13 +46,11 @@ public class LocationApiService {
     //장소 추천
     public List<PlaceResponse> getRecommendedPlaces(Long eventId, String type) {
 
-        /*// eventId를 사용하여 이벤트 정보 가져오기
+        // 이벤트 ID로 이벤트 정보 가져오기
         EventDto eventDto = eventService.getEventById(eventId);
 
-        Long cityId = eventDto.getCityId();*/
+        String cityName = eventDto.city();
 
-        //임의로
-        String cityName = "seoul";
         // 도시 이름으로 위도/경도 가져오기
         String location = getCoordinatesFromCityName(cityName);
 

@@ -11,8 +11,8 @@ public record LocationEventDto(
         BigDecimal latitude,
         BigDecimal longitude,
         String address,
-        String city,
-        String country,
+     /*   String city,
+        String country,*/
         BigDecimal rating,
         LocationType type
 ) {
@@ -23,8 +23,8 @@ public record LocationEventDto(
                 location.getLatitude(),
                 location.getLongitude(),
                 location.getAddress(),
-                location.getCity(),
-                location.getCountry(),
+      /*          location.getCity(),
+                location.getCountry(),*/
                 location.getRating(),
                 location.getType()
         );
