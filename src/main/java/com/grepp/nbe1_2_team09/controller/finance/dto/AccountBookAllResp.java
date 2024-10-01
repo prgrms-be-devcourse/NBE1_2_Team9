@@ -9,33 +9,31 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.data.convert.Jsr310Converters.StringToLocalDateConverter;
 
-@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AccountBookAllResp {
-
-    private Long expensesId;
-    private LocalDateTime expensesDate;
-    private String itemName;
-    private String amount;
-    private String paidByUserId;
-
+public record AccountBookAllResp(
+        Long expensesId,
+        LocalDateTime expensesDate,
+        String itemName,
+        String amount,
+        String paidByUserId
+){
     public static Expense toEntity(AccountBookAllResp accountBookDTO){
         Expense expense = new Expense();
 
-        expense.setExpenseId(accountBookDTO.getExpensesId());
-        expense.setExpenseDate(accountBookDTO.getExpensesDate());
-        expense.setItemName(accountBookDTO.getItemName());
-        if (accountBookDTO.getAmount() != null && !accountBookDTO.getAmount().isEmpty()) {
-            expense.setAmount(new BigDecimal(accountBookDTO.getAmount()));
+        expense.setExpenseId(accountBookDTO.expensesId());
+        expense.setExpenseDate(accountBookDTO.expensesDate());
+        expense.setItemName(accountBookDTO.itemName());
+        if (accountBookDTO.amount() != null && !accountBookDTO.amount().isEmpty()) {
+            expense.setAmount(new BigDecimal(accountBookDTO.amount()));
         } else {
             // amount 값이 null인 경우 = 0
             expense.setAmount(BigDecimal.ZERO);
         }
-        expense.setPaidBy(accountBookDTO.getPaidByUserId());
+        expense.setPaidBy(accountBookDTO.paidByUserId());
 
         return expense;
     }
@@ -49,5 +47,4 @@ public class AccountBookAllResp {
                 .paidByUserId(expense.getPaidBy())
                 .build();
     }
-
 }

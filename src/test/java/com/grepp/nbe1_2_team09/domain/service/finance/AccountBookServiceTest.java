@@ -167,8 +167,8 @@ class AccountBookServiceTest {
         //then
         List<AccountBookAllResp> results = accountBookService.findAllAccountBooks(groupResult.getGroupId(), saveUser.getUserId().toString());
         Assertions.assertThat(results.size()).isEqualTo(3);
-        Assertions.assertThat(results.get(0).getItemName()).isEqualTo("food");
-        Assertions.assertThat(results.get(1).getItemName()).isEqualTo("food");
+        Assertions.assertThat(results.get(0).itemName()).isEqualTo("food");
+        Assertions.assertThat(results.get(1).itemName()).isEqualTo("food");
     }
 
     @Test
@@ -351,10 +351,10 @@ class AccountBookServiceTest {
         List<AccountBookAllResp> before = accountBookService.findAllAccountBooks(groupResult.getGroupId(),
                 saveUser.getUserId().toString());
         Assertions.assertThat(before.size()).isEqualTo(1);
-        Assertions.assertThat(before.get(0).getItemName()).isEqualTo("food");
+        Assertions.assertThat(before.get(0).itemName()).isEqualTo("food");
 
         //when
-        accountBookService.deleteAccountBook(before.get(0).getExpensesId(), saveUser.getUserId().toString());
+        accountBookService.deleteAccountBook(before.get(0).expensesId(), saveUser.getUserId().toString());
 
         //then
         List<AccountBookAllResp> after = accountBookService.findAllAccountBooks(groupResult.getGroupId(),
