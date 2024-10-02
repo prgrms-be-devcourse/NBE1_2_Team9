@@ -35,7 +35,7 @@ public class EventLocationController {
         return ResponseEntity.ok(locations);
     }
 
-    @GetMapping("/{eventId}/locationsByDate/")
+    @GetMapping("/{eventId}/locationsByDate")
     public ResponseEntity<List<EventLocationInfoDto>> getEventLocationsByDate(
             @PathVariable Long eventId,
             @RequestParam("date") LocalDate date) {
