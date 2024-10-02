@@ -23,7 +23,7 @@ public class EventLocation {
     private Event event;
 
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
@@ -43,8 +43,8 @@ public class EventLocation {
         this.event = event;
         this.location = location;
         this.description = description;
-        this.visitStartTime = LocalDateTime.now();
-        this.visitEndTime = LocalDateTime.now();
+        this.visitStartTime = visitStartTime;
+        this.visitEndTime = visitEndTime;
     }
 
     public void updateDescription(String description) {
