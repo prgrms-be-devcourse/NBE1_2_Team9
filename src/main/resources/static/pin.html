@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Locations</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAquE_9PmI6XbFadiX3Gh8IjSK586ZYCPc&callback=initMap" async defer></script>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    let locations = []; // 장소 데이터
+
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { lat: locations[0]?.latitude, lng: locations[0]?.longitude } // 중심 좌표
+        });
+
+        const pathArray = []; // 경로 좌표 배열
+
+        // 각 위치에 마커 추가 (1, 2, 3... 커스텀 마커 순서로)
+        locations.forEach((location, index) => {
+            const markerLabel = (index + 1).toString(); // 1, 2, 3 순서대로 마커 생성
+
+            const marker = new google.maps.Marker({
+                position: { lat: location.latitude, lng: location.longitude },
+                map: map,
+                label: markerLabel,  // 마커 레이블
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: '#FF5733',
+                    fillOpacity: 0.8,
+                    strokeWeight: 2,
+                    strokeColor: '#ffffff',
+                    scale: 13
+                },
+            });
+
+            // 마커 위치를 경로 좌표 배열에 추가
+            pathArray.push({ lat: location.latitude, lng: location.longitude });
+        });
+
+        // 마커들을 잇는 선
+        const pathLine = new google.maps.Polyline({
+            path: pathArray,
+            geodesic: true,
+            strokeColor: "#3a3a40",
+            strokeOpacity: 0.7,
+            strokeWeight: 1.4
+        });
+        pathLine.setMap(map);
+    }
+
+    // 장소 데이터 가져오기
+    const eventId = 1;  // eventId를 임의로 설정
+
+    fetch(`/api/events/${eventId}/locationsByDate?date=2024-10-04`)
+        .then(response => response.json())
+        .then(data => {
+            locations = data.map(item => item.location); // 가져온 장소 데이터 저장
+            console.log("Locations:", locations);
+            initMap();
+        })
+        .catch(error => console.error("Error fetching locations:", error));
+
+</script>
+</body>
+</html>
