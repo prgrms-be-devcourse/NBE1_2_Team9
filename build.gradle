@@ -37,6 +37,8 @@ dependencies {
 
     // OAuth 2.0
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    testImplementation 'io.projectreactor:reactor-test'
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
