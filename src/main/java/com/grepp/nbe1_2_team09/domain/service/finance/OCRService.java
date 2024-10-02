@@ -9,23 +9,31 @@ import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.protobuf.ByteString;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
+import com.grepp.nbe1_2_team09.controller.finance.dto.ChatGPTReqDTO;
+import com.grepp.nbe1_2_team09.controller.finance.dto.ChatGPTResDTO;
 import com.grepp.nbe1_2_team09.controller.finance.dto.ReceiptDTO;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
 import java.util.Base64;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OCRService {
+
+    @Value("${openai.model}")
+    private String model;
+    @Value("${openai.api.url}")
+    private String apiURL;
+    @Value("${openai.api.key}")
+    private String openAiKey;
 
     public Map<Integer, String> extractTextFromImageUrl(String image) throws Exception {
         //-----웹 url 파싱
@@ -87,66 +95,36 @@ public class OCRService {
     }
 
     public ReceiptDTO ReceiptFormatting(ReceiptDTO receipt) {
-        String date=receipt.getExpenseDate();
-        String amount=receipt.getAmount();
-
-        //앞 문자 제거
-        date = date.replaceFirst("^.*?(\\d)", "$1");
-        //중간에 (요일) 제거
-        date = date.replaceAll("\\s*\\(.*?\\)\\s*", " ");
-        //숫자만 남기고 문자 다 제거
-        amount = amount.replaceAll("[^\\d]", "");
-
-        // 다양한 날짜 포맷 지원을 위한 포매터 구성
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/d HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy/M/dd HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy/M/d HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"))
-
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 d일 HH시 mm분 ss초"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 dd일 HH시 mm분 ss초"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH시 mm분 ss초"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"))
-
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 d일 HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 dd일 HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"))
-
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.d HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy.M.dd HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy.M.d HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
-
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-d HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy-M-dd HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss"))
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-
-
-                .toFormatter();
-
-        //2020-04-22 (수) 20:12:11
-
-        // 출력 포맷
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        ReceiptDTO resultReceiptDTO=new ReceiptDTO();
+        String date = receipt.getExpenseDate();
+        String amount = receipt.getAmount();
+        String resultDate="";
         try {
-            LocalDateTime resultDate = LocalDateTime.parse(date, formatter);
-            resultDate.format(outputFormatter);
-            resultReceiptDTO.setExpenseDate(String.valueOf(resultDate));
-            resultReceiptDTO.setAmount(amount);
-        } catch (Exception e) {
-            log.warn(">>>> {} : {} <<<<", date, new AccountBookException(ExceptionMessage.FORMAT_ERROR));
-            throw  new AccountBookException(ExceptionMessage.FORMAT_ERROR);
+
+            //숫자만 남기고 문자 다 제거
+            amount = amount.replaceAll("[^\\d]", "");
+
+            ChatGPTReqDTO reqDTO = new ChatGPTReqDTO(model, date);
+
+            RestTemplate restTemplate=new RestTemplate();
+            restTemplate.getInterceptors().add((request, body, execution) -> {
+                request.getHeaders().add("Authorization", "Bearer " + openAiKey);
+                return execution.execute(request, body);
+            });
+
+            ChatGPTResDTO chatGPTResDTO = restTemplate.postForObject(apiURL, reqDTO, ChatGPTResDTO.class);
+            resultDate = chatGPTResDTO.getChoices().get(0).getMessage().getContent();
+
+            if(resultDate.length()>19){ //만약 LocalDateTime 이외의 다른 문자가 들어오면 없애기(숫자, :, - ,T 제외 없애기)
+                resultDate= resultDate.replaceAll("[^0-9T:-]", "");
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            log.warn(">>>> {} : {} <<<<", e, new AccountBookException(ExceptionMessage.FORMAT_ERROR));
+            throw new AccountBookException(ExceptionMessage.FORMAT_ERROR);
         }
-        return resultReceiptDTO;
+        return new ReceiptDTO(resultDate, amount);
     }
 }
+
