@@ -72,12 +72,12 @@ public class AccountBookController {
 
     @GetMapping("/receipt")
     public Map<Integer, String> receiptOCR(@RequestBody Map<String, String> image) throws Exception {
-        return ocrService.extractTextFromImageUrl(image.get("image"));
+        return ocrService.extractTextFromImage(image.get("image"));
     }
 
     //받은 문자열 포매팅
     @GetMapping("/receipt/formatting")
     public ReceiptDTO receiptFormatting(@RequestBody ReceiptDTO receipt) {
-        return ocrService.ReceiptFormatting(receipt);
+        return ocrService.formatting(receipt);
     }
 }

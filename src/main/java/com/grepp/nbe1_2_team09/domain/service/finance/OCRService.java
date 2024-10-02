@@ -35,7 +35,7 @@ public class OCRService {
     @Value("${openai.api.key}")
     private String openAiKey;
 
-    public Map<Integer, String> extractTextFromImageUrl(String image) throws Exception {
+    public Map<Integer, String> extractTextFromImage(String image) throws Exception {
         //-----웹 url 파싱
 //        URL url = new URL(imageUrl);
 //        ByteString imgBytes;
@@ -94,7 +94,7 @@ public class OCRService {
         return results;
     }
 
-    public ReceiptDTO ReceiptFormatting(ReceiptDTO receipt) {
+    public ReceiptDTO formatting(ReceiptDTO receipt) {
         String date = receipt.getExpenseDate();
         String amount = receipt.getAmount();
         String resultDate="";
