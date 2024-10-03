@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +46,7 @@ public class LocationApiService {
     }
 
     //장소 추천
-    public List<PlaceResponse> getRecommendedPlaces(Long eventId, String type) {
+    public List<PlaceRecommendResponse> getRecommendedPlaces(Long eventId, String type) {
 
         // 이벤트 ID로 이벤트 정보 가져오기
         EventDto eventDto = eventService.getEventById(eventId);
@@ -64,7 +65,7 @@ public class LocationApiService {
 
         return response.getBody().results()
                 .stream()
-                .map(result -> new PlaceResponse(result.place_id(), result.name(), getPhotoUrl(result.photos())))
+                .map(result -> new PlaceRecommendResponse(result.place_id(), result.name(),result.geometry().location().lat(),result.geometry().location().lng(),Optional.ofNullable(result.rating()).orElse(0.0), result.user_ratings_total(), getPhotoUrl(result.photos())))
                 .collect(Collectors.toList());
     }
 
@@ -91,7 +92,7 @@ public class LocationApiService {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
-    private String getPhotoUrl(List<GooglePlacesNearbyResponse.Result.Photo> photos) {
+    private String getPhotoUrl(List<GooglePlacesNearbyResponse.Photo> photos) {
         if (photos != null && !photos.isEmpty()) {
             return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photos.get(0).photo_reference() + "&key=" + apiKey;
         }

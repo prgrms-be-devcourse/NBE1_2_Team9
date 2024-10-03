@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>추천 장소 검색</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAquE_9PmI6XbFadiX3Gh8IjSK586ZYCPc&callback=initMap" async defer></script>
     <style>
-        /* 간단한 스타일 추가 */
-        .place-type {
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        .place-type, .sort-button {
             cursor: pointer;
             margin: 5px;
             padding: 10px;
@@ -15,10 +19,10 @@
             display: inline-block;
             border-radius: 5px;
         }
-        .place-type.selected {
-            background-color: #d0e0ff; /* 선택된 항목 색상 */
+        .place-type.selected, .sort-button.selected {
+            background-color: #d0e0ff;
         }
-        .place-type:hover {
+        .place-type:hover, .sort-button:hover {
             background-color: #f0f0f0;
         }
         .suggestion-item {
@@ -34,18 +38,18 @@
             background-color: #f0f0f0;
         }
         .place-image {
-            width: 50px; /* 이미지 크기 조절 */
-            height: 50px; /* 이미지 크기 조절 */
-            margin-right: 10px; /* 이미지와 텍스트 사이의 간격 */
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
             border-radius: 5px;
         }
-        /* 선택된 장소의 색상 변경 */
         .selected-item {
             background-color: #d0e0ff;
         }
     </style>
 </head>
 <body>
+<div id="map"></div>
 <h1>추천 장소 검색</h1>
 
 <h2>장소 유형:</h2>
@@ -56,64 +60,144 @@
     <div class="place-type" data-type="lodging">숙소</div>
 </div>
 
+<h2>정렬 기준:</h2>
+<div id="sortOptions">
+    <div class="sort-button" data-sort="rating">평점순</div>
+    <div class="sort-button" data-sort="reviews">리뷰순</div>
+</div>
+
 <h3>추천 장소:</h3>
 <ul id="suggestions"></ul>
 
 <script>
-    const eventId = 1; // 서울 도시를 위한 eventId 예시
+    const eventId = 1; // 예시 eventId
+    let currentType = 'establishment'; // 현재 선택된 장소 유형
+    let currentSort = 'rating'; // 기본 정렬 기준
+    let placeData = []; // 가져온 장소 데이터를 저장할 배열
+    console.log("#############++",placeData);
 
     // 페이지가 로드될 때 "모두" 유형으로 기본 추천 장소 가져오기
     $(document).ready(function() {
-        fetchRecommendations('establishment'); // 기본적으로 모든 추천 장소 가져오기
+        fetchRecommendations(currentType, currentSort); // 기본적으로 모든 추천 장소 가져오기
     });
 
     // 장소 유형 클릭 이벤트 핸들러
     $('.place-type').on('click', function() {
-        const type = $(this).data('type'); // 클릭한 요소에서 type 가져오기
-        console.log("type", type); // 콘솔에 type 출력 (디버깅)
+        currentType = $(this).data('type'); // 클릭한 요소에서 type 가져오기
+        console.log("type", currentType); // 콘솔에 type 출력 (디버깅)
 
         // 선택된 유형에 클래스를 추가하고, 이전 선택 해제
         $('.place-type').removeClass('selected');
         $(this).addClass('selected');
 
+        $('.sort-button').removeClass('selected');
+
         // fetchRecommendations 함수 호출
-        fetchRecommendations(type);
+        fetchRecommendations(currentType, 'rating');
+    });
+
+    // 정렬 기준 클릭 이벤트 핸들러
+    $('.sort-button').on('click', function() {
+        currentSort = $(this).data('sort'); // 클릭한 요소에서 정렬 기준 가져오기
+        console.log("sort", currentSort); // 콘솔에 sort 출력 (디버깅)
+
+        // 선택된 정렬에 클래스를 추가하고, 이전 선택 해제
+        $('.sort-button').removeClass('selected');
+        $(this).addClass('selected');
+
+        // 데이터 정렬 및 표시
+        sortAndDisplayPlaces(currentSort);
     });
 
     // 추천 장소를 가져오는 함수
-    function fetchRecommendations(type) {
-        console.log("type", type); // 콘솔에 type 확인
+    function fetchRecommendations(type, sort) {
+        console.log("Fetching recommendations for type:", type, "with sort:", sort);
         $.ajax({
             url: `http://localhost:8080/api/locations/${eventId}/recommend?type=${type}`, // AJAX 요청 URL
             method: 'GET',
             success: function(data) {
-                $('#suggestions').empty(); // 기존 제안 목록 제거
-                data.forEach(place => {
-                    $('#suggestions').append(`
-                        <li class="suggestion-item" data-id="${place.placeId}">
-                            <img src="${place.photoUrl}" alt="${place.name}" class="place-image">
-                            ${place.name}
-                        </li>
-                    `); // 이미지와 장소 이름 추가
-                });
-
-                // 목록 항목 클릭 이벤트 추가
-                $('.suggestion-item').on('click', function() {
-                    const placeId = $(this).data('id'); // 클릭한 항목의 placeId 가져오기
-                    console.log("Clicked placeId:", placeId); // 콘솔에 placeId 출력
-
-                    // 이전에 선택된 항목 초기화
-                    $('.suggestion-item').removeClass('selected-item');
-
-                    // 클릭한 항목에 선택된 클래스 추가
-                    $(this).addClass('selected-item');
-                });
+                placeData = data; // 데이터를 배열에 저장
+                sortAndDisplayPlaces(sort); // 데이터를 정렬하고 표시
+                console.log("pladcefdsfdsfs",placeData)
+                initMap();
             },
             error: function(xhr, status, error) {
                 console.error("Error occurred:", xhr.responseText); // 오류 메시지 로그
                 $('#suggestions').empty(); // 오류 시 제안 목록 제거
                 $('#suggestions').append('<li>검색 중 오류가 발생했습니다.</li>');
             }
+        });
+    }
+
+    // 데이터를 정렬하고 표시하는 함수
+    function sortAndDisplayPlaces(sort) {
+        // 정렬 로직: 평점순 또는 리뷰순에 따라 정렬
+        if (sort === 'rating') {
+            placeData.sort((a, b) => {
+                if (b.rating !== a.rating) {
+                    return b.rating - a.rating; // 평점이 다르면 평점 높은 순
+                } else {
+                    return b.user_ratings_total - a.user_ratings_total; // 평점이 같으면 리뷰 수 많은 순
+                }
+            });
+        } else if (sort === 'reviews') {
+            placeData.sort((a, b) => {
+                if (b.user_ratings_total !== a.user_ratings_total) {
+                    return b.user_ratings_total - a.user_ratings_total; // 리뷰 수가 다르면 리뷰 수 많은 순
+                } else {
+                    return b.rating - a.rating; // 리뷰 수가 같으면 평점 높은 순
+                }
+            });
+        }
+
+        $('#suggestions').empty(); // 기존 제안 목록 제거
+        placeData.forEach(place => {
+            $('#suggestions').append(`
+                <li class="suggestion-item" data-id="${place.placeId}">
+                    <img src="${place.photoUrl}" alt="${place.name}" class="place-image">
+                    ${place.name} (평점: ${place.rating}, 리뷰 수: ${place.user_ratings_total})
+                </li>
+            `); // 이미지, 장소 이름, 평점, 리뷰 수 표시
+        });
+
+        // 목록 항목 클릭 이벤트 추가
+        $('.suggestion-item').on('click', function() {
+            const placeId = $(this).data('id'); // 클릭한 항목의 placeId 가져오기
+            console.log("Clicked placeId:", placeId); // 콘솔에 placeId 출력
+
+            // 이전에 선택된 항목 초기화
+            $('.suggestion-item').removeClass('selected-item');
+
+            // 클릭한 항목에 선택된 클래스 추가
+            $(this).addClass('selected-item');
+        });
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            //placeData.latitude이런식으로
+            center: {lat: placeData[0].latitude, lng: placeData[0].longitude} // 중심 좌표
+        });
+
+        console.log("111111111#############++",placeData[0].latitude);
+
+
+        placeData.forEach((placeData) => {
+            const marker = new google.maps.Marker({
+                position: {lat: placeData.latitude, lng: placeData.longitude},
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: '#FF5733',
+                    fillOpacity: 0.8,
+                    strokeWeight: 2,
+                    strokeColor: '#ffffff',
+                    scale: 13
+                },
+            });
+
         });
     }
 </script>
