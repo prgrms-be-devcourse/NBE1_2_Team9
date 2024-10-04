@@ -43,6 +43,7 @@ dependencies {
 
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     // DB
     runtimeOnly 'com.h2database:h2'
