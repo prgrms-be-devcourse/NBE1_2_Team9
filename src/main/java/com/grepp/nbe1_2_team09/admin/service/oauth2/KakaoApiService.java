@@ -114,4 +114,26 @@ public class KakaoApiService {
         return user;
     }
 
+    // JWT 토큰 생성
+    public void createJwtToken(User user, HttpServletResponse response) {
+        String accessToken = jwtUtil.createAccessToken(new CustomUserInfoDTO(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getRole()
+        ));
+        String refreshToken = jwtUtil.createRefreshToken(new CustomUserInfoDTO(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getRole()
+        ));
+
+        CookieUtil.createAccessTokenCookie(accessToken, response);
+        CookieUtil.createRefreshTokenCookie(refreshToken, response);
+
+        log.info("JWT 토큰을 쿠키에 저장했습니다.");
+    }
 }
