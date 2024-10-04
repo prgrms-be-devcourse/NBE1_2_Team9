@@ -1,6 +1,6 @@
 package com.grepp.nbe1_2_team09.domain.repository.group;
 
-import com.grepp.nbe1_2_team09.domain.entity.User;
+import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.entity.group.invitation.GroupInvitation;
 import com.grepp.nbe1_2_team09.domain.entity.group.invitation.InvitationStatus;
 import org.springframework.data.repository.CrudRepository;
