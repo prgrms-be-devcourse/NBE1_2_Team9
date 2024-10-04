@@ -62,7 +62,7 @@ public class GroupController {
     @PostMapping("/{groupId}/members")
     public ResponseEntity<Void> addMemberToGroup(@PathVariable Long groupId, @RequestParam String email, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long adminId = userDetails.getUser().getUserId();
-        groupService.addMemberToGroup(groupId, email, adminId);
+        groupService.inviteMemberToGroup(groupId, email, adminId);
         return ResponseEntity.ok().build();
     }
 
