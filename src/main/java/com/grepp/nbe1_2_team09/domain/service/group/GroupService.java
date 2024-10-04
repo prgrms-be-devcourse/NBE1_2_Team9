@@ -16,6 +16,8 @@ import com.grepp.nbe1_2_team09.domain.repository.group.GroupInvitationRepository
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
+import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationDto;
+import com.grepp.nbe1_2_team09.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMembershipRepository groupMembershipRepository;
     private final GroupInvitationRepository groupInvitationRepository;
+    private final NotificationService notificationService;
 
     // 관리자 유저 정보 받아서 그룹 생성
     @Transactional
@@ -90,7 +93,7 @@ public class GroupService {
 
     //그룹에 멤버 추가 기능
     @Transactional
-    public void addMemberToGroup(Long groupId, String email, Long adminId) {
+    public void inviteMemberToGroup(Long groupId, String email, Long adminId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
         User inviter = findUserByIdOrThrowUserException(adminId);
         User invitee = findUserByEmailOrThrowUserException(email);
@@ -112,6 +115,8 @@ public class GroupService {
                 .build();
 
         //여기에 초대 메시지 알림 추가
+        NotificationDto notificationDto = new NotificationDto("INVITE", group.getGroupName() + " 그룹에 초대되셨습니다.", inviter.getUserId(), invitee.getUserId());
+        notificationService.sendNotification(notificationDto);
 
     }
 
@@ -133,6 +138,8 @@ public class GroupService {
         groupMembershipRepository.save(membership);
 
         //여기에 그룹 관리자한테 초대 수락했다고 알림 보내는 기능 추가
+        NotificationDto notificationDto = new NotificationDto("ACCEPT", invitation.getInvitee().getUsername() +"님이 그룹에 참여했습니다.", invitation.getInviter().getUserId(), invitation.getInvitee().getUserId());
+        notificationService.sendNotification(notificationDto);
     }
 
     @Transactional
@@ -145,6 +152,9 @@ public class GroupService {
         invitation.reject();
 
         //여기에 그룹 관리자한테 초대 거절했다고 알림 보내느 기능 추가
+        NotificationDto notificationDto = new NotificationDto("REJECT", invitation.getInvitee().getUsername() +"님이 그룹 초대를 거절했습니다.", invitation.getInviter().getUserId(), invitation.getInvitee().getUserId());
+        notificationService.sendNotification(notificationDto);
+
     }
 
     @Transactional
