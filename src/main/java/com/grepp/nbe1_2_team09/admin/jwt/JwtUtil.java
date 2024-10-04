@@ -9,6 +9,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -24,14 +25,15 @@ public class JwtUtil {
     private final Key key;
     private final long accessTokenExpTime;
     private final long refreshTokenExpTime;
-    private final RedisTemplate<String, String> redisTemplate;
+
+     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();   // JSON 직렬화/역직렬화용
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.access_expiration_time}") long accessTokenExpTime,
             @Value("${jwt.refresh_expiration_time}") long refreshTokenExpTime,
-            RedisTemplate<String, String> redisTemplate
+            @Qualifier("jwtRedisTemplate") RedisTemplate<String, String> redisTemplate
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
