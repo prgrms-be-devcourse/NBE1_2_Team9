@@ -5,47 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Search</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .search-type {
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        .search-type.selected {
+            background-color: #d0e0ff;
+        }
+    </style>
 </head>
 <body>
 <h1>City Search</h1>
+
+<!-- 검색 유형 선택 -->
+<div id="searchTypeContainer">
+    <div class="search-type selected" data-type="city">도시 검색</div>
+    <div class="search-type" data-type="country-city">나라별 도시 검색</div>
+</div>
+
 <form id="searchForm">
     <input type="text" id="query" name="query" placeholder="Enter city or country" required>
-    <button type="submit">Search</button>
+    <button type="submit" id="searchButton">Search</button>
 </form>
 
 <h2>Results</h2>
 <ul id="resultsList">
-    <!-- 검색 결과가 여기에 표시됩니다 -->
 </ul>
 
 <script>
+    let searchType = 'city';
+
     $(document).ready(function() {
+        $('.search-type').on('click', function() {
+            $('.search-type').removeClass('selected');
+            $(this).addClass('selected');
+            searchType = $(this).data('type');
+
+            // 검색어 초기화
+            $('#query').val('');
+            $('#resultsList').empty();
+        });
+
+        // 도시 검색일 경우->입력 시 자동으로 검색
         $('#query').on('input', function() {
             const query = $(this).val();
 
-            if (query.length > 0) {
-                $.get('/api/cities/search', { input: query }, function(data) {
-                    $('#resultsList').empty(); // 이전 결과를 지웁니다
-                    data.forEach(function(result) {
-                        $('#resultsList').append(`
-                            <li class="result-item" data-id="${result.placeId}">
-                                <h3>${result.description}</h3>
-                                ${result.photoUrl ? `<img src="${result.photoUrl}" alt="Photo" />` : ''}
-                            </li>
-                        `);
-                    });
-
-                    // 클릭 이벤트를 각 결과 항목에 바인딩
-                    $('.result-item').on('click', function() {
-                        const placeId = $(this).data('id'); // data-id에서 placeId 가져오기
-                        console.log('Place ID:', placeId); // 콘솔에 출력
-                    });
-                });
-            } else {
-                $('#resultsList').empty(); // 입력이 비어 있으면 결과를 지웁니다
+            if (searchType === 'city' && query.length > 0) {
+                search(query, '/api/cities/search');
+            } else if (searchType === 'city' && query.length === 0) {
+                $('#resultsList').empty();
             }
         });
+
+        // 나라별 도시 검색->검색 버튼 클릭시
+        $('#searchForm').on('submit', function(event) {
+            event.preventDefault();
+            const query = $('#query').val();
+
+            if (searchType === 'country-city' && query.length > 0) {
+                search(query, '/api/cities/country');
+            }
+        });
+
+        // 공통 검색 함수
+        function search(query, apiUrl) {
+            $.get(apiUrl, { input: query }, function(data) {
+                $('#resultsList').empty();
+                data.forEach(function(result) {
+                    $('#resultsList').append(`
+                        <li class="result-item" data-id="${result.placeId}">
+                            <h3>${result.description}</h3>
+                            ${result.photoUrl ? `<img src="${result.photoUrl}" alt="Photo" />` : ''}
+                        </li>
+                    `);
+                });
+
+
+                $('.result-item').on('click', function() {
+                    const placeId = $(this).data('id');
+                    console.log('Place ID:', placeId);
+                });
+            });
+        }
     });
 </script>
+
 </body>
 </html>
