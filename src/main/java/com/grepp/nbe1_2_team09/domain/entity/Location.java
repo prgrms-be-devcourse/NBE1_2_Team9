@@ -41,7 +41,7 @@ public class Location {
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<EventLocation> eventLocation;
+    private List<EventLocation> eventLocations = new ArrayList<>();
 
     @OneToMany(mappedBy = "startLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
