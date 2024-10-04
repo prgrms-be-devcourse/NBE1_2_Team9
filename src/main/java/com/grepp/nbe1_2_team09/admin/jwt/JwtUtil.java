@@ -9,6 +9,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -42,6 +44,7 @@ public class JwtUtil {
 
     // AccessToken 생성 (쿠키로 관리)
     public String createAccessToken(CustomUserInfoDTO user) {
+        log.info("AccessToken 생성 완료 - userId: {}, email: {}", user.getUserId(), user.getEmail());
         return createToken(user, accessTokenExpTime);
     }
 
@@ -52,8 +55,9 @@ public class JwtUtil {
         try {
             String refreshTokenJson = objectMapper.writeValueAsString(refreshToken);    // 객체를 JSON으로 변호나
             redisTemplate.opsForValue().set(user.getEmail(), refreshTokenJson, refreshTokenExpTime, TimeUnit.SECONDS);
+            log.info("RefreshToken 생성 및 Redis 저장 완료 - userId: {}, email: {}", user.getUserId(), user.getEmail());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("RefreshToken 저장 실패 - userId: {}, email: {}", user.getUserId(), user.getEmail(), e);
         }
 
         return token;
@@ -81,21 +85,25 @@ public class JwtUtil {
     public RefreshToken getRefreshToken(String email) {
         String refreshTokenJson = redisTemplate.opsForValue().get(email);
         try {
+            log.info("Redis에서 RefreshToken 조회 - email: {}", email);
             return objectMapper.readValue(refreshTokenJson, RefreshToken.class);    // JSON을 객체로 변환
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Redis에서 RefreshToken 조회 실패 - email: {}", email, e);
         }
         return null;
     }
 
     // Redis에서 RefreshToken 삭제
     public void deleteRefreshToken(String email) {
+        log.info("Redis에서 RefreshToken 삭제 - email: {}", email);
         redisTemplate.delete(email);
     }
 
     // Token에서 User ID 추출
     public Long getUserId(String token) {
-        return parseClaims(token).get("userId", Long.class);
+        Long userId = parseClaims(token).get("userId", Long.class);
+        log.info("JWT에서 userId 추출 - userId: {}", userId);
+        return userId;
     }
 
     // JWT 검증
