@@ -39,9 +39,9 @@ public class Location {
 
     private String photo;
 
-    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private EventLocation eventLocation;
+    private List<EventLocation> eventLocations = new ArrayList<>();
 
     @OneToMany(mappedBy = "startLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

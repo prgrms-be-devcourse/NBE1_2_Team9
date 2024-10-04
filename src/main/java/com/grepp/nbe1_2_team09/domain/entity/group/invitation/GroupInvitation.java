@@ -17,15 +17,19 @@ public class GroupInvitation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inviter_id", nullable = false)
     private User inviter;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invitee_id", nullable = false)
     private User invitee;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private InvitationStatus status;
 
     @Builder
