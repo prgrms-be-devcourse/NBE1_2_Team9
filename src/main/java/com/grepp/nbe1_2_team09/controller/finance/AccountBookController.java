@@ -33,7 +33,6 @@ public class AccountBookController {
     private final AccountBookService accountBookService;
     private final OCRService ocrService;
 
-
     //가계부 지출 기록
     @PostMapping("/{groupId}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,7 +49,7 @@ public class AccountBookController {
     }
 
     //가계부 목록 상세 조회
-    @GetMapping
+    @PostMapping
     public AccountBookOneResp findAccountBook(@RequestBody Map<String, String> expenseId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userId= customUserDetails.getUsername();
         return accountBookService.findAccountBook(Long.parseLong(expenseId.get("expenseId")), userId);
@@ -70,13 +69,13 @@ public class AccountBookController {
         accountBookService.deleteAccountBook(Long.parseLong(expenseId.get("expenseId")), userId);
     }
 
-    @GetMapping("/receipt")
+    @PostMapping("/receipt")
     public Map<Integer, String> receiptOCR(@RequestBody Map<String, String> image) throws Exception {
         return ocrService.extractTextFromImage(image.get("image"));
     }
 
     //받은 문자열 포매팅
-    @GetMapping("/receipt/formatting")
+    @PostMapping("/receipt/formatting")
     public ReceiptDTO receiptFormatting(@RequestBody ReceiptDTO receipt) {
         return ocrService.formatting(receipt);
     }

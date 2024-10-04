@@ -1,6 +1,5 @@
 package com.grepp.nbe1_2_team09.domain.entity.group;
 
-import com.grepp.nbe1_2_team09.domain.entity.event.Event;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Task;
 import jakarta.persistence.*;
@@ -10,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.grepp.nbe1_2_team09.domain.entity.event.Event;
 
 @Entity
 @Table(name = "group_tb")
