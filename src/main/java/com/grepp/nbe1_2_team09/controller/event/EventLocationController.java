@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -33,6 +34,15 @@ public class EventLocationController {
         List<EventLocationInfoDto> locations = eventLocationService.getEventLocations(eventId);
         return ResponseEntity.ok(locations);
     }
+
+    @GetMapping("/{eventId}/locationsByDate")
+    public ResponseEntity<List<EventLocationInfoDto>> getEventLocationsByDate(
+            @PathVariable Long eventId,
+            @RequestParam("date") LocalDate date) {
+        List<EventLocationInfoDto> locations = eventLocationService.getEventLocationByDate(eventId, date);
+        return ResponseEntity.ok(locations);
+    }
+
 
     @PatchMapping("/{eventId}/locations/{locationId}")
     public ResponseEntity<EventLocationDto> updateEventLocation(

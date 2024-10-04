@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,20 @@ public class EventLocationService {
 
         return infos;
     }
+
+    //일정에 포함되고 선택한 날짜랑 같은 장소 불러오기(시간 빠른 순서)
+    public List<EventLocationInfoDto> getEventLocationByDate(Long eventId, LocalDate date){
+        Event event = findEventByIdOrThrowEventException(eventId);
+
+        List<EventLocation> eventLocations = eventLocationRepository.findByEventAndDateOrderByTime(event,date);
+
+        List<EventLocationInfoDto> infos = eventLocations.stream()
+                .map(EventLocationInfoDto::from)
+                .collect(Collectors.toList());
+
+        return infos;
+    }
+
 
     @Transactional
     public EventLocationDto updateEventLocation(Long eventId, Long locationId, UpdateEventLocationReq req){

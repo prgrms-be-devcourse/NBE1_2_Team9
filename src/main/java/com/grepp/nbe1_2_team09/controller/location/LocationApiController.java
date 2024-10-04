@@ -1,6 +1,7 @@
 package com.grepp.nbe1_2_team09.controller.location;
 
 import com.grepp.nbe1_2_team09.controller.location.dto.PlaceDetailResponse;
+import com.grepp.nbe1_2_team09.controller.location.dto.PlaceRecommendResponse;
 import com.grepp.nbe1_2_team09.controller.location.dto.PlaceResponse;
 import com.grepp.nbe1_2_team09.domain.service.location.LocationApiService;
 import lombok.AllArgsConstructor;
@@ -29,10 +30,10 @@ public class LocationApiController {
 
     // 추천 장소 검색
     @GetMapping("/{eventId}/recommend")
-    public ResponseEntity<List<PlaceResponse>> getRecommendedPlaces(
+    public ResponseEntity<List<PlaceRecommendResponse>> getRecommendedPlaces(
             @PathVariable(name="eventId") Long eventId,
             @RequestParam(name = "type", defaultValue = "establishment") String type) {
-        List<PlaceResponse> places = placeService.getRecommendedPlaces(eventId, type);
+        List<PlaceRecommendResponse> places = placeService.getRecommendedPlaces(eventId, type);
         return ResponseEntity.ok(places);
     }
 
