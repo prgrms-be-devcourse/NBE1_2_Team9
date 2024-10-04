@@ -1,7 +1,6 @@
 package com.grepp.nbe1_2_team09.notification.repository;
 
 import com.grepp.nbe1_2_team09.notification.entity.Notification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,12 +13,13 @@ public class NotificationRepository {
 
     private static final String KEY_PREFIX = "notification:user:";
 
-    @Autowired
-    @Qualifier("notificationRedisTemplate")
-    private RedisTemplate<String, Notification> notificationRedisTemplate;
+    private final RedisTemplate<String, Notification> notificationRedisTemplate;
+
+    public NotificationRepository(@Qualifier("notificationRedisTemplate") RedisTemplate<String, Notification> notificationRedisTemplate) {
+        this.notificationRedisTemplate = notificationRedisTemplate;
+    }
 
     public void save(Notification notification) {
-        System.out.println("___________"+notification.getReceiverId());
         String key = KEY_PREFIX + notification.getReceiverId();
         notificationRedisTemplate.opsForHash().put(key, notification.getId(), notification);
     }

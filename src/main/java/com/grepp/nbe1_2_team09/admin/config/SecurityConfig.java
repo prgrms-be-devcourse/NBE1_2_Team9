@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/**", "/api-docs", "/user/**"
+            "/swagger-ui/**", "/api-docs", "/user/**","/ws/**"
     };
 
     @Bean
@@ -54,7 +54,6 @@ public class SecurityConfig {
         // 권한 규칙 작성
         httpSecurity.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers("/ws/**").permitAll()
                 .anyRequest().permitAll()
 //                .anyRequest().authenticated()
         );

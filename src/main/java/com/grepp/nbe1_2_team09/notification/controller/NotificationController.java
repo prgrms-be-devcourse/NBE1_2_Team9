@@ -32,7 +32,7 @@ public class NotificationController {
         notificationService.sendNotification(notificationDto);
     }
 
-    @GetMapping("/api/notifications")
+    @GetMapping("/notifications")
     public ResponseEntity<List<Notification>> getNotifications(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "false") boolean unreadOnly) {
@@ -40,13 +40,13 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getNotifications(userId, unreadOnly));
     }
 
-    @GetMapping("/api/notifications/unread-count")
+    @GetMapping("/notifications/unread-count")
     public ResponseEntity<Integer> getUnreadCount(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUser().getUserId();
         return ResponseEntity.ok(notificationService.getUnreadCount(userId));
     }
 
-    @PostMapping("/api/notifications/{notificationId}/read")
+    @PostMapping("/notifications/{notificationId}/read")
     public ResponseEntity<Void> markNotificationAsRead(
             @PathVariable String notificationId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -55,7 +55,7 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/notifications/mark-all-read")
+    @PostMapping("/notifications/mark-all-read")
     public ResponseEntity<Void> markAllNotificationsAsRead(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUser().getUserId();
         notificationService.markAllAsRead(userId);
