@@ -1,8 +1,11 @@
 package com.grepp.nbe1_2_team09.controller.user;
 
+import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoApiService;
+import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoUserInfo;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
+import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +24,7 @@ import java.security.Principal;
 public class UserController {
 
     private final UserService userService;
+    private final KakaoApiService kakaoApiService;
 
     // 회원 가입
     @PostMapping("/signup")
@@ -36,13 +40,34 @@ public class UserController {
         return ResponseEntity.ok("로그인 성공. 토큰: " + token);
     }
 
+    // 소셜 로그인
+    @GetMapping("/signin/kakao")
+    public ResponseEntity<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) {
+        log.info("카카오 인가 코드: {}", code);
+
+        try {
+            String accessToken = kakaoApiService.getAccessToken(code);
+
+            KakaoUserInfo kakaoUserInfo = kakaoApiService.getUserInfo(accessToken);
+
+            User user = kakaoApiService.processUser(kakaoUserInfo);
+
+            kakaoApiService.createJwtToken(user, response);
+
+            return ResponseEntity.ok("카카오 로그인 성공, JWT 토큰이 쿠키에 저장되었습니다.");
+        } catch (Exception e) {
+            log.error("카카오 로그인 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카카오 로그인 실패");
+        }
+    }
+
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         Principal principal = request.getUserPrincipal();
 
         if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자가 로그인되어 있지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자가 로그인되지 않았습니다.");
         }
 
         String email = principal.getName();

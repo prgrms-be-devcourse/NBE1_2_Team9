@@ -15,7 +15,7 @@ public class CookieUtil {
     public static void createAccessTokenCookie(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);     // HTTPS에서만 전송되도록 설정
+        cookie.setSecure(false);     // HTTPS에서만 전송되도록 설정
         cookie.setPath("/");        // 모든 경로에서 사용 가능
         cookie.setMaxAge(ACCESS_TOKEN_EXPIRY);
         response.addCookie(cookie);
@@ -25,7 +25,7 @@ public class CookieUtil {
     public static void createRefreshTokenCookie(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(REFRESH_TOKEN_EXPIRY);
         response.addCookie(cookie);
@@ -68,7 +68,7 @@ public class CookieUtil {
     private static void deleteCookie(HttpServletResponse response, String cookieName) {
         Cookie cookie = new Cookie(cookieName, null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(0); // 즉시 삭제
         response.addCookie(cookie);

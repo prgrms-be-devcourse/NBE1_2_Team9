@@ -3,6 +3,7 @@ package com.grepp.nbe1_2_team09.admin.config;
 import com.grepp.nbe1_2_team09.admin.jwt.JwtFilter;
 import com.grepp.nbe1_2_team09.admin.jwt.JwtUtil;
 import com.grepp.nbe1_2_team09.admin.service.CustomUserDetailsService;
+import com.grepp.nbe1_2_team09.admin.service.oauth2.OAuth2LoginFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +22,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Collections;
 
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/**", "/api-docs", "/user/**","/ws/**"
@@ -35,28 +38,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         // CSRF, CORS
-        httpSecurity.csrf((csrf) -> csrf
+        httpSecurity
+                .csrf((csrf) -> csrf
                 .ignoringRequestMatchers("/ws/**")
-                .disable());
+                .disable())
 //        httpSecurity.cors((Customizer.withDefaults()));
-        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-        // 세션 관리 상태 없음으로 구성, Spring Security가 세션 생성 or 사용 X
-        httpSecurity.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                // 세션 비활성화 (JWT 사용)
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        // FormLogin, BasicHttp 비활성화
-        httpSecurity.formLogin((form) -> form.disable());
-        httpSecurity.httpBasic(AbstractHttpConfigurer::disable);
+                // FormLogin, BasicHttp 비활성화
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
 
-        // JwtAuthFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
-        httpSecurity.addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .oauth2Login(oauth2 -> oauth2
+                        .failureHandler(oAuth2LoginFailureHandler)
+                )
 
-        // 권한 규칙 작성
-        httpSecurity.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().permitAll()
-//                .anyRequest().authenticated()
-        );
+                // JwtAuthFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
+                .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+
+                // 권한 규칙 작성
+                .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers(AUTH_WHITELIST).permitAll()
+                                .anyRequest().permitAll()
+//                                .anyRequest().authenticated()
+                );
 
         return httpSecurity.build();
     }
