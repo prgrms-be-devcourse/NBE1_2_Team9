@@ -1,4 +1,4 @@
-package com.grepp.nbe1_2_team09.domain.entity;
+package com.grepp.nbe1_2_team09.domain.entity.user;
 
 import com.grepp.nbe1_2_team09.domain.entity.group.GroupMembership;
 import jakarta.persistence.*;
@@ -34,6 +34,14 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    // 소셜 로그인 제공자
+    @Column(nullable = true, length = 50)
+    private OAuthProvider provider;
+
+    // 소셜 제공자에서 유저 식별 ID
+    @Column(nullable = true, length = 100)
+    private String providerId;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime signUpDate;
@@ -42,20 +50,21 @@ public class User {
     private LocalDateTime lastLoginDate;
 
 
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @ToString.Exclude
     private List<GroupMembership> groupMemberships = new ArrayList<>();
 
     //비즈니스 메서드 기본
-
     @Builder
-    public User(String username, String email, String password, Role role) {
+    public User(String username, String email, String password, Role role, OAuthProvider provider, String providerId) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
     }
+
     // 외부에 보이는 정보들을 업데이트
     public void updateProfile(String username, String email){
         this.username = username;
