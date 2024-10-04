@@ -12,6 +12,7 @@ public enum ExceptionMessage {
     EXPIRED_TOKEN("만료된 JWT 토큰입니다."),
     UNSUPPORTED_TOKEN("지원되지 않는 JWT 토큰입니다."),
     EMPTY_CLAIMS("JWT 클레임이 비어있습니다."),
+    UNAUTHORIZED_ACTION("사용자가 이 작업을 수행할 권한이 없습니다."),
 
     // USER
     USER_NOT_FOUND("해당 사용자를 찾을 수 없습니다."),

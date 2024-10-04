@@ -83,22 +83,25 @@ public class UserController {
 
     // 회원 정보 수정
     @PutMapping("/{userId}")
-    public ResponseEntity<String> updateProfile(@PathVariable Long userId, @RequestBody UpdateProfileReq updateProfileReq) {
-        userService.updateProfile(userId, updateProfileReq);
+    public ResponseEntity<String> updateProfile(@PathVariable Long userId, @RequestBody UpdateProfileReq updateProfileReq, Principal principal ) {
+        Long loggedInUserId = Long.parseLong(principal.getName());
+        userService.updateProfile(loggedInUserId, userId, updateProfileReq);
         return ResponseEntity.ok("회원 정보 수정 성공");
     }
 
     // 비밀번호 변경
     @PutMapping("/{userId}/password")
-    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestParam String newPassword) {
-        userService.changePassword(userId, newPassword);
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestParam String newPassword, Principal principal) {
+        Long loggedInUserId = Long.parseLong(principal.getName());
+        userService.changePassword(loggedInUserId, userId, newPassword);
         return ResponseEntity.ok("비밀번호 변경 성공");
     }
 
     // 회원 정보 삭제 (회원 탈퇴)
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId, Principal principal) {
+        Long loggedInUserId = Long.parseLong(principal.getName());
+        userService.deleteUser(loggedInUserId, userId);
         return ResponseEntity.ok("회원 탈퇴 성공");
     }
 }

@@ -28,6 +28,13 @@ public class UserService  {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    // 권한 검증 메서드
+    public void checkAuthorization(Long loggedInUserId, Long targetUserId) {
+        if (!loggedInUserId.equals(targetUserId)) {
+            throw new UserException(ExceptionMessage.UNAUTHORIZED_ACTION);
+        }
+    }
+
     // 회원가입
     @Transactional
     public User register(SignUpReq signUpReq) {
@@ -92,25 +99,28 @@ public class UserService  {
 
     // 회원 정보 수정
     @Transactional
-    public void updateProfile(Long userId, UpdateProfileReq updateProfileReq) {
-        User user = findByIdOrThrowUserException(userId);
+    public void updateProfile(Long loggedInUserId, Long targetUserId, UpdateProfileReq updateProfileReq) {
+        checkAuthorization(loggedInUserId, targetUserId);
+        User user = findByIdOrThrowUserException(targetUserId);
         user.updateProfile(updateProfileReq.getUsername(), updateProfileReq.getEmail());
-    }
-
-    // 회원 정보 삭제
-    @Transactional
-    public void deleteUser(Long userId) {
-        User user = findByIdOrThrowUserException(userId);
-        userRepository.delete(user);
-        log.info("사용자 정보가 삭제되었습니다. userId: {}", userId);
     }
 
     // 비밀번호 변경
     @Transactional
-    public void changePassword(Long userId, String newPassword) {
-        User user = findByIdOrThrowUserException(userId);
+    public void changePassword(Long loggedInUserId, Long targetUserId, String newPassword) {
+        checkAuthorization(loggedInUserId, targetUserId);
+        User user = findByIdOrThrowUserException(targetUserId);
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.changePassword(encodedPassword);
+    }
+
+    // 회원 정보 삭제
+    @Transactional
+    public void deleteUser(Long loggedInUserId, Long targetUserId) {
+        checkAuthorization(loggedInUserId, targetUserId);
+        User user = findByIdOrThrowUserException(targetUserId);
+        userRepository.delete(user);
+        log.info("사용자 정보가 삭제되었습니다. userId: {}", targetUserId);
     }
 
     // ID로 찾기
