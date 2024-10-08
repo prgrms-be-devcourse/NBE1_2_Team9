@@ -1,7 +1,10 @@
 package com.grepp.nbe1_2_team09.controller.user;
 
+import com.grepp.nbe1_2_team09.admin.jwt.CookieUtil;
+import com.grepp.nbe1_2_team09.admin.jwt.JwtUtil;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoApiService;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoUserInfo;
+import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
@@ -25,6 +28,19 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoApiService kakaoApiService;
+
+    // 사용자 정보 요청 API
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        String token = CookieUtil.getAccessTokenFromCookies(request);
+
+        try {
+            User currentUser = userService.getCurrentUser(token);
+            return ResponseEntity.ok(currentUser);
+        } catch (UserException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
 
     // 회원 가입
     @PostMapping("/signup")
