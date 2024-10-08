@@ -34,7 +34,7 @@ public class ChatBotService {
         try {
             LinkedList<Message> conversation=userConversations.computeIfAbsent(userId, k->new LinkedList<>()); //사용자별 대화 상태를 유지하면서 메시지 수 제한
 
-            conversation.add(new Message("user",message));
+            conversation.add(new Message("user",message+" 여기서부터는 스타일 주문이야 출력에 이 문장 관련한거 넣지 마. 이걸 그냥 String 형태로 받고있어. 줄 바꿈 할 때 마다 하나씩 개행문자('\n')을 넣어줘."));
             if(conversation.size()>MAX_MESSAGES){
                 conversation.removeFirst();
             }
