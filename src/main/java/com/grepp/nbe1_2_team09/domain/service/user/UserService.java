@@ -35,6 +35,17 @@ public class UserService  {
         }
     }
 
+    // 현재 사용자 정보를 가져오는 메서드
+    public User getCurrentUser(String token) {
+        if (token == null || !jwtUtil.validateToken(token)) {
+            throw new UserException(ExceptionMessage.UNAUTHORIZED_ACTION);
+        }
+
+        Long userId = jwtUtil.getUserId(token);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_FOUND));
+    }
+
     // 회원가입
     @Transactional
     public User register(SignUpReq signUpReq) {
@@ -83,7 +94,7 @@ public class UserService  {
         CookieUtil.createAccessTokenCookie(accessToken, response);
         CookieUtil.createRefreshTokenCookie(refreshToken, response);
 
-        return jwtUtil.createAccessToken(customUserInfoDTO);
+        return accessToken;
     }
 
     // 로그아웃
