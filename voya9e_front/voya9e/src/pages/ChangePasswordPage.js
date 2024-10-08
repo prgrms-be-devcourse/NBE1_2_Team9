@@ -21,30 +21,32 @@ const ChangePasswordPage = () => {
   };
 
   return (
+    <div className='userBody'>
     <div className="change-password-container">
       <h1>비밀번호 변경</h1>
       <form onSubmit={handleChangePassword}>
-        <input
+        <input className='userInput'
           type="password"
           placeholder="현재 비밀번호"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="password"
           placeholder="새 비밀번호"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="password"
           placeholder="비밀번호 확인"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
         <br/><br/>
-        <button type="submit">비밀번호 변경하기</button>
+        <button className='userButton' type="submit">비밀번호 변경하기</button>
       </form>
+    </div>
     </div>
   );
 };

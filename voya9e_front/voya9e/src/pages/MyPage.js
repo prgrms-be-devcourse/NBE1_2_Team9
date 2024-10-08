@@ -18,12 +18,14 @@ const MyPage = () => {
   }
 
   return (
+    <div className='userBody'>
     <div className="mypage-container">
       <h1>마이페이지</h1>
       <p>사용자 이름: {user.username}</p>
       <p>이메일: {user.email}</p>
       <p>가입일: {user.joinedDate}</p>
       <p>역할: {user.role}</p>
+    </div>
     </div>
   );
 };

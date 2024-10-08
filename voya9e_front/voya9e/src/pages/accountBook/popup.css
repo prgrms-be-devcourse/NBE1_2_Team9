@@ -1,0 +1,38 @@
+/* 팝업을 화면 중앙에 표시하고, 뒷배경을 어둡게 처리 */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* 어둡게 처리된 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; /* 팝업을 화면의 가장 앞쪽에 표시 */
+  }
+  
+  /* 팝업 창 스타일 */
+  .popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px; /* 팝업 창 너비 조정 */
+    max-width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center; /* 내용 가운데 정렬 */
+  }
+  
+  /* 팝업 내 버튼 스타일 */
+  .popup-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+  }
+  

@@ -27,36 +27,38 @@ const SignupPage = () => {
   };
 
   return (
+    <div className='userBody'>
     <div className="signup-container">
       <h1>회원가입</h1>
       <form onSubmit={handleSignup}>
-        <input
+        <input className='userInput'
           type="email"
           placeholder="이메일"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="password"
           placeholder="비밀번호"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="password"
           placeholder="비밀번호 확인"
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="text"
           placeholder="이름"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <br/><br/>
-        <button type="submit">회원가입 하기</button>
+        <button className='userButton' type="submit">회원가입 하기</button>
       </form>
+    </div>
     </div>
   );
 };

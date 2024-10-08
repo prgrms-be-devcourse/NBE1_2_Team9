@@ -17,10 +17,12 @@ const DeleteAccountPage = () => {
   };
 
   return (
+    <div className='userBody'>
     <div className="delete-account-container">
       <h1>계정 삭제</h1>
       <p>계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
-      <button onClick={handleDeleteAccount}>계정 삭제</button>
+      <button className='userButton' onClick={handleDeleteAccount}>계정 삭제</button>
+    </div>
     </div>
   );
 };

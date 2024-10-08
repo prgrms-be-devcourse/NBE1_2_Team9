@@ -32,24 +32,26 @@ const UpdateProfilePage = () => {
   }
 
   return (
+    <div className='userBody'>
     <div className="update-profile-container">
       <h1>프로필 수정</h1>
       <form onSubmit={handleUpdateProfile}>
-        <input
+        <input className='userInput'
           type="text"
           placeholder="사용자 이름"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="email"
           placeholder="이메일"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <br/><br/>
-        <button type="submit">프로필 수정하기</button>
+        <button className='userButton' type="submit">프로필 수정하기</button>
       </form>
+    </div>
     </div>
   );
 };

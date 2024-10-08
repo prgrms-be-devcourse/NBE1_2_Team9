@@ -8,6 +8,13 @@ import UpdateProfilePage from './pages/UpdateProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
 import NavBar from './components/NavBar';
+import AddExpense from './pages/accountBook/AddExpense';
+import ExpenseDetail from './pages/accountBook/ExpenseDetail';
+import EditExpense from './pages/accountBook/EditExpense';
+import AddReceiptExpense from './pages/accountBook/AddReceiptExpense';
+import ExchangeRate from './pages/accountBook/ExchangeRate';
+import Chat from './pages/chatBot/Chat';
+import AccountBook from './pages/accountBook/AccountBook';
 
 const App = () => {
   return (
@@ -22,6 +29,13 @@ const App = () => {
         <Route path="/update-profile" element={<UpdateProfilePage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/delete-account" element={<DeleteAccountPage />} />
+        <Route path="/accountBook/:groupId" element={<AccountBook />} />
+        <Route path="/accountBook/:groupId/addExpense" element={<AddExpense/>}/>
+        <Route path="/expense/:groupId" element={<ExpenseDetail />} />
+        <Route path="/accountBook/:groupId/edit" element={<EditExpense />} />
+        <Route path="/accountBook/:groupId/receipt/add" element={<AddReceiptExpense />} />
+        <Route path="/exchange-rate" element={<ExchangeRate />} />
+        <Route path='/chat' element={<Chat />}/>
       </Routes>
     </>
   );

@@ -8,13 +8,21 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'Arial', sans-serif;
   }
 
-  body {
+  .userBody {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f5f5f5;
   }
+
+  // body {
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   height: 100vh;
+  //   background-color: #f5f5f5;
+  // }
 
   .login-container, .signup-container {
     background-color: #ffffff;
@@ -32,7 +40,7 @@ const GlobalStyles = createGlobalStyle`
     margin-bottom: 30px;
   }
 
-  input {
+  .userInput {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
@@ -41,7 +49,7 @@ const GlobalStyles = createGlobalStyle`
     font-size: 16px;
   }
 
-  button {
+  .userButton {
     width: 100%;
     padding: 12px;
     border: none;
@@ -50,6 +58,24 @@ const GlobalStyles = createGlobalStyle`
     cursor: pointer;
   }
 
+  // input {
+  //   width: 100%;
+  //   padding: 12px;
+  //   margin: 10px 0;
+  //   border-radius: 5px;
+  //   border: 1px solid #ccc;
+  //   font-size: 16px;
+  // }
+
+  // button {
+  //   width: 100%;
+  //   padding: 12px;
+  //   border: none;
+  //   border-radius: 5px;
+  //   font-size: 16px;
+  //   cursor: pointer;
+  // }
+
   .login-btn {
     background-color: #2e7d32;
     color: white;
@@ -57,6 +83,12 @@ const GlobalStyles = createGlobalStyle`
   }
 
   .kakao-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
     background-color: #FEE500;
     color: #3c1e1e;
     font-weight: bold;

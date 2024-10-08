@@ -1,0 +1,82 @@
+body {
+    background-color: #ffffff;
+  }
+
+  .voyage-logo {
+    font-family: 'Arial', sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #008CFF;
+  }
+  
+  .card {
+    border-radius: 10px;
+  }
+  
+  .card-body h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  
+  button {
+    background-color: #008CFF;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #008CFF;
+  }
+  
+  .expense-item {
+    margin-bottom: 10px;
+  }
+  
+  .expense-item p {
+    margin: 0;
+  }
+
+  .expense-item .item-name {
+    font-size: 1.5rem;  /* 글씨 크기 조정 */
+    font-weight: bold;  /* 볼드체 적용 */
+  }
+
+  .expense-item .expenses-date{
+    font-size: 0.7rem;  /* 글씨 크기 조정 */
+    color:grey;
+  }
+  
+  .expense-item .text-danger {
+    color: red;
+  }
+
+  .btn{
+    background-color: #008CFF;
+    color:#ffffff;
+  }
+
+  .btn-cancel{
+    background-color: tomato;
+    color:#ffffff;
+  }
+
+  /* btn-select 클래스에 스타일을 추가 */
+.btn-select {
+  background-color: #f0f0f0; /* 배경색 흰색 */
+  color: #000000; /* 글씨색 검정색 */
+  border: none; /* 버튼 테두리 제거 */
+  padding: 5px 10px; /* 버튼 패딩 */
+  text-decoration: none; /* 버튼의 밑줄 제거 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+  font-size: 14px; /* 폰트 크기 조정 */
+}
+
+/* 버튼을 호버할 때 스타일 (선택 사항) */
+.btn-select:hover {
+  background-color: #f0f0f0; /* 마우스 오버 시 배경색 변경 */
+  color: #000000; /* 마우스 오버 시 글씨색 유지 */
+  text-decoration: underline; /* 마우스 오버 시 밑줄 추가 */
+}
+
+

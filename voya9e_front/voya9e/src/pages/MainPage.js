@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { fetchUserInfo } from '../services/api'; // api.js에서 가져옴
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
+    const navigate = useNavigate();
   
     useEffect(() => {
       const loadUserInfo = async () => {
@@ -15,9 +17,14 @@ const MainPage = () => {
   
       loadUserInfo();
     }, []);
+
+    const handleChatBot=()=>{
+      navigate('/chat');
+    }
   
 
   return (
+    <div className='userBody'>
     <MainContainer>
       {userInfo ? (
         <>
@@ -27,13 +34,14 @@ const MainPage = () => {
             <OptionButton>찜한 여행지</OptionButton>
             <OptionButton>그룹 보기</OptionButton>
             <OptionButton>찜한 장소</OptionButton>
-            <OptionButton>여행 기록</OptionButton>
+            <OptionButton onClick={handleChatBot}>챗봇</OptionButton>
           </TravelOptions>
         </>
       ) : (
         <h2>로그인이 필요합니다.</h2>
       )}
     </MainContainer>
+    </div>
   );
 };
 

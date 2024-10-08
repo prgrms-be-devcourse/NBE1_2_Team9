@@ -25,16 +25,17 @@ const LoginPage = () => {
   };
 
   return (
+    <div className='userBody'>
     <div className="login-container">
       <h1>voya9e</h1>
       <form onSubmit={handleLogin}>
-        <input
+        <input className='userInput'
           type="email"
           placeholder="이메일"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
+        <input className='userInput'
           type="password"
           placeholder="비밀번호"
           value={password}
@@ -42,13 +43,14 @@ const LoginPage = () => {
         />
         <br/>
         <br/>
-        <button type="submit">로그인</button>
+        <button className='userButton' type="submit">로그인</button>
       </form>
       <br/>
       <button onClick={handleKakaoLogin} className="kakao-btn">
         <img src="/kakaotalk.png" alt="Kakao icon" width="16" /> 카카오 로그인
       </button>
-      <a href="/users/signup">회원가입</a>
+      <a href="/signup">회원가입</a>
+    </div>
     </div>
   );
 };
