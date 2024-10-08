@@ -1,4 +1,4 @@
-package com.grepp.nbe1_2_team09.controller.finance.dto;
+package com.grepp.nbe1_2_team09.controller.chatBot.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
