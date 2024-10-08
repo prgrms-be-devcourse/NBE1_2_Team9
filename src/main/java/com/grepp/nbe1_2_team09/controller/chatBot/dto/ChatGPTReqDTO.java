@@ -8,11 +8,12 @@ import lombok.Data;
 public class ChatGPTReqDTO {
     private String model;
     private List<Message> messages;
+    private Integer max_tokens;
 
-    public ChatGPTReqDTO(String model, String prompt) {
+    public ChatGPTReqDTO(String model, List<Message> messages) {
         this.model = model;
-        this.messages = new ArrayList<>();
-        this.messages.add(new Message("user", prompt));
+        this.messages = messages;
+        this.max_tokens = 1000;
     }
 }
 

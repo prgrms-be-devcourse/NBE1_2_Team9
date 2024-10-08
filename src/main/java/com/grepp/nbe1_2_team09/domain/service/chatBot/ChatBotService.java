@@ -4,6 +4,10 @@ import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
 import com.grepp.nbe1_2_team09.controller.chatBot.dto.ChatGPTReqDTO;
 import com.grepp.nbe1_2_team09.controller.chatBot.dto.ChatGPTResDTO;
+import com.grepp.nbe1_2_team09.controller.chatBot.dto.Message;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +26,20 @@ public class ChatBotService {
     @Value("${openai.api.key}")
     private String openAiKey;
 
-    public String chat(String message) {
+    private final Map<String, LinkedList<Message>>userConversations=new HashMap<>(); //대화상태를 유지하는 맵
+    private static final int MAX_MESSAGES=5; //사용자 별 유지할 최대 메시지 개수
+
+    public String chat(String message, String userId) {
         String answer="오류가 발생했습니다. 다시 시도해주세요."; //이 멘트가 변경X = 오류 발생한 것
         try {
-            ChatGPTReqDTO reqDTO = new ChatGPTReqDTO(model, message);
+            LinkedList<Message> conversation=userConversations.computeIfAbsent(userId, k->new LinkedList<>()); //사용자별 대화 상태를 유지하면서 메시지 수 제한
+
+            conversation.add(new Message("user",message));
+            if(conversation.size()>MAX_MESSAGES){
+                conversation.removeFirst();
+            }
+
+            ChatGPTReqDTO reqDTO = new ChatGPTReqDTO(model, conversation);
 
             RestTemplate restTemplate=new RestTemplate();
             restTemplate.getInterceptors().add((request, body, execution) -> {
