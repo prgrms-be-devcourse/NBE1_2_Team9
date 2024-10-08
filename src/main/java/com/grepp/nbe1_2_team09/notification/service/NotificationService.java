@@ -7,10 +7,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -19,6 +21,17 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
+
+    @Async
+    public CompletableFuture<Void> sendNotificationAsync(NotificationDto notificationDto) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                sendNotification(notificationDto);
+            } catch (Exception e) {
+                log.error("Failed to send notification: " + e.getMessage(), e);
+            }
+        });
+    }
 
     public void sendNotification(NotificationDto notificationDto) {
         // 실시간 메시지 전송
@@ -62,11 +75,9 @@ public class NotificationService {
         }
     }
 
+    // 벌크 처리를 사용하여 모든 알림을 읽음 처리
     public void markAllAsRead(Long userId) {
-        List<Notification> unreadNotifications = notificationRepository.findByReceiverIdAndReadFalse(userId);
-        unreadNotifications.forEach(notification -> {
-            notification.setRead(true);
-            notificationRepository.save(notification);
-        });
+        notificationRepository.markAllAsReadBulk(userId);
+        log.info("Marked all notifications as read for user: {}", userId);
     }
 }

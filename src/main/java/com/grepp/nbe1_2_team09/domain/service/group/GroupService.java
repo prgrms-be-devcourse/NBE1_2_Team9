@@ -7,11 +7,11 @@ import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
-import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import com.grepp.nbe1_2_team09.domain.entity.group.GroupMembership;
 import com.grepp.nbe1_2_team09.domain.entity.group.GroupRole;
 import com.grepp.nbe1_2_team09.domain.entity.group.invitation.GroupInvitation;
+import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupInvitationRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,6 +37,12 @@ public class GroupService {
     private final GroupMembershipRepository groupMembershipRepository;
     private final GroupInvitationRepository groupInvitationRepository;
     private final NotificationService notificationService;
+
+    // sendGroupNotification 메서드 수정: invitationId 추가
+    private void sendGroupNotification(String type, String message, Long senderId, Long receiverId, Long invitationId) {
+        NotificationDto notificationDto = new NotificationDto(type, message, senderId, receiverId, invitationId);
+        notificationService.sendNotification(notificationDto);
+    }
 
     // 관리자 유저 정보 받아서 그룹 생성
     @Transactional
@@ -67,12 +72,10 @@ public class GroupService {
 
     //사용자가 참여한 그룹의 리스트 조회
     public List<GroupDto> getUserGroups(Long userId) {
-
         return groupMembershipRepository.findByUser_Id(userId).stream()
                 .map(GroupMembership::getGroup)//User로 group을 찾음
                 .map(GroupDto::from)//그리고 dto로 변환
                 .collect(Collectors.toList());
-
     }
 
     @Transactional
@@ -114,10 +117,10 @@ public class GroupService {
                 .inviter(inviter)
                 .build();
 
-        //여기에 초대 메시지 알림 추가
-        NotificationDto notificationDto = new NotificationDto("INVITE", group.getGroupName() + " 그룹에 초대되셨습니다.", inviter.getUserId(), invitee.getUserId());
-        notificationService.sendNotification(notificationDto);
+        GroupInvitation savedInvitation = groupInvitationRepository.save(invitation); // 초대 저장
 
+        // 알림 전송 시 invitationId 포함
+        sendGroupNotification("INVITE", group.getGroupName() + " 그룹에 초대되셨습니다.", inviter.getUserId(), invitee.getUserId(), savedInvitation.getId());
     }
 
     // 초대를 받은 유저가 초대를 수락했을 경우
@@ -129,6 +132,7 @@ public class GroupService {
         }
 
         invitation.accept();
+        groupInvitationRepository.save(invitation); // 상태 변경 후 저장
 
         GroupMembership membership = GroupMembership.builder()
                 .group(invitation.getGroup())
@@ -137,9 +141,8 @@ public class GroupService {
                 .build();
         groupMembershipRepository.save(membership);
 
-        //여기에 그룹 관리자한테 초대 수락했다고 알림 보내는 기능 추가
-        NotificationDto notificationDto = new NotificationDto("ACCEPT", invitation.getInvitee().getUsername() +"님이 그룹에 참여했습니다.", invitation.getInviter().getUserId(), invitation.getInvitee().getUserId());
-        notificationService.sendNotification(notificationDto);
+        // 알림 전송 시 invitationId 포함
+        sendGroupNotification("ACCEPT", invitation.getInvitee().getUsername() +"님이 그룹에 참여했습니다.", invitation.getInvitee().getUserId(), invitation.getInviter().getUserId(), invitationId);
     }
 
     @Transactional
@@ -150,11 +153,10 @@ public class GroupService {
         }
 
         invitation.reject();
+        groupInvitationRepository.save(invitation); // 상태 변경 후 저장
 
-        //여기에 그룹 관리자한테 초대 거절했다고 알림 보내느 기능 추가
-        NotificationDto notificationDto = new NotificationDto("REJECT", invitation.getInvitee().getUsername() +"님이 그룹 초대를 거절했습니다.", invitation.getInviter().getUserId(), invitation.getInvitee().getUserId());
-        notificationService.sendNotification(notificationDto);
-
+        // 알림 전송 시 invitationId 포함
+        sendGroupNotification("REJECT", invitation.getInvitee().getUsername() +"님이 그룹 초대를 거절했습니다.", invitation.getInvitee().getUserId(), invitation.getInviter().getUserId(), invitationId);
     }
 
     @Transactional
@@ -165,7 +167,6 @@ public class GroupService {
 
         //만약 관리자가 역할을 변경하고자 할 때, 관리자가 1명이라면 역할을 바꾸지 못하도록 설정
         if (membership.getRole() == GroupRole.ADMIN && role != GroupRole.ADMIN) {
-
             List<GroupMembership> memberships = groupMembershipRepository.findByGroup(group);
             long adminCount = memberships.stream()
                     .filter(m -> m.getRole() == GroupRole.ADMIN)
@@ -173,12 +174,9 @@ public class GroupService {
             if (adminCount == 1) {
                 throw new GroupException(ExceptionMessage.CANNOT_REMOVE_LAST_ADMIN);
             }
-
         }
 
         membership.changeRole(role);
-
-
     }
 
     //이거 관리자 전용하고 사용자의 자의 탈퇴 구분할지 결정
@@ -189,7 +187,6 @@ public class GroupService {
         GroupMembership membership = findGroupMemberByIdThrowGroupException(group, user);
 
         groupMembershipRepository.delete(membership);
-
     }
 
     //그룹에 해당되는 멤버 정보들 검색
@@ -200,10 +197,6 @@ public class GroupService {
                 .map(GroupMembershipDto::from)
                 .collect(Collectors.toList());
     }
-
-
-
-
 
     //예외처리를 포함한 검색 함수들
 
@@ -246,6 +239,4 @@ public class GroupService {
                     return new GroupException(ExceptionMessage.INVITATION_NOT_FOUND);
                 });
     }
-
-
 }
