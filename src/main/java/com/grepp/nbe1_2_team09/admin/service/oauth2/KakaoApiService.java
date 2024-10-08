@@ -121,14 +121,16 @@ public class KakaoApiService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole(),
+                user.getSignUpDate()
         ));
         String refreshToken = jwtUtil.createRefreshToken(new CustomUserInfoDTO(
                 user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole(),
+                user.getSignUpDate()
         ));
 
         CookieUtil.createAccessTokenCookie(accessToken, response);
