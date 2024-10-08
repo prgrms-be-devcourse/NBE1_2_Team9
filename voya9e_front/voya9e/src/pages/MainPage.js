@@ -21,6 +21,9 @@ const MainPage = () => {
     const handleChatBot=()=>{
       navigate('/chat');
     }
+    const handleGroupView = () => {
+        navigate('/groups');
+    };
   
 
   return (
@@ -32,7 +35,7 @@ const MainPage = () => {
           <SearchInput type="text" placeholder="어디로 떠나시나요?" />
           <TravelOptions>
             <OptionButton>찜한 여행지</OptionButton>
-            <OptionButton>그룹 보기</OptionButton>
+              <OptionButton onClick={handleGroupView}>그룹 보기</OptionButton>
             <OptionButton>찜한 장소</OptionButton>
             <OptionButton onClick={handleChatBot}>챗봇</OptionButton>
           </TravelOptions>

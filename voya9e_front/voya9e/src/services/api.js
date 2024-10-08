@@ -60,3 +60,28 @@ export const isAuthenticated = async () => {
         return false;
     }
 };
+
+export const getGroups = async () => {
+    const response = await axios.get(`${API_BASE_URL}/groups/user`, { withCredentials: true });
+    return response.data;
+};
+
+export const createGroup = async (groupData) => {
+    const response = await axios.post(`${API_BASE_URL}/groups`, groupData, { withCredentials: true });
+    return response.data;
+};
+
+export const getGroupMembers = async (groupId) => {
+    const response = await axios.get(`${API_BASE_URL}/groups/${groupId}/members`, { withCredentials: true });
+    return response.data;
+};
+
+export const inviteMember = async (groupId, email) => {
+    const response = await axios.post(`${API_BASE_URL}/groups/${groupId}/members`, null, { params: { email }, withCredentials: true });
+    return response.data;
+};
+
+export const getGroupEvents = async (groupId) => {
+    const response = await axios.get(`${API_BASE_URL}/events/group/${groupId}`, { withCredentials: true });
+    return response.data;
+};
