@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record GooglePlacesNearbyResponse(List<Result> results) {
-    public record Result(String place_id, String name, Double rating, Integer user_ratings_total, List<Photo> photos, Geometry geometry) {
+    public record Result(String place_id, String name, Double rating, Integer user_ratings_total,String vicinity, List<Photo> photos, Geometry geometry) {
     }
 
     public record Geometry(Location location) {

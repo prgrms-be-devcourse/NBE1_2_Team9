@@ -9,6 +9,7 @@ public record PlaceRecommendResponse(
         BigDecimal longitude,
         double rating,
         Integer user_ratings_total,
+        String address,
         String photoUrl
 ) {
 }

@@ -60,6 +60,8 @@ public class EventService {
         return EventDto.from(event);
     }
 
+
+
     @Transactional
     public void deleteEvent(Long eventId){
         if(!eventRepository.existsById(eventId)){

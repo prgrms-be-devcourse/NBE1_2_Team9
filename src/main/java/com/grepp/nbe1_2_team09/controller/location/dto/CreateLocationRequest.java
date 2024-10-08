@@ -11,7 +11,6 @@ public record CreateLocationRequest(
          BigDecimal longitude,
          String address,
          BigDecimal rating,
-         LocationType type,
          String photo) {
 
     //DTO->Entity
@@ -22,7 +21,6 @@ public record CreateLocationRequest(
                 .longitude(longitude)
                 .address(address)
                 .rating(rating)
-                .type(type)
                 .photo(photo)
                 .build();
 
