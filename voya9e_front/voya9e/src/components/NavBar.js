@@ -1,54 +1,101 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { logout, isAuthenticated } from '../services/api';
+import { logout, isAuthenticated, fetchUnreadNotificationCount } from '../services/api';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const NavBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const checkAuth = async () => {
       const authenticated = await isAuthenticated();
-      setLoggedIn(authenticated);  // 로그인 상태 설정
+      setLoggedIn(authenticated);
     };
     checkAuth();
-  }, []);
+
+    if (loggedIn) {
+      // 초기 알림 개수 로드
+      const loadNotificationCount = async () => {
+        try {
+          const count = await fetchUnreadNotificationCount();
+          setNotificationCount(count);
+        } catch (error) {
+          console.error('알림 개수 로드 중 오류 발생:', error);
+        }
+      };
+      loadNotificationCount();
+
+      // 웹소켓 연결
+      const socketUrl = 'http://localhost:8080/ws';
+      const socket = new SockJS(socketUrl);
+
+      const stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        onConnect: () => {
+          console.log('웹소켓 연결 성공');
+          stompClient.subscribe(`/topic/user/${userId}`, (message) => {
+            console.log('새 알림 수신:', message.body);
+            setNotificationCount(prevCount => prevCount + 1);
+          });
+        },
+        onStompError: (frame) => {
+          console.error('STOMP 오류 발생', frame.headers['message']);
+        }
+      });
+
+      stompClient.activate();
+
+      return () => {
+        if (stompClient) stompClient.deactivate();
+      };
+    }
+  }, [loggedIn, userId]);
 
   const handleLogout = () => {
-    logout();  // 로그아웃 처리
-    setLoggedIn(false);  // 상태 업데이트
-    navigate('/login');  // 로그아웃 후 로그인 페이지로 이동
+    logout();
+    setLoggedIn(false);
+    navigate('/login');
   };
 
   return (
-    <Nav>
-      <NavList>
-        <NavItem>
-          <StyledLink to="/">Home</StyledLink>
-        </NavItem>
+      <Nav>
+        <NavList>
+          <NavItem>
+            <StyledLink to="/">Home</StyledLink>
+          </NavItem>
 
-        {loggedIn ? (
-          <>
-            <NavItem>
-              <StyledLink to="/mypage">MyPage</StyledLink>
-            </NavItem>
-            <NavItem>
-              <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
-            </NavItem>
-          </>
-        ) : (
-          <>
-            <NavItem>
-              <StyledLink to="/login">Login</StyledLink>
-            </NavItem>
-            <NavItem>
-              <StyledLink to="/signup">Signup</StyledLink>
-            </NavItem>
-          </>
-        )}
-      </NavList>
-    </Nav>
+          {loggedIn ? (
+              <>
+                <NavItem>
+                  <StyledLink to="/mypage">MyPage</StyledLink>
+                </NavItem>
+                <NavItem>
+                  <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+                </NavItem>
+                <NavItem>
+                  <StyledLink to="/notifications">
+                    알림 {notificationCount > 0 && `(${notificationCount})`}
+                  </StyledLink>
+                </NavItem>
+              </>
+          ) : (
+              <>
+                <NavItem>
+                  <StyledLink to="/login">Login</StyledLink>
+                </NavItem>
+                <NavItem>
+                  <StyledLink to="/signup">Signup</StyledLink>
+                </NavItem>
+              </>
+          )}
+        </NavList>
+      </Nav>
   );
 };
 
