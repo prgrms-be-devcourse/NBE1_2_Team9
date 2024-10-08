@@ -50,7 +50,7 @@ public class User {
     private LocalDateTime lastLoginDate;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<GroupMembership> groupMemberships = new ArrayList<>();
 

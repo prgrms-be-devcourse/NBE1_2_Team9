@@ -51,6 +51,8 @@ export const fetchUserInfo = async () => {
     }
 };
 
+
+
 export const isAuthenticated = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/users/me`, { withCredentials: true });

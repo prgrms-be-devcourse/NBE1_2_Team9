@@ -1,13 +1,13 @@
 package com.grepp.nbe1_2_team09.controller.user;
 
 import com.grepp.nbe1_2_team09.admin.jwt.CookieUtil;
-import com.grepp.nbe1_2_team09.admin.jwt.JwtUtil;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoApiService;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoUserInfo;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
+import com.grepp.nbe1_2_team09.controller.user.dto.UserInfoResp;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class UserController {
         String token = CookieUtil.getAccessTokenFromCookies(request);
 
         try {
-            User currentUser = userService.getCurrentUser(token);
+            UserInfoResp currentUser = userService.getCurrentUserDTO(token);
             return ResponseEntity.ok(currentUser);
         } catch (UserException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -120,4 +120,5 @@ public class UserController {
         userService.deleteUser(loggedInUserId, userId);
         return ResponseEntity.ok("회원 탈퇴 성공");
     }
+
 }
