@@ -70,7 +70,7 @@ public class GroupController {
     @PostMapping("/invitations/{invitationId}/accept")
     public ResponseEntity<Void> acceptInvitation(@PathVariable Long invitationId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUser().getUserId();
-        groupService.acceptInvitation(userId, invitationId);
+        groupService.acceptInvitation(invitationId, userId); // 인자 순서 수정
         return ResponseEntity.ok().build();
     }
 
@@ -78,7 +78,7 @@ public class GroupController {
     @PostMapping("/invitations/{invitationId}/reject")
     public ResponseEntity<Void> rejectInvitation(@PathVariable Long invitationId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUser().getUserId();
-        groupService.rejectInvitation(userId, invitationId);
+        groupService.rejectInvitation(invitationId, userId); // 인자 순서 수정
         return ResponseEntity.ok().build();
     }
 

@@ -7,11 +7,11 @@ import com.grepp.nbe1_2_team09.controller.group.dto.CreateGroupRequest;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.GroupMembershipDto;
 import com.grepp.nbe1_2_team09.controller.group.dto.UpdateGroupRequest;
-import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import com.grepp.nbe1_2_team09.domain.entity.group.GroupMembership;
 import com.grepp.nbe1_2_team09.domain.entity.group.GroupRole;
 import com.grepp.nbe1_2_team09.domain.entity.group.invitation.GroupInvitation;
+import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupInvitationRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
@@ -38,9 +38,10 @@ public class GroupService {
     private final GroupInvitationRepository groupInvitationRepository;
     private final NotificationService notificationService;
 
-    private void sendGroupNotification(String type, String message, Long senderId, Long receiverId) {
-        NotificationDto notificationDto = new NotificationDto(type, message, senderId, receiverId);
-        notificationService.sendNotificationAsync(notificationDto);
+    // sendGroupNotification 메서드 수정: invitationId 추가
+    private void sendGroupNotification(String type, String message, Long senderId, Long receiverId, Long invitationId) {
+        NotificationDto notificationDto = new NotificationDto(type, message, senderId, receiverId, invitationId);
+        notificationService.sendNotification(notificationDto);
     }
 
     // 관리자 유저 정보 받아서 그룹 생성
@@ -116,8 +117,10 @@ public class GroupService {
                 .inviter(inviter)
                 .build();
 
-        //여기에 초대 메시지 알림 추가
-        sendGroupNotification("INVITE", group.getGroupName() + " 그룹에 초대되셨습니다.", inviter.getUserId(), invitee.getUserId());
+        GroupInvitation savedInvitation = groupInvitationRepository.save(invitation); // 초대 저장
+
+        // 알림 전송 시 invitationId 포함
+        sendGroupNotification("INVITE", group.getGroupName() + " 그룹에 초대되셨습니다.", inviter.getUserId(), invitee.getUserId(), savedInvitation.getId());
     }
 
     // 초대를 받은 유저가 초대를 수락했을 경우
@@ -129,6 +132,7 @@ public class GroupService {
         }
 
         invitation.accept();
+        groupInvitationRepository.save(invitation); // 상태 변경 후 저장
 
         GroupMembership membership = GroupMembership.builder()
                 .group(invitation.getGroup())
@@ -137,8 +141,8 @@ public class GroupService {
                 .build();
         groupMembershipRepository.save(membership);
 
-        //여기에 그룹 관리자한테 초대 수락했다고 알림 보내는 기능 추가
-        sendGroupNotification("ACCEPT", invitation.getInvitee().getUsername() +"님이 그룹에 참여했습니다.", invitation.getInviter().getUserId(), invitation.getInvitee().getUserId());
+        // 알림 전송 시 invitationId 포함
+        sendGroupNotification("ACCEPT", invitation.getInvitee().getUsername() +"님이 그룹에 참여했습니다.", invitation.getInvitee().getUserId(), invitation.getInviter().getUserId(), invitationId);
     }
 
     @Transactional
@@ -149,9 +153,10 @@ public class GroupService {
         }
 
         invitation.reject();
+        groupInvitationRepository.save(invitation); // 상태 변경 후 저장
 
-        //여기에 그룹 관리자한테 초대 거절했다고 알림 보내느 기능 추가
-        sendGroupNotification("REJECT", invitation.getInvitee().getUsername() +"님이 그룹 초대를 거절했습니다.", invitation.getInviter().getUserId(), invitation.getInvitee().getUserId());
+        // 알림 전송 시 invitationId 포함
+        sendGroupNotification("REJECT", invitation.getInvitee().getUsername() +"님이 그룹 초대를 거절했습니다.", invitation.getInvitee().getUserId(), invitation.getInviter().getUserId(), invitationId);
     }
 
     @Transactional
@@ -234,6 +239,4 @@ public class GroupService {
                     return new GroupException(ExceptionMessage.INVITATION_NOT_FOUND);
                 });
     }
-
-
 }
