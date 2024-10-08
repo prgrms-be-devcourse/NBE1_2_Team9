@@ -1,6 +1,7 @@
 package com.grepp.nbe1_2_team09.admin.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.grepp.nbe1_2_team09.admin.dto.CustomUserInfoDTO;
 import com.grepp.nbe1_2_team09.admin.redis.entity.RefreshToken;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.JwtException;
@@ -16,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +44,8 @@ public class JwtUtil {
         this.accessTokenExpTime = accessTokenExpTime;
         this.refreshTokenExpTime = refreshTokenExpTime;
         this.redisTemplate = redisTemplate;
+
+        objectMapper.registerModule(new JavaTimeModule());  // LocalDateTime 처리를 위한 모듈
     }
 
     // AccessToken 생성 (쿠키로 관리)
@@ -72,7 +76,7 @@ public class JwtUtil {
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
-        claims.put("joinedDate", user.getSignUpDate());
+        claims.put("joinedDate", user.getSignUpDate().toInstant(ZoneOffset.UTC).toEpochMilli());
 
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidity = now.plusSeconds(expireTime);
