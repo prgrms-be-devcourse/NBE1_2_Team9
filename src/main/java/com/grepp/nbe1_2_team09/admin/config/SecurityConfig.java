@@ -32,7 +32,7 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/**", "/api-docs", "/user/**","/ws/**"
+            "/swagger-ui/**", "/api-docs", "/users/**","/ws/**"
     };
 
     @Bean

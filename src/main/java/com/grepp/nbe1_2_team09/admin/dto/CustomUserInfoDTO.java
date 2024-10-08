@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,5 +22,7 @@ public class CustomUserInfoDTO extends User {
     private String password;
 
     private Role role;
+
+    private LocalDateTime signUpDate;
 
 }

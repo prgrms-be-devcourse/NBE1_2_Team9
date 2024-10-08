@@ -72,7 +72,8 @@ public class UserService  {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole(),
+                user.getSignUpDate()
         );
 
         // AccessToken, RefreshToken 생성 및 쿠키 저장
