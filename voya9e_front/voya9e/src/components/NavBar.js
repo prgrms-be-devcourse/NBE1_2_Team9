@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { logout, isAuthenticated, fetchUnreadNotificationCount } from '../services/api';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { logout, isAuthenticated } from '../services/api';
+import { useNotification } from '../context/NotificationContext';
 
 const NavBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
+  const { unreadCount } = useNotification();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -17,45 +15,7 @@ const NavBar = () => {
       setLoggedIn(authenticated);
     };
     checkAuth();
-
-    if (loggedIn) {
-      // 초기 알림 개수 로드
-      const loadNotificationCount = async () => {
-        try {
-          const count = await fetchUnreadNotificationCount();
-          setNotificationCount(count);
-        } catch (error) {
-          console.error('알림 개수 로드 중 오류 발생:', error);
-        }
-      };
-      loadNotificationCount();
-
-      // 웹소켓 연결
-      const socketUrl = 'http://localhost:8080/ws';
-      const socket = new SockJS(socketUrl);
-
-      const stompClient = new Client({
-        webSocketFactory: () => socket,
-        reconnectDelay: 5000,
-        onConnect: () => {
-          console.log('웹소켓 연결 성공');
-          stompClient.subscribe(`/topic/user/${userId}`, (message) => {
-            console.log('새 알림 수신:', message.body);
-            setNotificationCount(prevCount => prevCount + 1);
-          });
-        },
-        onStompError: (frame) => {
-          console.error('STOMP 오류 발생', frame.headers['message']);
-        }
-      });
-
-      stompClient.activate();
-
-      return () => {
-        if (stompClient) stompClient.deactivate();
-      };
-    }
-  }, [loggedIn, userId]);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -80,7 +40,7 @@ const NavBar = () => {
                 </NavItem>
                 <NavItem>
                   <StyledLink to="/notifications">
-                    알림 {notificationCount > 0 && `(${notificationCount})`}
+                    알림 {unreadCount > 0 && `(${unreadCount})`}
                   </StyledLink>
                 </NavItem>
               </>

@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { inviteMember } from '../services/api';
+import { useNotification } from '../context/NotificationContext';
 
 const InviteMember = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const { groupId } = useParams();
+    const { userId } = useNotification();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!userId) {
+            setMessage('사용자 정보를 가져올 수 없습니다. 다시 로그인해주세요.');
+            return;
+        }
 
         try {
             await inviteMember(groupId, email);
@@ -21,14 +28,22 @@ const InviteMember = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>이메일:</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-            </div>
-            {message && <div>{message}</div>}
-            <button type="submit">초대하기</button>
-        </form>
+        <div>
+            <h2>멤버 초대</h2>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>이메일:</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                {message && <div>{message}</div>}
+                <button type="submit">초대하기</button>
+            </form>
+        </div>
     );
 };
 
