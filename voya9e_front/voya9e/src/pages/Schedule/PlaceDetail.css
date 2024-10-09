@@ -1,0 +1,157 @@
+.place-detail {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 화면 전체 높이 사용 */
+}
+
+.header {
+    text-align: center; /* 헤더 중앙 정렬 */
+    margin-bottom: 20px;
+}
+
+.detail-content {
+    max-width: 800px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
+}
+
+.place-image {
+    width: 100%; /* 이미지 너비 설정 */
+    height: 300px; /* 자동 비율 유지 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    margin-bottom: 20px; /* 이미지와 다음 요소 간격 */
+}
+
+.open-now {
+    font-weight: bold; /* 볼드체 */
+    font-size: 1em; /* 글꼴 크기 */
+    margin-bottom: 10px; /* 간격 추가 */
+}
+
+.open {
+    color: green; /* 영업 중일 때 색상 */
+}
+
+.closed {
+    color: red; /* 영업 종료일 때 색상 */
+}
+
+.opening-hours {
+    background-color: #f9f9f9; /* 배경 색상 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    padding: 10px; /* 패딩 추가 */
+    margin-bottom: 20px; /* 간격 추가 */
+}
+
+.opening-hours h3 {
+    font-size: 1.2em; /* 글꼴 크기 조정 */
+    margin-bottom: 10px; /* 간격 추가 */
+}
+
+.opening-hours ul {
+    list-style-type: none; /* 기본 리스트 스타일 제거 */
+    padding: 0; /* 패딩 제거 */
+}
+
+.opening-hours li {
+    font-size: 0.9em; /* 리스트 항목 글꼴 크기 조정 */
+    margin-bottom: 5px; /* 항목 간격 추가 */
+}
+
+.learn-more {
+    color: #007bff; /* 링크 색상 */
+    text-decoration: none; /* 기본 링크 스타일 제거 */
+}
+
+.learn-more:hover {
+    text-decoration: underline; /* 마우스 오버 시 밑줄 */
+}
+
+.loading {
+    font-size: 1.5em; /* 로딩 상태 글꼴 크기 */
+    text-align: center; /* 중앙 정렬 */
+    margin-top: 20%; /* 위쪽 간격 */
+}
+
+.error {
+    color: red; /* 에러 메시지 색상 */
+    font-size: 1.2em; /* 에러 메시지 글꼴 크기 */
+    text-align: center; /* 중앙 정렬 */
+    margin-top: 20%; /* 위쪽 간격 */
+}
+.info-buttons {
+    display: flex; /* 버튼을 수평으로 배치 */
+    flex-direction: column; /* 열 방향으로 배치 */
+    gap: 10px; /* 버튼 간격 */
+    margin-top: 20px; /* 상단 여백 */
+}
+
+.learn-more {
+    color: #007bff; /* 링크 색상 */
+    text-decoration: none; /* 기본 링크 스타일 제거 */
+    font-weight: bold; /* 글자 두껍게 */
+    padding: 8px 12px; /* 패딩 추가 */
+    border: 1px solid #007bff; /* 테두리 추가 */
+    border-radius: 4px; /* 둥근 모서리 */
+    background-color: #fff; /* 배경 색상 */
+    transition: background-color 0.3s, color 0.3s; /* 효과 추가 */
+}
+
+.learn-more:hover {
+    background-color: #007bff; /* 마우스 오버 시 배경 색상 변경 */
+    color: white; /* 글자 색상 변경 */
+}
+
+.toggle-button {
+    background-color: transparent; /* 투명 배경 */
+    border: none; /* 테두리 제거 */
+    color: #007bff; /* 링크 색상 */
+    cursor: pointer; /* 커서 포인터로 변경 */
+    text-decoration: underline; /* 밑줄 추가 */
+}
+
+.toggle-button:hover {
+    color: #0056b3; /* 마우스 오버 시 색상 변경 */
+}
+.currency-button {
+    font-size: 0.8em; /* 글자 크기 조정 */
+    padding: 3px 8px; /* 버튼 안쪽 여백 */
+    margin-left: 5px; /* 왼쪽 정렬 */
+    margin-bottom: 10px; /* 버튼 아래 여백 */
+    background-color: #995d55; /* 배경색 */
+    color: white; /* 글자색 */
+    border: none; /* 테두리 없애기 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    cursor: pointer; /* 마우스 커서 포인터로 변경 */
+    transition: background-color 0.3s; /* 배경색 변화에 부드러운 전환 효과 */
+}
+
+.currency-button:hover {
+    background-color: #FF3C00; /* 마우스 오버 시 배경색 변화 */
+}
+.button-container {
+    display: flex; /* flexbox 사용 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    margin-bottom: 20px; /* 버튼과 다음 요소 간격 */
+}
+
+.small-button-detail{
+    padding: 5px 7px; /* 버튼 크기 조정 */
+    font-size: 12px; /* 글자 크기 작게 */
+    border: 1px solid #065A91; /* 테두리 추가 */
+    background-color: transparent; /* 배경 없음 */
+    color: #065A91; /* 글자 색상 */
+    border-radius: 8px; /* 둥글게 */
+    cursor: pointer; /* 커서 포인터로 변경 */
+    margin-left: 10px; /* Voyage 텍스트와의 간격 */
+    margin-right: 10px; /* Voyage 텍스트와의 간격 */
+}
+
+
+
+
