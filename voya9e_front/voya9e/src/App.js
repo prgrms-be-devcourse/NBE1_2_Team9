@@ -29,6 +29,7 @@ import AutoSearchPage from './pages/Schedule/AutoCompleteSearch';
 import RecommendedSearchPage from './pages/Schedule/RecommendationSearch';
 import PlaceDetail from './pages/Schedule/PlaceDetail';
 import Calendar from './pages/Event/Calendar';
+import EventDetail from './pages/Event/EventDetail';
 
 const App = () => {
   return (
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/autosearch/:eventId" element={<AutoSearchPage />} />
           <Route path="/recommended/:eventId" element={<RecommendedSearchPage />} />
           <Route path="/places/:placeId" element={<PlaceDetail />} />
+          <Route path="/eventdetail/:groupId" element={<EventDetail />} />
         </Routes>
       </NotificationProvider>
   );
