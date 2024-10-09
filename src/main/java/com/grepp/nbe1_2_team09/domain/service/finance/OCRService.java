@@ -9,8 +9,9 @@ import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.protobuf.ByteString;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.AccountBookException;
-import com.grepp.nbe1_2_team09.controller.finance.dto.ChatGPTReqDTO;
-import com.grepp.nbe1_2_team09.controller.finance.dto.ChatGPTResDTO;
+import com.grepp.nbe1_2_team09.controller.chatBot.dto.ChatGPTReqDTO;
+import com.grepp.nbe1_2_team09.controller.chatBot.dto.ChatGPTResDTO;
+import com.grepp.nbe1_2_team09.controller.chatBot.dto.Message;
 import com.grepp.nbe1_2_team09.controller.finance.dto.ReceiptDTO;
 import java.util.Base64;
 import java.util.LinkedHashMap;
@@ -103,7 +104,9 @@ public class OCRService {
             //숫자만 남기고 문자 다 제거
             amount = amount.replaceAll("[^\\d]", "");
 
-            ChatGPTReqDTO reqDTO = new ChatGPTReqDTO(model, date);
+            List<Message> messages=new ArrayList<>();
+            messages.add(new Message("user", date +" Please convert this word into 'yyyy-MM-ddTHH:mm:ss' format. If you don't have enough time information, you can infer and fill it in. Instead, you have to keep this format 'yyyy-MM-ddTHH:mm:ss', and when you print it out, just 'yyyy-MM-ddTHH:mm:ss'. Don't print anything else"));
+            ChatGPTReqDTO reqDTO = new ChatGPTReqDTO(model, messages);
 
             RestTemplate restTemplate=new RestTemplate();
             restTemplate.getInterceptors().add((request, body, execution) -> {
