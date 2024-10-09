@@ -13,7 +13,7 @@ import com.grepp.nbe1_2_team09.domain.entity.group.GroupRole;
 import com.grepp.nbe1_2_team09.domain.entity.group.invitation.GroupInvitation;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupInvitationRepository;
-import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
+import com.grepp.nbe1_2_team09.domain.repository.group.membership.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
 import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationDto;
@@ -63,7 +63,7 @@ public class GroupService {
     }
 
     public List<GroupDto> getUserGroups(Long userId) {
-        return groupMembershipRepository.findByUser_Id(userId).stream()
+        return groupMembershipRepository.findByUserId(userId).stream()
                 .map(GroupMembership::getGroup)
                 .map(GroupDto::from)
                 .collect(Collectors.toList());
