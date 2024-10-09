@@ -137,3 +137,13 @@ export const markNotificationAsRead = async (notificationId) => {
         throw error;
     }
 };
+
+export const markAllNotificationsAsRead = async () => {
+    try {
+        await axios.post('/notifications/mark-all-read', {}, { withCredentials: true });
+        console.log('모든 알림이 읽음 처리되었습니다.');
+    } catch (error) {
+        console.error('모든 알림 읽음 처리 실패:', error);
+        throw error;
+    }
+};

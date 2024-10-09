@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { logout, isAuthenticated } from '../services/api';
+import {logout, isAuthenticated, fetchUnreadNotificationCount} from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 
 const NavBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
-  const { unreadCount } = useNotification();
+  const { unreadCount, updateUnreadCount } = useNotification();
 
   useEffect(() => {
     const checkAuth = async () => {
       const authenticated = await isAuthenticated();
       setLoggedIn(authenticated);
     };
+
+    const fetchUnreadCount = async () => {
+      const count = await fetchUnreadNotificationCount();
+      updateUnreadCount(count);
+    }
     checkAuth();
-  }, []);
+    if(loggedIn){
+      fetchUnreadCount();
+    }
+  }, [loggedIn, updateUnreadCount]);
 
   const handleLogout = () => {
     logout();
