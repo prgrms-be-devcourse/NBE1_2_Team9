@@ -1,0 +1,69 @@
+.userBody {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.mypage-container {
+    width: 400px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.mypage-container h1 {
+    font-size: 2rem;
+    font-weight: 300;
+    color: #008CFF;
+    margin-bottom: 1.5rem;
+    font-family: 'Arial', sans-serif;
+}
+
+.mypage-container p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    font-family: 'Arial', sans-serif;
+}
+
+.mypage-container p span {
+    font-weight: bold;
+    color: #007ACC;
+}
+
+/* @media (max-width: 500px) {
+    .mypage-container {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .mypage-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .mypage-container p {
+        font-size: 0.9rem;
+    }
+} */
+
+.mypageBtn:hover {
+    background-color: #007ACC;
+}
+
+.mypageBtn{
+    margin-top: 40px;
+    width: 100%; /* 인풋과 동일한 너비 설정 */
+    padding: 0.5rem;
+    background-color: #008CFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}

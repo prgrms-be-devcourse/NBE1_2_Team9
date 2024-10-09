@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getGroups } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import './Group.css';
 
 const GroupList = () => {
     const [groups, setGroups] = useState([]);
@@ -32,12 +33,15 @@ const GroupList = () => {
     }
 
     return (
-        <div>
-            <h2>내 여행 그룹</h2>
-            <button onClick={() => navigate('/create-group')}>그룹 추가하기</button>
+        <div className='groupList'>
+            <div className='groupListTitle'>
+                <h2 className='title'>내 여행 그룹</h2>
+                <button className='groupBtn' onClick={() => navigate('/create-group')}>그룹 추가하기</button>
+            </div>
+            <hr/>
             <ul>
                 {groups.map(group => (
-                    <li key={group.groupId} onClick={() => handleGroupClick(group.groupId)} style={{ cursor: 'pointer' }}>
+                    <li className='group' key={group.groupId} onClick={() => handleGroupClick(group.groupId)} style={{ cursor: 'pointer' }}>
                         {group.groupName}
                     </li>
                 ))}

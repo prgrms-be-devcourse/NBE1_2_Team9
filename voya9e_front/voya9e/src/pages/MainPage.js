@@ -24,6 +24,10 @@ const MainPage = () => {
     const handleGroupView = () => {
         navigate('/groups');
     };
+
+    const handleExchangeRate=()=>{
+      navigate('/exchange-rate')
+    }
   
 
   return (
@@ -38,6 +42,7 @@ const MainPage = () => {
               <OptionButton onClick={handleGroupView}>그룹 보기</OptionButton>
             <OptionButton>찜한 장소</OptionButton>
             <OptionButton onClick={handleChatBot}>챗봇</OptionButton>
+            <OptionButton onClick={handleExchangeRate}>환율</OptionButton>
           </TravelOptions>
         </>
       ) : (

@@ -19,14 +19,16 @@ const CreateGroup = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>그룹 이름:</label>
-                <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} required />
-            </div>
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-            <button type="submit">그룹 생성</button>
-        </form>
+        <div className='CreateGroup'>
+            <form className='createGroupForm' onSubmit={handleSubmit}>
+                <div>
+                    <label className='createGroupTitle'>그룹 이름</label>
+                    <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)} required />
+                </div>
+                {error && <div style={{ color: 'red' }}>{error}</div>}
+                <button className='createGroupBtn' type="submit">그룹 생성</button>
+            </form>
+        </div>
     );
 };
 

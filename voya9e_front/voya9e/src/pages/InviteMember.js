@@ -21,14 +21,16 @@ const InviteMember = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <div className='CreateGroup'>
+        <form className='createGroupForm' onSubmit={handleSubmit}>
             <div>
-                <label>이메일:</label>
+                <label className='createGroupTitle'>이메일</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
             </div>
             {message && <div>{message}</div>}
-            <button type="submit">초대하기</button>
+            <button className='createGroupBtn' type="submit">초대하기</button>
         </form>
+        </div>
     );
 };
 

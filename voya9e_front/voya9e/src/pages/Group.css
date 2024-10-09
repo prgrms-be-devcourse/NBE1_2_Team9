@@ -1,0 +1,165 @@
+.groupList{
+    margin: 30px;
+}
+
+.groupListTitle{
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    margin-bottom: 1rem; /* 아래 요소와의 간격 */
+}
+
+.groupMemberList{
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    margin-bottom: 1rem; /* 아래 요소와의 간격 */
+}
+
+.title{
+    margin: 20px;
+    font-size: 2rem;
+    margin-right: 1rem; /* 버튼과의 간격 */
+}
+
+.groupBtn {
+    padding: 0.3rem 0.8rem; /* 패딩을 줄여 버튼 크기 축소 */
+    font-size: 0.875rem; /* 폰트 크기 조정 (보통 14px 정도) */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #5f99c5;
+    }
+}
+
+.group {
+    list-style-type: none; /* 점 없애기 */
+    padding: 0;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #008CFF; /* 왼쪽에 선 추가 */
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.groupMemberLi{
+    list-style-type: none; /* 점 없애기 */
+    padding: 0;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.CreateGroup{
+    margin: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.CreateGroup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 화면 전체 높이 */
+}
+
+.createGroupForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    width: 100%; /* 폼이 화면 중앙에 가로 너비를 차지하도록 설정 */
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+.createGroupForm div {
+    width: 100%;
+    margin-bottom: 1.5rem; /* 인풋과 버튼 사이의 간격 */
+}
+
+.createGroupForm > label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #333;
+}
+
+.createGroupForm input[type="text"] {
+    width: 100%; /* 버튼과 동일한 너비 설정 */
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.createGroupForm input[type="email"]:focus {
+    outline: none;
+    border-color: #008CFF;
+    box-shadow: 0 0 5px rgba(0, 140, 255, 0.2);
+}
+
+.createGroupForm input[type="email"] {
+    width: 100%; /* 버튼과 동일한 너비 설정 */
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.createGroupForm input[type="text"]:focus {
+    outline: none;
+    border-color: #008CFF;
+    box-shadow: 0 0 5px rgba(0, 140, 255, 0.2);
+}
+
+.createGroupBtn {
+    width: 100%; /* 인풋과 동일한 너비 설정 */
+    padding: 0.8rem;
+    background-color: #008CFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.createGroupBtn:hover {
+    background-color: #007ACC;
+}
+
+.createGroupTitle{
+    font-size: 20px;
+}
+
+.expenseBookBtn{
+    margin-top: 40px;
+    width: 100%; /* 인풋과 동일한 너비 설정 */
+    padding: 0.5rem;
+    background-color: #008CFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}

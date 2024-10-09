@@ -131,7 +131,7 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const LogoutButton = styled.button`
+const LogoutButton = styled.a`
   background: none;
   border: none;
   color: #fff;
