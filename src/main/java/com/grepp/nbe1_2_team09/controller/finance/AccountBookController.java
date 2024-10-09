@@ -1,28 +1,20 @@
 package com.grepp.nbe1_2_team09.controller.finance;
 
 import com.grepp.nbe1_2_team09.admin.service.CustomUserDetails;
-import com.grepp.nbe1_2_team09.common.config.OpenAiConfig;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookAllResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookOneResp;
 import com.grepp.nbe1_2_team09.controller.finance.dto.AccountBookReq;
-import com.grepp.nbe1_2_team09.controller.finance.dto.ChatGPTReqDTO;
-import com.grepp.nbe1_2_team09.controller.finance.dto.ChatGPTResDTO;
 import com.grepp.nbe1_2_team09.controller.finance.dto.ReceiptDTO;
 import com.grepp.nbe1_2_team09.controller.finance.dto.UpdateAccountBookReq;
 import com.grepp.nbe1_2_team09.domain.service.finance.AccountBookService;
 import com.grepp.nbe1_2_team09.domain.service.finance.OCRService;
 import java.util.List;
 import java.util.Map;
-import jdk.management.jfr.RecordingInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RestController

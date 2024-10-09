@@ -22,6 +22,7 @@ public class Notification implements Serializable {
     private Long receiverId;
     private LocalDateTime createdAt;
     private boolean read;
+    private Long invitationId;
 
     public void setRead(boolean read) {
         this.read = read;

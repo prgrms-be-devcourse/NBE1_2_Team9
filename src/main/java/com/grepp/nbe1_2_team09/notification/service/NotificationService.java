@@ -47,6 +47,7 @@ public class NotificationService {
                 .receiverId(notificationDto.receiverId())
                 .createdAt(LocalDateTime.now())
                 .read(false)
+                .invitationId(notificationDto.invitationId())
                 .build();
         log.info("보낸 사람: " + notificationDto.senderId());
         log.info("Sent notification to user: " + notificationDto.receiverId());

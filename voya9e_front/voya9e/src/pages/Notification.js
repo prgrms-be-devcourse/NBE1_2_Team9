@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import axios from 'axios';
+import { fetchNotifications, acceptInvitation, rejectInvitation, markNotificationAsRead } from '../services/api';
 
 const Notification = () => {
     const [notifications, setNotifications] = useState([]);
@@ -10,8 +10,8 @@ const Notification = () => {
     useEffect(() => {
         const loadInitialNotifications = async () => {
             try {
-                const response = await axios.get('/notifications');
-                setNotifications(response.data);
+                const fetchedNotifications = await fetchNotifications();
+                setNotifications(fetchedNotifications);
             } catch (error) {
                 console.error('초기 알림 로드 중 오류 발생:', error);
             }
@@ -45,23 +45,31 @@ const Notification = () => {
         };
     }, [userId]);
 
-    const handleAccept = async (notificationId, invitationId) => {
+    const handleAccept = async (notification) => {
+        if (!notification.invitationId) {
+            console.error('초대 ID가 없습니다.');
+            return;
+        }
         try {
-            await axios.post(`/groups/invitations/${invitationId}/accept`);
-            await axios.post(`/notifications/${notificationId}/read`);
+            await acceptInvitation(notification.invitationId);
+            await markNotificationAsRead(notification.id);
             alert('초대를 수락했습니다.');
-            removeNotification(notificationId);
+            removeNotification(notification.id);
         } catch (err) {
             console.error('수락 중 오류 발생:', err);
         }
     };
 
-    const handleDecline = async (notificationId, invitationId) => {
+    const handleReject = async (notification) => {
+        if (!notification.invitationId) {
+            console.error('초대 ID가 없습니다.');
+            return;
+        }
         try {
-            await axios.post(`/groups/invitations/${invitationId}/reject`);
-            await axios.post(`/notifications/${notificationId}/read`);
+            await rejectInvitation(notification.invitationId);
+            await markNotificationAsRead(notification.id);
             alert('초대를 거절했습니다.');
-            removeNotification(notificationId);
+            removeNotification(notification.id);
         } catch (err) {
             console.error('거절 중 오류 발생:', err);
         }
@@ -80,8 +88,12 @@ const Notification = () => {
                 {notifications.map((notification, index) => (
                     <li key={index}>
                         {notification.message}
-                        <button onClick={() => handleAccept(notification.id, notification.invitationId)}>수락</button>
-                        <button onClick={() => handleDecline(notification.id, notification.invitationId)}>거절</button>
+                        {notification.type === 'INVITE' && (
+                            <>
+                                <button onClick={() => handleAccept(notification)}>수락</button>
+                                <button onClick={() => handleReject(notification)}>거절</button>
+                            </>
+                        )}
                     </li>
                 ))}
             </ul>

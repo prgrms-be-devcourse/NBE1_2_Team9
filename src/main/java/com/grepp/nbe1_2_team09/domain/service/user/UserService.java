@@ -8,6 +8,7 @@ import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
 import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
+import com.grepp.nbe1_2_team09.controller.user.dto.UserInfoResp;
 import com.grepp.nbe1_2_team09.domain.entity.user.Role;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
@@ -151,6 +152,25 @@ public class UserService  {
                     log.warn(">>>> {} : {} <<<<", email, ExceptionMessage.USER_NOT_FOUND);
                     return new UserException(ExceptionMessage.USER_NOT_FOUND);
                 });
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResp getCurrentUserDTO(String token) {
+        if (token == null || !jwtUtil.validateToken(token)) {
+            throw new UserException(ExceptionMessage.UNAUTHORIZED_ACTION);
+        }
+
+        Long userId = jwtUtil.getUserId(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ExceptionMessage.USER_NOT_FOUND));
+
+        return new UserInfoResp(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole().name(),
+                user.getSignUpDate()
+        );
     }
 
 }

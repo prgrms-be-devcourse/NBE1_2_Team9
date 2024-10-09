@@ -39,6 +39,10 @@ const GroupMembers = () => {
         navigate(`/add-event/${groupId}`);
     };
 
+    const handleAccountBook = () => {
+        navigate(`/accountBook/${groupId}`);
+    };
+
     if (loading) {
         return <div>로딩 중...</div>;
     }
@@ -70,6 +74,7 @@ const GroupMembers = () => {
                     )}
                 </ul>
             </div>
+            <button onClick={handleAccountBook} style={{marginLeft: '10px'}}>가계부</button>
         </div>
     );
 };

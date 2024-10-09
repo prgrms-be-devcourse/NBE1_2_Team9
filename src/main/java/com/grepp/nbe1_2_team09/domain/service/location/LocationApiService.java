@@ -65,11 +65,11 @@ public class LocationApiService {
 
         return response.getBody().results()
                 .stream()
-                .map(result -> new PlaceRecommendResponse(result.place_id(), result.name(),result.geometry().location().lat(),result.geometry().location().lng(),Optional.ofNullable(result.rating()).orElse(0.0), result.user_ratings_total(), getPhotoUrl(result.photos())))
+                .map(result -> new PlaceRecommendResponse(result.place_id(), result.name(),result.geometry().location().lat(),result.geometry().location().lng(),Optional.ofNullable(result.rating()).orElse(0.0), result.user_ratings_total(),result.vicinity() ,getPhotoUrl(result.photos())))
                 .collect(Collectors.toList());
     }
 
-    //id로 장소 상세 정보 조회
+    // id로 장소 상세 정보 조회
     public PlaceDetailResponse getPlaceDetail(String placeId) {
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + placeId + "&key=" + apiKey;
 
@@ -79,25 +79,46 @@ public class LocationApiService {
         // 응답의 result 객체를 사용하여 PlaceDetailResponse를 반환
         PlaceDetailApiResponse.Result result = response.getBody().result();
 
+        // 첫 번째 사진의 URL을 가져옵니다.
+        String photoUrl = getPhotoUrl2(result.photos());
+
+        // 현재 영업 여부와 요일별 영업 시간 정보
+        boolean openNow = result.current_opening_hours() != null && result.current_opening_hours().open_now();
+        String weekdayText = result.current_opening_hours() != null
+                ? String.join(", ", result.current_opening_hours().weekday_text())
+                : "운영 시간 정보가 없습니다.";
+
         return new PlaceDetailResponse(
                 result.place_id(),
                 result.name(),
+                result.geometry().location().lat(),
+                result.geometry().location().lng(),
                 result.formatted_address(),
                 result.formatted_phone_number(),
-                result.photos() != null ? new PlaceDetailResponse.Photo(result.photos().photo_reference()) : null, // 사진을 단일로 반환
+                photoUrl != null ? new String(photoUrl) : null,
                 result.rating(),
-                result.url()
+                result.url(),
+                weekdayText,  // 요일별 영업 시간 정보 추가
+                result.website(),
+                openNow  // 현재 영업 여부 추가
         );
-
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
     private String getPhotoUrl(List<GooglePlacesNearbyResponse.Photo> photos) {
         if (photos != null && !photos.isEmpty()) {
             return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photos.get(0).photo_reference() + "&key=" + apiKey;
         }
         return null;
     }
+
+    private String getPhotoUrl2(List<PlaceDetailApiResponse.Photo> photos) {
+        if (photos != null && !photos.isEmpty()) {
+            return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + photos.get(0).photo_reference() + "&key=" + apiKey;
+        }
+        return null;
+    }
+
 
     public String getCoordinatesFromCityName(String cityName) {
         String geocodingUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=" + cityName + "&key=" + apiKey;

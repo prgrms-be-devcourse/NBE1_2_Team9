@@ -51,6 +51,8 @@ export const fetchUserInfo = async () => {
     }
 };
 
+
+
 export const isAuthenticated = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/users/me`, { withCredentials: true });
@@ -92,6 +94,55 @@ export const getWeatherForecast = async (location) => {
         return response.data;
     } catch (error) {
         console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
+        throw error;
+    }
+};
+
+export const fetchUnreadNotificationCount = async () => {
+    try {
+        const response = await axios.get('/notifications/unread-count', {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (error) {
+        console.error('읽지 않은 알림 개수 조회 실패:', error);
+        return 0;
+    }
+};
+
+export const fetchNotifications = async () => {
+    try {
+        const response = await axios.get('/notifications');
+        return response.data;
+    } catch (error) {
+        console.error('알림 조회 실패:', error);
+        throw error;
+    }
+};
+
+export const acceptInvitation = async (invitationId) => {
+    try {
+        await axios.post(`/groups/invitations/${invitationId}/accept`);
+    } catch (error) {
+        console.error('초대 수락 실패:', error);
+        throw error;
+    }
+};
+
+export const rejectInvitation = async (invitationId) => {
+    try {
+        await axios.post(`/groups/invitations/${invitationId}/reject`);
+    } catch (error) {
+        console.error('초대 거절 실패:', error);
+        throw error;
+    }
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+    try {
+        await axios.post(`/notifications/${notificationId}/read`);
+    } catch (error) {
+        console.error('알림 읽음 처리 실패:', error);
         throw error;
     }
 };
