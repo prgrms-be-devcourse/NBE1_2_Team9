@@ -1,22 +1,24 @@
 package com.grepp.nbe1_2_team09.domain.service.weather;
 
 import com.grepp.nbe1_2_team09.controller.weather.dto.GeocodeRes;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WeatherService {
 
     private final RestTemplate restTemplate;
 
     @Value("${weather.api.key}")
     private String apiKey;
-
-    public WeatherService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     // 도시 이름으로 날씨 예보 조회
     public String getForecastByCityName(String city) {
