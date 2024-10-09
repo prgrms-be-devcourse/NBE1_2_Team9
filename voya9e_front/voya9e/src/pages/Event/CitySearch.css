@@ -1,0 +1,172 @@
+/* 기본 설정 */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.city-search {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 화면 전체 높이 사용 */
+}
+
+h1 {
+    color: #008CFF;
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 검색창과 검색 버튼을 함께 배치 */
+.search-bar {
+    display: flex;
+    width: 100%; /* 전체 너비 사용 */
+    justify-content: center; /* 가운데 정렬 */
+    margin-bottom: 7px;
+}
+
+.search-bar-input {
+    width: calc(100% - 100px); /* 검색 버튼 너비를 고려하여 동적으로 조정 */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px 0 0 8px; /* 왼쪽만 둥글게 */
+}
+
+.search-button {
+    width: 100px; /* 버튼의 고정 너비 */
+    padding: 10px 15px;
+    background-color: #065A91;
+    color: white;
+    border: none;
+    border-radius: 8px; /* 오른쪽만 둥글게 */
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+/* 그 외 스타일은 그대로 유지 */
+
+
+.search-button:hover {
+    background-color: #0E76A8;
+}
+
+/* 도시/나라별 도시 버튼 */
+.search-type-options {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    margin-top: 5px; /* 검색창과 버튼 사이 간격 */
+    margin-bottom: 10px;
+}
+
+.search-type-options button {
+    width: 100px;
+    padding: 5px;
+    margin-right: 10px; /* 우측 간격 */
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: bold; /* 글씨 두껍게 */
+    color: #999; /* 기본적으로 회색 */
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.search-type-options button.selected {
+    color: #000; /* 선택된 경우 검정색 */
+}
+
+.search-type-options button:hover {
+    color: #000; /* 선택 안된 경우 hover 시 검정색으로 변경 */
+}
+
+/* 결과 목록 */
+.result-list {
+    flex-grow: 1; /* 빈 공간을 채우도록 설정 */
+    text-align: left;
+    padding: 10px;
+    overflow-y: auto; /* 스크롤 가능 */
+    border-radius: 8px;
+    margin-bottom: 10px; /* 선택 완료 버튼과의 여백 */
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+    min-height: 60px; /* 각 아이템 고정 높이 */
+}
+.result-item.selected {
+    background-color: #c1c1c167; /* 선택된 항목의 배경 색 */
+}
+
+.city-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover; /* 이미지를 동그랗게 */
+    margin-right: 10px;
+}
+
+.city-name {
+    flex-grow: 1;
+    font-size: 16px;
+    text-align: left;
+}
+
+.select-button-city {
+    padding: 5px 8px; /* Smaller padding */
+    background-color: #d3d3d39d;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 20px; /* More rounded */
+    cursor: pointer;
+    font-size: 12px; /* Smaller font size */
+    margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
+}
+
+.select-button-city:selected {
+    background-color: #ffffff7e;
+}
+
+/* 빈 결과 */
+.empty-result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #999;
+    text-align: center;
+    height: 100%;
+}
+
+/* 선택 완료 버튼 */
+.save-button {
+    padding: 10px 20px;
+    background-color: #0E76A8;
+    color: rgba(248, 248, 248, 0.87);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: auto; /* 선택 완료 버튼을 맨 아래로 고정 */
+}
+
+.save-button:hover {
+    background-color: #065A91;
+}
+
+
+.save-button.active {
+    background-color: #0056b3; /* 선택된 도시가 있을 때 버튼 색상 */
+}
+

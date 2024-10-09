@@ -1,5 +1,6 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+//import { Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotificationProvider } from './context/NotificationContext';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -21,6 +22,13 @@ import CreateGroup from './pages/CreateGroup';
 import GroupMembers from './pages/GroupMembers';
 import InviteMember from './pages/InviteMember';
 import Notification from './pages/Notification';
+import CitySearch from './pages/Event/CitySearch';
+import Schedule from './pages/Schedule/Schedule';
+import ScheduleDetail from './pages/Schedule/ScheduleDetail';
+import AutoSearchPage from './pages/Schedule/AutoCompleteSearch';
+import RecommendedSearchPage from './pages/Schedule/RecommendationSearch';
+import PlaceDetail from './pages/Schedule/PlaceDetail';
+import Calendar from './pages/Event/Calendar';
 
 const App = () => {
   return (
@@ -47,6 +55,13 @@ const App = () => {
           <Route path="/group/:groupId/members" element={<GroupMembers />} />
           <Route path="/invite-member/:groupId" element={<InviteMember />} />
           <Route path="/notifications" element={<Notification />} />
+          <Route path="/citysearch" element={<CitySearch />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/scheduledetail" element={<ScheduleDetail />} />
+          <Route path="/autosearch/:eventId" element={<AutoSearchPage />} />
+          <Route path="/recommended/:eventId" element={<RecommendedSearchPage />} />
+          <Route path="/places/:placeId" element={<PlaceDetail />} />
         </Routes>
       </NotificationProvider>
   );
