@@ -19,6 +19,7 @@ const WeatherSearch = ({ onSearch }) => {
         onChange={(e) => setLocation(e.target.value)}
         placeholder="어디로 떠나시나요?"
       />
+      &nbsp;&nbsp;
       <button onClick={handleSearch}>검색</button>
     </div>
   );
