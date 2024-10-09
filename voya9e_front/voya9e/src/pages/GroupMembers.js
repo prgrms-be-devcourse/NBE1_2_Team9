@@ -36,7 +36,7 @@ const GroupMembers = () => {
     };
 
     const handleAddEvent = () => {
-        navigate(`/add-event/${groupId}`);
+        navigate(`/eventdetail/${groupId}`);
     };
 
     const handleAccountBook = () => {
@@ -48,33 +48,42 @@ const GroupMembers = () => {
     }
 
     return (
-        <div>
+        <div className='groupList'>
+            <div className='groupMemberList'>
             <h2>그룹 멤버 목록</h2>
-            <button onClick={handleAddMember} style={{marginLeft: '10px'}}>멤버 추가하기</button>
+            <button className='groupBtn' onClick={handleAddMember} style={{marginLeft: '10px'}}>멤버 추가하기</button>
+            </div>
             <ul>
                 {members.map(member => (
-                    <li key={member.id}>
+                    <li className='groupMemberLi' key={member.id}>
                         {member.username} ({getRoleName(member.role)})
                     </li>
                 ))}
             </ul>
+            
 
             <div style={{marginTop: '30px'}}>
+                <div className='groupMemberList'>
                 <h2>일정 목록</h2>
-                <button onClick={handleAddEvent} style={{marginLeft: '10px'}}>일정 추가하기</button>
-                <ul>
+                <button className='groupBtn' onClick={handleAddEvent} style={{marginLeft: '10px'}}>일정 추가하기</button>
+                </div>
+                {<ul>
                     {events.length > 0 ? (
-                        events.map(event => (
-                            <li key={event.eventId}>
-                                {event.title} - {new Date(event.date).toLocaleDateString()}
-                            </li>
-                        ))
+                        events.map(event => {
+                            console.log("Event data:", event); // 각 이벤트 데이터를 콘솔에 출력
+                            return (
+                                <li className='groupMemberLi' key={event.eventId}>
+                                    {event.eventName} <br></br>{event.city} <br></br>{event.startDate+"~"+event.endDate} {/* 날짜 형식 개선 */}
+                                </li>
+                            );
+                        })
                     ) : (
-                        <li>등록된 일정이 없습니다.</li>
+                        <li className='groupMemberLi'>등록된 일정이 없습니다.</li>
                     )}
-                </ul>
+
+                </ul>}
             </div>
-            <button onClick={handleAccountBook} style={{marginLeft: '10px'}}>가계부</button>
+            <button className='expenseBookBtn' onClick={handleAccountBook} style={{marginLeft: '10px'}}>가계부</button>
         </div>
     );
 };

@@ -38,13 +38,6 @@ public class GroupService {
     private final GroupInvitationRepository groupInvitationRepository;
     private final NotificationService notificationService;
 
-    // sendGroupNotification 메서드 수정: invitationId 추가
-    private void sendGroupNotification(String type, String message, Long senderId, Long receiverId, Long invitationId) {
-        NotificationDto notificationDto = new NotificationDto(type, message, senderId, receiverId, invitationId);
-        notificationService.sendNotification(notificationDto);
-    }
-
-    // 관리자 유저 정보 받아서 그룹 생성
     @Transactional
     public GroupDto createGroup(CreateGroupRequest request, Long creatorId) {
         User creator = findUserByIdOrThrowUserException(creatorId);
@@ -57,24 +50,22 @@ public class GroupService {
         GroupMembership membership = GroupMembership.builder()
                 .group(savedGroup)
                 .user(creator)
-                .role(GroupRole.ADMIN)//만든 사람은 처음에 관리자로 설정됨
+                .role(GroupRole.ADMIN)
                 .build();
         groupMembershipRepository.save(membership);
 
         return GroupDto.from(savedGroup);
     }
 
-    //groupId를 통해 group 조회
     public GroupDto getGroupById(Long id) {
         Group group = findGroupByIdOrThrowGroupException(id);
         return GroupDto.from(group);
     }
 
-    //사용자가 참여한 그룹의 리스트 조회
     public List<GroupDto> getUserGroups(Long userId) {
         return groupMembershipRepository.findByUser_Id(userId).stream()
-                .map(GroupMembership::getGroup)//User로 group을 찾음
-                .map(GroupDto::from)//그리고 dto로 변환
+                .map(GroupMembership::getGroup)
+                .map(GroupDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -94,7 +85,6 @@ public class GroupService {
         groupRepository.deleteById(id);
     }
 
-    //그룹에 멤버 추가 기능
     @Transactional
     public void inviteMemberToGroup(Long groupId, String email, Long adminId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
@@ -106,7 +96,6 @@ public class GroupService {
             throw new GroupException(ExceptionMessage.GROUP_ADMIN_ACCESS_ONLY);
         }
 
-        //추가하려고 하는데 해당 사용자가 이미 그룹에 속해있는 경우
         if (groupMembershipRepository.existsByGroupAndUser(group, invitee)) {
             throw new GroupException(ExceptionMessage.USER_ALREADY_IN_GROUP);
         }
@@ -117,13 +106,15 @@ public class GroupService {
                 .inviter(inviter)
                 .build();
 
-        GroupInvitation savedInvitation = groupInvitationRepository.save(invitation); // 초대 저장
+        GroupInvitation savedInvitation = groupInvitationRepository.save(invitation);
 
-        // 알림 전송 시 invitationId 포함
-        sendGroupNotification("INVITE", group.getGroupName() + " 그룹에 초대되셨습니다.", inviter.getUserId(), invitee.getUserId(), savedInvitation.getId());
+        notificationService.sendNotificationAsync(new NotificationDto("INVITE",
+                group.getGroupName() + " 그룹에 초대되셨습니다.",
+                inviter.getUserId(),
+                invitee.getUserId(),
+                savedInvitation.getId()));
     }
 
-    // 초대를 받은 유저가 초대를 수락했을 경우
     @Transactional
     public void acceptInvitation(Long invitationId, Long userId){
         GroupInvitation invitation = findInvitationByIdOrThrowException(invitationId);
@@ -132,7 +123,7 @@ public class GroupService {
         }
 
         invitation.accept();
-        groupInvitationRepository.save(invitation); // 상태 변경 후 저장
+        groupInvitationRepository.save(invitation);
 
         GroupMembership membership = GroupMembership.builder()
                 .group(invitation.getGroup())
@@ -141,8 +132,11 @@ public class GroupService {
                 .build();
         groupMembershipRepository.save(membership);
 
-        // 알림 전송 시 invitationId 포함
-        sendGroupNotification("ACCEPT", invitation.getInvitee().getUsername() +"님이 그룹에 참여했습니다.", invitation.getInvitee().getUserId(), invitation.getInviter().getUserId(), invitationId);
+        notificationService.sendNotificationAsync(new NotificationDto("ACCEPT",
+                invitation.getInvitee().getUsername() + "님이 그룹에 참여했습니다.",
+                invitation.getInvitee().getUserId(),
+                invitation.getInviter().getUserId(),
+                invitationId));
     }
 
     @Transactional
@@ -153,10 +147,13 @@ public class GroupService {
         }
 
         invitation.reject();
-        groupInvitationRepository.save(invitation); // 상태 변경 후 저장
+        groupInvitationRepository.save(invitation);
 
-        // 알림 전송 시 invitationId 포함
-        sendGroupNotification("REJECT", invitation.getInvitee().getUsername() +"님이 그룹 초대를 거절했습니다.", invitation.getInvitee().getUserId(), invitation.getInviter().getUserId(), invitationId);
+        notificationService.sendNotificationAsync(new NotificationDto("REJECT",
+                invitation.getInvitee().getUsername() + "님이 그룹 초대를 거절했습니다.",
+                invitation.getInvitee().getUserId(),
+                invitation.getInviter().getUserId(),
+                invitationId));
     }
 
     @Transactional
@@ -165,7 +162,6 @@ public class GroupService {
         User user = findUserByIdOrThrowUserException(userId);
         GroupMembership membership = findGroupMemberByIdThrowGroupException(group, user);
 
-        //만약 관리자가 역할을 변경하고자 할 때, 관리자가 1명이라면 역할을 바꾸지 못하도록 설정
         if (membership.getRole() == GroupRole.ADMIN && role != GroupRole.ADMIN) {
             List<GroupMembership> memberships = groupMembershipRepository.findByGroup(group);
             long adminCount = memberships.stream()
@@ -179,7 +175,6 @@ public class GroupService {
         membership.changeRole(role);
     }
 
-    //이거 관리자 전용하고 사용자의 자의 탈퇴 구분할지 결정
     @Transactional
     public void removeMemberFromGroup(Long groupId, Long userId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
@@ -189,7 +184,6 @@ public class GroupService {
         groupMembershipRepository.delete(membership);
     }
 
-    //그룹에 해당되는 멤버 정보들 검색
     public List<GroupMembershipDto> getGroupMembers(Long groupId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
 
@@ -197,8 +191,6 @@ public class GroupService {
                 .map(GroupMembershipDto::from)
                 .collect(Collectors.toList());
     }
-
-    //예외처리를 포함한 검색 함수들
 
     private User findUserByEmailOrThrowUserException(String email) {
         return userRepository.findByEmail(email)

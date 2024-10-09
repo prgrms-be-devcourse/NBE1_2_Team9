@@ -1,0 +1,149 @@
+.auto-complete-search {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 화면 전체 높이 사용 */
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    margin-bottom: 7px;
+}
+
+.search-bar input {
+    width: 100%; /* 검색창 너비 */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px; /* 둥글게 */
+}
+
+.recommendation-btn {
+    width: 20%;
+    padding: 5px 10px;
+    background-color: #008CFF;
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 5px; /* 검색창과 버튼 사이 간격 */
+}
+
+.recommendation-btn:hover {
+    background-color: #008CFF;
+}
+
+.result-list {
+    flex-grow: 1; /* 빈 공간을 채우도록 설정 */
+    text-align: left;
+    padding: 10px;
+    overflow-y: auto; /* 스크롤 가능 */
+    border-radius: 8px;
+    margin-bottom: 10px; /* 선택 완료 버튼과의 여백 */
+}
+
+.city-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* 이미지를 동그랗게 */
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.result-item-auto {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+    min-height: 60px; /* 각 아이템 고정 높이 */
+}
+
+.result-item-auto.selected {
+    background-color: #c1c1c167; /* 선택된 항목의 배경 색 */
+}
+
+.city-name {
+    flex-grow: 1; /* 남은 공간을 차지 */
+    font-size: 14px; /* 폰트 크기를 작게 */
+    text-align: left;
+    max-width: 250px; /* 최대 너비 제한 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 "..."로 표시 */
+    font-weight: bold; /* 두꺼운 폰트 */
+    color: black; /* 검정색 */
+    margin: 0; /* 기본 마진 제거 */
+}
+
+.select-button-auto {
+    padding: 5px 8px; /* Smaller padding */
+    background-color: #d3d3d39d;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 20px; /* More rounded */
+    cursor: pointer;
+    font-size: 12px; /* Smaller font size */
+    margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
+}
+
+
+.select-button-auto:selected {
+    background-color: #ffffff7e; /* 선택된 배경 색 */
+    color: white; /* 선택된 텍스트 색 */
+}
+
+
+
+.save-button-cal {
+    padding: 10px 20px;
+    background-color: #008CFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: auto; /* 선택 완료 버튼을 맨 아래로 고정 */
+    width: 100%; /* 버튼의 고정 너비 설정 */
+}
+
+.save-button:hover {
+    background-color: #065A91;
+}
+
+
+.header {
+    display: flex; /* 플렉스 박스를 사용하여 수평 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: space-between; /* 좌우 간격 조정 */
+}
+
+.title {
+    color: #008CFF; /* 기존 텍스트 색상 */
+    font-size: 36px; /* 제목 크기 */
+    margin: 0; /* 기본 마진 제거 */
+}
+
+.small-button-auto{
+    padding: 5px 10px; /* 버튼 크기 조정 */
+    font-size: 12px; /* 글자 크기 작게 */
+    border: 1px solid #065A91; /* 테두리 추가 */
+    background-color: transparent; /* 배경 없음 */
+    color: #065A91; /* 글자 색상 */
+    border-radius: 8px; /* 둥글게 */
+    cursor: pointer; /* 커서 포인터로 변경 */
+    margin-left: 10px; /* Voyage 텍스트와의 간격 */
+    margin-right: 10px; /* Voyage 텍스트와의 간격 */
+}
+
+.small-button-auto:hover {
+    background-color: rgba(14, 118, 168, 0.1); /* 호버 시 배경 색상 */
+}

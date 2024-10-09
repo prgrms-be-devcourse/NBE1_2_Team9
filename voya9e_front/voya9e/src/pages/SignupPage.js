@@ -55,7 +55,6 @@ const SignupPage = () => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <br/><br/>
         <button className='userButton' type="submit">회원가입 하기</button>
       </form>
     </div>

@@ -1,49 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { fetchNotifications, acceptInvitation, rejectInvitation, markNotificationAsRead } from '../services/api';
+import React, {useEffect} from 'react';
+import {acceptInvitation, rejectInvitation, markNotificationAsRead, markAllNotificationsAsRead} from '../services/api';
+import { useNotification } from '../context/NotificationContext';
+import './Group.css';
 
 const Notification = () => {
-    const [notifications, setNotifications] = useState([]);
-    const userId = localStorage.getItem('userId');
+    const { notifications, markAsRead } = useNotification();
 
     useEffect(() => {
-        const loadInitialNotifications = async () => {
+        const markAllAsRead = async () => {
             try {
-                const fetchedNotifications = await fetchNotifications();
-                setNotifications(fetchedNotifications);
-            } catch (error) {
-                console.error('초기 알림 로드 중 오류 발생:', error);
+                await markAllNotificationsAsRead();
+            } catch (err) {
+                console.error('모든 알림 읽음 처리중 오류 발생:', err);
             }
         };
-
-        loadInitialNotifications();
-
-        const socketUrl = 'http://localhost:8080/ws';
-        const socket = new SockJS(socketUrl);
-
-        const stompClient = new Client({
-            webSocketFactory: () => socket,
-            reconnectDelay: 5000,
-            onConnect: () => {
-                console.log('웹소켓 연결 성공');
-                stompClient.subscribe(`/topic/user/${userId}`, (message) => {
-                    console.log('새 알림 수신:', message.body);
-                    const notification = JSON.parse(message.body);
-                    setNotifications(prevNotifications => [...prevNotifications, notification]);
-                });
-            },
-            onStompError: (frame) => {
-                console.error('STOMP 오류 발생', frame.headers['message']);
-            }
-        });
-
-        stompClient.activate();
-
-        return () => {
-            if (stompClient) stompClient.deactivate();
-        };
-    }, [userId]);
+        markAllAsRead();
+    }, []);
 
     const handleAccept = async (notification) => {
         if (!notification.invitationId) {
@@ -53,8 +25,7 @@ const Notification = () => {
         try {
             await acceptInvitation(notification.invitationId);
             await markNotificationAsRead(notification.id);
-            alert('초대를 수락했습니다.');
-            removeNotification(notification.id);
+            markAsRead(notification.id);
         } catch (err) {
             console.error('수락 중 오류 발생:', err);
         }
@@ -68,35 +39,39 @@ const Notification = () => {
         try {
             await rejectInvitation(notification.invitationId);
             await markNotificationAsRead(notification.id);
-            alert('초대를 거절했습니다.');
-            removeNotification(notification.id);
+            markAsRead(notification.id);
         } catch (err) {
             console.error('거절 중 오류 발생:', err);
         }
     };
 
-    const removeNotification = (notificationId) => {
-        setNotifications((prevNotifications) =>
-            prevNotifications.filter(notification => notification.id !== notificationId)
-        );
-    };
-
     return (
-        <div>
+        <div className='notification-container'>
             <h2>알림</h2>
-            <ul>
-                {notifications.map((notification, index) => (
-                    <li key={index}>
-                        {notification.message}
-                        {notification.type === 'INVITE' && (
-                            <>
-                                <button onClick={() => handleAccept(notification)}>수락</button>
-                                <button onClick={() => handleReject(notification)}>거절</button>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <div className='notification'>
+                <ul>
+                    {notifications
+                        .slice()
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 최신순 정렬
+                        .map((notification) => (
+                            <li key={notification.id} className="notification-item">
+                                <p className="notification-message">{notification.message}</p>
+                                {notification.type === 'INVITE' && !notification.read && (
+                                    <div className="button-group">
+                                        <button className="accept-btn" onClick={() => handleAccept(notification)}>수락</button>
+                                        <button className="reject-btn" onClick={() => handleReject(notification)}>거절</button>
+                                    </div>
+                                )}
+                                {notification.type === 'ACCEPT' && (
+                                    <span className="status-text">초대 수락 완료</span>
+                                )}
+                                {notification.type === 'REJECT' && (
+                                    <span className="status-text">초대 거절 완료</span>
+                                )}
+                            </li>
+                        ))}
+                </ul>
+            </div>
         </div>
     );
 };

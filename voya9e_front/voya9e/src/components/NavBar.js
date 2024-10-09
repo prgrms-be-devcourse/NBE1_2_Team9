@@ -1,61 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { logout, isAuthenticated, fetchUnreadNotificationCount } from '../services/api';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import {logout, isAuthenticated, fetchUnreadNotificationCount} from '../services/api';
+import { useNotification } from '../context/NotificationContext';
 
 const NavBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
+  const { unreadCount, updateUnreadCount } = useNotification();
 
   useEffect(() => {
     const checkAuth = async () => {
       const authenticated = await isAuthenticated();
       setLoggedIn(authenticated);
     };
-    checkAuth();
 
-    if (loggedIn) {
-      // 초기 알림 개수 로드
-      const loadNotificationCount = async () => {
-        try {
-          const count = await fetchUnreadNotificationCount();
-          setNotificationCount(count);
-        } catch (error) {
-          console.error('알림 개수 로드 중 오류 발생:', error);
-        }
-      };
-      loadNotificationCount();
-
-      // 웹소켓 연결
-      const socketUrl = 'http://localhost:8080/ws';
-      const socket = new SockJS(socketUrl);
-
-      const stompClient = new Client({
-        webSocketFactory: () => socket,
-        reconnectDelay: 5000,
-        onConnect: () => {
-          console.log('웹소켓 연결 성공');
-          stompClient.subscribe(`/topic/user/${userId}`, (message) => {
-            console.log('새 알림 수신:', message.body);
-            setNotificationCount(prevCount => prevCount + 1);
-          });
-        },
-        onStompError: (frame) => {
-          console.error('STOMP 오류 발생', frame.headers['message']);
-        }
-      });
-
-      stompClient.activate();
-
-      return () => {
-        if (stompClient) stompClient.deactivate();
-      };
+    const fetchUnreadCount = async () => {
+      const count = await fetchUnreadNotificationCount();
+      updateUnreadCount(count);
     }
-  }, [loggedIn, userId]);
+    checkAuth();
+    if(loggedIn){
+      fetchUnreadCount();
+    }
+  }, [loggedIn, updateUnreadCount]);
 
   const handleLogout = () => {
     logout();
@@ -64,38 +32,39 @@ const NavBar = () => {
   };
 
   return (
-      <Nav>
-        <NavList>
-          <NavItem>
-            <StyledLink to="/">Home</StyledLink>
-          </NavItem>
+    <Nav>
+      <NavList>
+        <NavItem>
+          <StyledLink to="/">Home</StyledLink>
+        </NavItem>
 
-          {loggedIn ? (
-              <>
-                <NavItem>
-                  <StyledLink to="/mypage">MyPage</StyledLink>
-                </NavItem>
-                <NavItem>
-                  <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
-                </NavItem>
-                <NavItem>
-                  <StyledLink to="/notifications">
-                    알림 {notificationCount > 0 && `(${notificationCount})`}
-                  </StyledLink>
-                </NavItem>
-              </>
-          ) : (
-              <>
-                <NavItem>
-                  <StyledLink to="/login">Login</StyledLink>
-                </NavItem>
-                <NavItem>
-                  <StyledLink to="/signup">Signup</StyledLink>
-                </NavItem>
-              </>
-          )}
-        </NavList>
-      </Nav>
+        {loggedIn ? (
+          <>
+            <NavItem>
+              <StyledLink to="/mypage">MyPage</StyledLink>
+            </NavItem>
+            <NavItem>
+              <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+            </NavItem>
+            <NavItem>
+              <StyledLink to="/notifications">
+                알림
+                {unreadCount > 0 && <NotificationBadge>{unreadCount > 99 ? '99+' : unreadCount}</NotificationBadge>}
+              </StyledLink>
+            </NavItem>
+          </>
+        ) : (
+          <>
+            <NavItem>
+              <StyledLink to="/login">Login</StyledLink>
+            </NavItem>
+            <NavItem>
+              <StyledLink to="/signup">Signup</StyledLink>
+            </NavItem>
+          </>
+        )}
+      </NavList>
+    </Nav>
   );
 };
 
@@ -117,7 +86,9 @@ const NavList = styled.ul`
   padding: 0;
 `;
 
-const NavItem = styled.li``;
+const NavItem = styled.li`
+  position: relative; /* 배지 위치를 설정하기 위해 relative 추가 */
+`;
 
 const StyledLink = styled(Link)`
   color: #fff;
@@ -125,13 +96,14 @@ const StyledLink = styled(Link)`
   font-size: 1.2rem;
   font-weight: bold;
   transition: color 0.3s ease;
+  position: relative;
 
   &:hover {
     color: #E0E0E0;
   }
 `;
 
-const LogoutButton = styled.button`
+const LogoutButton = styled.a`
   background: none;
   border: none;
   color: #fff;
@@ -145,4 +117,21 @@ const LogoutButton = styled.button`
   }
 `;
 
+const NotificationBadge = styled.span`
+  background-color: red;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 50%;
+  position: absolute;
+  top: -0.5rem;
+  right: -1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 20px;
+  height: 20px;
+`;
+
 export default NavBar;
+

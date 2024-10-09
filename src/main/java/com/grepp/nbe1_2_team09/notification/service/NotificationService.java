@@ -71,6 +71,9 @@ public class NotificationService {
         if (notification != null) {
             notification.setRead(true);
             notificationRepository.save(notification);
+
+            int unreadCount = getUnreadCount(userId);
+            messagingTemplate.convertAndSend("/topic/user/" + userId + "/unreadCount", unreadCount);
         } else {
             log.warn("Notification not found or not belonging to user. ID: {}, User: {}", notificationId, userId);
         }
@@ -80,5 +83,6 @@ public class NotificationService {
     public void markAllAsRead(Long userId) {
         notificationRepository.markAllAsReadBulk(userId);
         log.info("Marked all notifications as read for user: {}", userId);
+        messagingTemplate.convertAndSend("/topic/user/" + userId + "/unreadCount", 0);
     }
 }

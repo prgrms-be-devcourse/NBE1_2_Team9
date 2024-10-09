@@ -72,10 +72,10 @@ const Chat = () => {
 
     return (
         <div style={styles.chatContainer}>
-            <div style={styles.header}>
+            {/* <div style={styles.header}>
                 <button style={styles.backButton} onClick={handleGoBack}> 뒤로가기 </button>
                 <div style={styles.voya9e}>voyage</div>
-            </div>
+            </div> */}
             <div style={styles.chatHistory} ref={chatContainerRef}>
                 {chatHistory.map((chat, index) => (
                     <div
@@ -121,8 +121,8 @@ const styles = {
         display: 'flex',
         position: 'relative',
         flexDirection: 'column',
-        height: '100vh',
-        maxWidth: '500px',
+        height: '91vh',
+        // maxWidth: '500px',
         margin: '0 auto',
         border: '1px solid #ccc',
         borderRadius: '8px',

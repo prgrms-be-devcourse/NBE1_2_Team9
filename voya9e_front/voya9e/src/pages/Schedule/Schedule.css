@@ -1,0 +1,69 @@
+/* 테이블 전체 설정 */
+table {
+    width: 80%;
+    border-collapse: collapse; /* 테이블의 경계 간격 제거 */
+    margin: auto; /* 테이블을 화면 가운데로 배치 */
+}
+
+/* 테이블 헤더 및 셀 설정 */
+th, td {
+    border: 1px solid #ccc; /* 셀 경계 설정 */
+    padding: 10px; /* 셀 내 여백 설정 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+th {
+    background-color: #f4f4f4; /* 헤더 배경색 */
+}
+
+/* 날짜 셀 설정 */
+td.date-cell {
+    user-select: none; /* 텍스트 선택 방지 */
+    padding: 0; /* 패딩 제거 */
+    position: relative; /* 자식 요소의 절대 위치를 위한 설정 */
+}
+
+/* 이벤트 이름을 위한 div 스타일 설정 */
+td.date-cell .event-name {
+    position: absolute; /* 절대 위치 지정 */
+    left: 50%; /* 수평 중앙 정렬 */
+    top: 50%; /* 수직 중앙 정렬 */
+    transform: translate(-50%, -50%); /* 중앙 정렬을 위한 변환 */
+    font-size: 1vw; /* 글씨 크기를 viewport width에 비례하여 설정 */
+    width: 100%; /* 너비 100% */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    pointer-events: none; /* 마우스 이벤트 무시 (드래그 기능 유지) */
+}
+
+td.date-cell div {
+    height: 100%; /* 전체 셀의 높이 사용 */
+    display: flex; /* 플렉스 박스 사용 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    border-bottom: 1px solid #ccc; /* 하단 경계선 설정 */
+}
+
+/* 선택된 셀의 배경색 설정 */
+td.date-cell.selected {
+    background-color: #90caf9; /* 선택된 셀의 배경색 */
+    cursor: not-allowed; /* 커서를 금지 기호로 변경 */
+}
+
+/* 선택된 div의 배경색 및 텍스트 스타일 설정 */
+td.date-cell div.selected {
+    background-color: #90caf9; /* 선택된 div의 배경색 */
+    color: #000; /* 선택된 div의 텍스트 색상 */
+    font-weight: bold; /* 선택된 div의 텍스트 두껍게 */
+}
+
+/* 마우스를 올렸을 때의 셀 배경색 설정 */
+td.date-cell div:hover {
+    background-color: #e0e0e0; /* 마우스를 올렸을 때의 배경색 */
+    cursor: pointer; /* 커서를 포인터로 변경 */
+}
+
+/* 선택된 div의 텍스트를 숨김 처리 */
+td.date-cell div::after {
+    content: attr(data-time); /* 텍스트 제거해도 데이터를 유지 */
+    visibility: hidden; /* 텍스트가 화면에 보이지 않도록 처리 */
+}
