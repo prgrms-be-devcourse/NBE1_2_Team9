@@ -7,7 +7,7 @@ const MainPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [searchLocation, setSearchLocation] = useState('');  // 검색할 도시 상태
+  const [searchLocation, setSearchLocation] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const MainPage = () => {
   // 날씨 검색 핸들러
   const handleWeatherSearch = async () => {
     try {
-      const data = await getWeatherForecast(searchLocation);  // 검색할 도시로 API 호출
+      const data = await getWeatherForecast(searchLocation);
       if (data && data.list && data.list.length > 0) {
         setWeatherData(data);
         setErrorMessage('');
@@ -61,8 +61,9 @@ const MainPage = () => {
                     value={searchLocation}
                     onChange={(e) => setSearchLocation(e.target.value)}
                 />
-                <SearchButton onClick={handleWeatherSearch}>날씨 검색</SearchButton><br/>
-
+                <SearchButton onClick={handleWeatherSearch}>날씨 검색</SearchButton>
+                <br/>
+                
                 <TravelOptions>
                   <OptionButton onClick={handleGroupView}>그룹 보기</OptionButton>
                   <OptionButton onClick={handleChatBot}>챗봇</OptionButton>
@@ -140,6 +141,12 @@ const OptionButton = styled.button`
   }
 `;
 
+const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 // 검색 입력 필드 스타일링
 const SearchInput = styled.input`
   padding: 0.8rem;
@@ -165,6 +172,8 @@ const SearchButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
+  height: calc(100%);
 
   &:hover {
     background-color: #007ACC;
