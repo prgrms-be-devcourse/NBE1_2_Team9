@@ -29,10 +29,11 @@ const InviteMember = () => {
 
     return (
         <div className='CreateGroup'>
+            <div className='CreateGrouppp'>
             <h2>멤버 초대</h2>
             <form className='createGroupForm' onSubmit={handleSubmit}>
                 <div>
-                    <label className='createGroupTitle'>이메일:</label>
+                    <label className='createGroupTitle'>이메일 </label>
                     <input
                         type="email"
                         value={email}
@@ -43,6 +44,7 @@ const InviteMember = () => {
                 {message && <div>{message}</div>}
                 <button  className='createGroupBtn' type="submit">초대하기</button>
             </form>
+            </div>
         </div>
     );
 };

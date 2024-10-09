@@ -51,10 +51,14 @@ const generateTimeRows = (startTime, endTime, dates, events, handleMouseEvents) 
 
             // 이벤트 확인
             const event = events.find(event => {
-                const eventDate = event.visitStartTime.split('T')[0];
-                const eventStart = new Date(event.visitStartTime);
-                const eventEnd = new Date(event.visitEndTime);
-                return eventDate === date && eventStart <= new Date(`${date}T${formattedHour}:00`) && eventEnd > new Date(`${date}T${formattedHour}:00`);
+                console.log(event)
+                if (event && event.visitStartTime && event.visitEndTime) {
+                    const eventDate = event.visitStartTime.split('T')[0];
+                    const eventStart = new Date(event.visitStartTime);
+                    const eventEnd = new Date(event.visitEndTime);
+                    return eventDate === date && eventStart <= new Date(`${date}T${formattedHour}:00`) && eventEnd > new Date(`${date}T${formattedHour}:00`);
+                }
+                return false; // event가 유효하지 않으면 false 반환
             });
 
             const isHalfHourEvent = events.find(event => {
@@ -178,11 +182,18 @@ const Schedule = () => {
     // 저장된 이벤트를 가져오는 함수
     const fetchSavedEvents = async () => {
         try {
-            const response = await fetch(`/events/${eventData.id}/locations`); // 예시 URL, eventId는 eventData.id로 설정
+            const response = await fetch(`/events/${eventData.id}/locations`);
             const data = await response.json();
-            console.log("data", data);
-            const events = Array.isArray(data) ? data : [data]; // 데이터 형식이 맞지 않을 경우를 대비하여 배열로 변환
-            setEvents(events); // 상태에 저장
+            console.log("data", data); // 데이터를 로그에 출력하여 확인
+            
+            // 이벤트가 있는 경우에만 상태 업데이트
+            if (data && Array.isArray(data) && data.length > 0) {
+                const events = data; // 이미 배열이므로 그대로 사용
+                console.log("events", events); // 변환된 events를 로그에 출력하여 확인
+                setEvents(events);
+            } else {
+                console.log("이벤트가 없습니다."); // 이벤트가 없는 경우 로그에 출력
+            }
         } catch (error) {
             console.error('이벤트를 가져오는 중 오류 발생:', error);
         }

@@ -38,9 +38,9 @@ const MainPage = () => {
           <WelcomeText>{`${userInfo.username}님 환영합니다!`}</WelcomeText>
           <SearchInput type="text" placeholder="어디로 떠나시나요?" />
           <TravelOptions>
-            <OptionButton>찜한 여행지</OptionButton>
+            {/* <OptionButton>찜한 여행지</OptionButton> */}
               <OptionButton onClick={handleGroupView}>그룹 보기</OptionButton>
-            <OptionButton>찜한 장소</OptionButton>
+            {/* <OptionButton>찜한 장소</OptionButton> */}
             <OptionButton onClick={handleChatBot}>챗봇</OptionButton>
             <OptionButton onClick={handleExchangeRate}>환율</OptionButton>
           </TravelOptions>

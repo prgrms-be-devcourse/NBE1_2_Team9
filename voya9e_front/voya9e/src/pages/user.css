@@ -51,11 +51,11 @@
     }
 } */
 
-.mypageBtn:hover {
+.userButton:hover {
     background-color: #007ACC;
 }
 
-.mypageBtn{
+.userButton{
     margin-top: 40px;
     width: 100%; /* 인풋과 동일한 너비 설정 */
     padding: 0.5rem;

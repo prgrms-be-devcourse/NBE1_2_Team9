@@ -1,6 +1,7 @@
 import React from 'react';
 import { acceptInvitation, rejectInvitation, markNotificationAsRead } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
+import './Group.css';
 
 const Notification = () => {
     const { notifications, markAsRead } = useNotification();
@@ -34,27 +35,29 @@ const Notification = () => {
     };
 
     return (
-        <div>
+        <div className='notification-container'>
             <h2>알림</h2>
-            <ul>
-                {notifications.map((notification) => (
-                    <li key={notification.id}>
-                        {notification.message}
-                        {notification.type === 'INVITE' && !notification.read && (
-                            <>
-                                <button onClick={() => handleAccept(notification)}>수락</button>
-                                <button onClick={() => handleReject(notification)}>거절</button>
-                            </>
-                        )}
-                        {notification.type === 'ACCEPT' && (
-                            <span>초대 수락 완료</span>
-                        )}
-                        {notification.type === 'REJECT' && (
-                            <span>초대 거절 완료</span>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <div className='notification'>
+                <ul>
+                    {notifications.map((notification) => (
+                        <li key={notification.id} className="notification-item">
+                            <p className="notification-message">{notification.message}</p>
+                            {notification.type === 'INVITE' && !notification.read && (
+                                <div className="button-group">
+                                    <button className="accept-btn" onClick={() => handleAccept(notification)}>수락</button>
+                                    <button className="reject-btn" onClick={() => handleReject(notification)}>거절</button>
+                                </div>
+                            )}
+                            {notification.type === 'ACCEPT' && (
+                                <span className="status-text">초대 수락 완료</span>
+                            )}
+                            {notification.type === 'REJECT' && (
+                                <span className="status-text">초대 거절 완료</span>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };

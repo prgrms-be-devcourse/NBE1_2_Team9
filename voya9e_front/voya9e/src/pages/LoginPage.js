@@ -41,8 +41,6 @@ const LoginPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <br/>
-        <br/>
         <button className='userButton' type="submit">로그인</button>
       </form>
       <br/>

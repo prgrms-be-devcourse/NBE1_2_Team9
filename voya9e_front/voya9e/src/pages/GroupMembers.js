@@ -67,7 +67,7 @@ const GroupMembers = () => {
                 <h2>일정 목록</h2>
                 <button className='groupBtn' onClick={handleAddEvent} style={{marginLeft: '10px'}}>일정 추가하기</button>
                 </div>
-                <ul>
+                {/* <ul>
                     {events.length > 0 ? (
                         events.map(event => (
                             <li className='groupMemberLi' key={event.eventId}>
@@ -77,7 +77,7 @@ const GroupMembers = () => {
                     ) : (
                         <li className='groupMemberLi' >등록된 일정이 없습니다.</li>
                     )}
-                </ul>
+                </ul> */}
             </div>
             <button className='expenseBookBtn' onClick={handleAccountBook} style={{marginLeft: '10px'}}>가계부</button>
         </div>
