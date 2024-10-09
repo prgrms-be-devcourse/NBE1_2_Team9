@@ -1,77 +1,73 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // useNavigate로 변경
-import './CitySearch.css'; // 별도의 CSS 파일 사용
+import { useNavigate, useLocation } from 'react-router-dom';
+import './CitySearch.css';
 
 function CitySearch() {
-    const navigate = useNavigate(); // useNavigate 훅 사용
-    const [searchType, setSearchType] = useState('city'); // 'city' 또는 'country'
+    const navigate = useNavigate();
+    const location = useLocation(); // location에서 상태를 받아옵니다.
+    const [searchType, setSearchType] = useState('city');
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
-    const [selectedCity, setSelectedCity] = useState(null); // 선택된 도시를 저장하는 상태
+    const [selectedCity, setSelectedCity] = useState(null);
+    const groupId = location.state?.groupId; // 이전 페이지에서 그룹 아이디를 가져옵니다.
 
-    // API 검색 호출 함수
     const search = (query) => {
         const url = searchType === 'city' ? '/api/cities/search' : '/api/cities/country';
         axios.get(url, { params: { input: query } })
             .then(response => {
-                setResults(response.data); // 결과를 목록에 바로 반영
+                setResults(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     };
 
-    // 검색어가 변경될 때마다 API 호출 (도시 검색일 경우)
     const handleInputChange = (e) => {
         const inputValue = e.target.value;
         setQuery(inputValue);
 
         if (searchType === 'city' && inputValue.length > 0) {
-            search(inputValue); // 입력이 있을 때마다 검색 (도시 검색일 때만)
+            search(inputValue);
         } else if (inputValue.length === 0) {
-            setResults([]); // 검색어가 없으면 목록을 비움
+            setResults([]);
         }
     };
 
-    // 검색 타입이 변경될 때 (도시 검색 <-> 나라별 도시 검색), 검색어와 결과 초기화
     const handleSearchTypeChange = (type) => {
         setSearchType(type);
-        setQuery(''); // 검색창 초기화
-        setResults([]); // 검색 결과 초기화
-        setSelectedCity(null); // 선택된 도시 초기화
+        setQuery('');
+        setResults([]);
+        setSelectedCity(null);
     };
 
-    // 도시 선택/취소 (단일 선택)
     const toggleSelection = (city) => {
-        const cityName = searchType === 'city' ? city.split(',')[0] : city; // 도시 검색일 때만 ',' 기준으로 첫 번째 텍스트 가져오기
-        setSelectedCity(cityName === selectedCity ? null : cityName); // 같은 도시 선택 시 해제
+        const cityName = searchType === 'city' ? city.split(',')[0] : city;
+        setSelectedCity(cityName === selectedCity ? null : cityName);
     };
 
     // 선택 완료 버튼 클릭 시
     const saveSelection = () => {
         if (selectedCity) {
-            console.log('선택된 도시:', selectedCity);
+            // 선택된 도시를 sessionStorage에 저장
+            sessionStorage.setItem('cityData', JSON.stringify({ selectedCity }));
 
-            // 캘린더 페이지로 이동하면서 선택된 도시 정보 전달
-            navigate('/calendar', { state: { selectedCity } }); // navigate로 변경
+            // groupId가 있는 경우 URL에 추가
+            navigate(`/eventdetail/${groupId}`, { state: { selectedCity, groupId } });
         } else {
-            alert('도시를 선택하세요.'); // 선택되지 않았을 경우 경고창 표시
+            alert('도시를 선택하세요.');
         }
     };
 
-    // 나라별 검색 버튼 클릭 시
     const handleSearchButtonClick = () => {
         if (searchType === 'country' && query.length > 0) {
-            search(query); // 검색 버튼을 눌렀을 때 API 호출 (나라별 검색일 때)
+            search(query);
         }
     };
 
     return (
         <div className="city-search">
             <h1>voyage</h1>
-
-            {/* 검색창 */}
             <div className="search-bar">
                 <input
                     type="text"
@@ -82,11 +78,10 @@ function CitySearch() {
                 {searchType === 'country' && (
                     <button onClick={handleSearchButtonClick} className="search-button">
                         검색
-                    </button> // 나라별 검색일 때만 검색 버튼 표시
+                    </button>
                 )}
             </div>
 
-            {/* 검색 타입 선택 */}
             <div className="search-type-options">
                 <button className={searchType === 'city' ? 'selected' : ''} onClick={() => handleSearchTypeChange('city')}>
                     도시
@@ -96,26 +91,25 @@ function CitySearch() {
                 </button>
             </div>
 
-            {/* 검색 결과 목록 */}
             <div className="result-list">
                 {results.length === 0 ? (
                     <div className="empty-result">검색 결과가 없습니다</div>
                 ) : (
                     results.map((result) => {
-                        const cityName = searchType === 'city' ? result.description.split(',')[0] : result.description; // 도시 검색일 때만 ',' 기준으로 첫 번째 텍스트 가져오기
+                        const cityName = searchType === 'city' ? result.description.split(',')[0] : result.description;
                         return (
                             <div
                                 key={result.placeId}
-                                className={`result-item ${selectedCity === cityName ? 'selected' : ''}`} // 선택된 상태에 따라 배경 색상 변경
-                                onClick={(e) => e.stopPropagation()} // 클릭 시 상세 정보 이동 방지
+                                className={`result-item ${selectedCity === cityName ? 'selected' : ''}`}
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 <span className="city-name">{result.description}</span>
                                 <button
                                     onClick={(e) => {
-                                        e.stopPropagation(); // 클릭 시 상세 정보 이동 방지
-                                        toggleSelection(cityName); // 선택 토글
+                                        e.stopPropagation();
+                                        toggleSelection(cityName);
                                     }}
-                                    className={`select-button-city ${selectedCity === cityName ? 'selected' : ''}`} // 선택된 상태에 따라 배경 색상 변경
+                                    className={`select-button-city ${selectedCity === cityName ? 'selected' : ''}`}
                                 >
                                     {selectedCity === cityName ? '선택됨' : '선택'}
                                 </button>
@@ -125,7 +119,6 @@ function CitySearch() {
                 )}
             </div>
 
-            {/* 선택 완료 버튼 */}
             <button className="save-button" onClick={saveSelection}>
                 선택 완료
             </button>
