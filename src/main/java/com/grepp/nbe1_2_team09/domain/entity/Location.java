@@ -3,6 +3,7 @@ package com.grepp.nbe1_2_team09.domain.entity;
 import com.grepp.nbe1_2_team09.domain.entity.event.EventLocation;
 import jakarta.persistence.*;
 import lombok.*;
+import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,10 +34,7 @@ public class Location {
     @Column(precision = 3, scale = 2)
     private BigDecimal rating;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LocationType type;
-
+    @Column(columnDefinition = "TEXT")
     private String photo;
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -54,13 +52,12 @@ public class Location {
     //비즈니스 메서드
 
     @Builder
-    public Location(String placeName, BigDecimal latitude, BigDecimal longitude, String address, BigDecimal rating, LocationType type,String photo, EventLocation eventLocation) {
+    public Location(String placeName, BigDecimal latitude, BigDecimal longitude, String address, BigDecimal rating,String photo, EventLocation eventLocation) {
         this.placeName = placeName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.address = address;
         this.rating = rating;
-        this.type = type;
         this.photo = photo;
 
     }

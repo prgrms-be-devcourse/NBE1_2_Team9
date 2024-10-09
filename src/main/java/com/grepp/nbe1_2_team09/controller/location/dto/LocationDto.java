@@ -12,7 +12,6 @@ public record LocationDto(
         BigDecimal longitude,
         String address,
         BigDecimal rating,
-        LocationType type,
         String photo
 ) {
     public static LocationDto fromEntity(Location location){
@@ -23,7 +22,6 @@ public record LocationDto(
                 location.getLongitude(),
                 location.getAddress(),
                 location.getRating(),
-                location.getType(),
                 location.getPhoto()
         );
     }

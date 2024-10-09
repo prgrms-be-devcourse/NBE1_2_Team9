@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap'); /* Google Font */
+
+.recommendation-search {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 화면 전체 높이 사용 */
+}
+
+.place-types, .sort-options {
+    margin: 10px 0;
+}
+
+.place-types button,
+.sort-options button {
+    margin-right: 5px;
+    padding: 8px;
+    background-color: #e7e7e7;
+    color: rgba(151, 150, 150, 0.836);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.place-types button.selected,
+.sort-options button.selected {
+    background-color: #0E76A8; /* 선택된 버튼 스타일 */
+    color: rgba(255, 255, 255, 0.836);
+}
+
+.place-list {
+    margin: 10px 0;
+    flex: 1;
+    overflow-y: auto; /* 스크롤 가능 */
+}
+
+.place-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.place-item.selected {
+    background-color: #c1c1c167; /* 선택된 항목의 배경 색 */
+}
+
+
+
+.place-name {
+    font-weight: bold; /* 두꺼운 폰트 */
+    color: black; /* 검정색 */
+    margin: 0; /* 기본 마진 제거 */
+}
+
+.place-image-container {
+    width: 80px; /* 고정 너비 */
+    height: 80px; /* 고정 높이 */
+    overflow: hidden; /* 내용이 범위를 넘지 않도록 */
+    border-radius: 4px; /* 둥글게 */
+    margin-right: 10px; /* 오른쪽 여백 */
+}
+
+.place-image-reco{
+    width: 100%; /* 부모 요소의 너비에 맞추기 */
+    height: 70px; /* 고정된 높이 */
+    border-radius: 8px;
+    margin: 15px 0;
+    object-fit: cover; /* 비율을 유지하며 잘라냄 */
+}
+
+
+.select-button-reco {
+    padding: 5px 8px; /* Smaller padding */
+    background-color: #d3d3d39d;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 20px; /* More rounded */
+    cursor: pointer;
+    font-size: 12px; /* Smaller font size */
+    margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
+}
+
+
+.select-button-reco:selected {
+    background-color: #ffffff7e; /* 선택된 배경 색 */
+    color: white; /* 선택된 텍스트 색 */
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif; /* 전체 폰트 변경 */
+}
+.title-reco {
+    color: #212121;
+    font-size: 27px;
+    margin: 0;
+}

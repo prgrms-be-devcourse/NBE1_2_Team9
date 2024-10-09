@@ -1,8 +1,10 @@
 package com.grepp.nbe1_2_team09.domain.service.city;
 
 import com.grepp.nbe1_2_team09.controller.city.dto.CityResponse;
+import com.grepp.nbe1_2_team09.controller.location.dto.PlaceDetailResponse;
 import com.grepp.nbe1_2_team09.controller.location.dto.api.GooglePlacesAutocompleteResponse;
 import com.grepp.nbe1_2_team09.controller.location.dto.api.GooglePlacesNearbyResponse;
+import com.grepp.nbe1_2_team09.controller.location.dto.api.PlaceDetailApiResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,5 +44,7 @@ public class CityApiService {
                 .map(prediction -> new CityResponse(prediction.place_id(), prediction.name()))
                 .collect(Collectors.toList());
     }
+
+
 }
 

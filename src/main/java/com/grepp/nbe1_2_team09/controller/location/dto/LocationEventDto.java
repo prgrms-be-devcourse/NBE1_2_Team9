@@ -13,8 +13,7 @@ public record LocationEventDto(
         String address,
      /*   String city,
         String country,*/
-        BigDecimal rating,
-        LocationType type
+        BigDecimal rating
 ) {
     public static LocationEventDto from(Location location) {
         return new LocationEventDto(
@@ -25,8 +24,7 @@ public record LocationEventDto(
                 location.getAddress(),
       /*          location.getCity(),
                 location.getCountry(),*/
-                location.getRating(),
-                location.getType()
+                location.getRating()
         );
     }
 }
