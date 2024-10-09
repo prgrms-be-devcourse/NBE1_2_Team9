@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
-import { changePassword } from '../services/api';
+import React, { useEffect, useState } from 'react';
+import { fetchUserInfo, changePassword } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const ChangePasswordPage = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      const user = await fetchUserInfo();
+      setUserId(user.userId); // userId 설정
+    };
+
+    loadUserInfo();
+  }, []);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -13,8 +25,9 @@ const ChangePasswordPage = () => {
       return;
     }
     try {
-      await changePassword({ currentPassword, newPassword });
+      await changePassword(userId, { currentPassword, newPassword });
       alert('비밀번호 변경 완료!');
+      navigate("/mypage");
     } catch (error) {
       console.error('비밀번호 변경 오류:', error);
     }

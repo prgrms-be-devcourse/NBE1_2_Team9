@@ -107,7 +107,7 @@ public class UserController {
 
     // 비밀번호 변경
     @PutMapping("/{userId}/password")
-    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestParam String newPassword, Principal principal) {
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody String newPassword, Principal principal) {
         Long loggedInUserId = Long.parseLong(principal.getName());
         userService.changePassword(loggedInUserId, userId, newPassword);
         return ResponseEntity.ok("비밀번호 변경 성공");
