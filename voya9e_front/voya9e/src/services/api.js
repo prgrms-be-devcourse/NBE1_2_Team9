@@ -154,3 +154,25 @@ export const markAllNotificationsAsRead = async () => {
         throw error;
     }
 };
+
+// 그룹 삭제 요청
+export const deleteGroup = async (groupId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/groups/${groupId}`, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error(`그룹 삭제 실패 (ID: ${groupId}):`, error);
+        throw error;
+    }
+};
+
+// 그룹 업데이트 요청
+export const updateGroup = async (groupId, updatedData) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/groups/${groupId}`, updatedData, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error(`그룹 업데이트 실패 (ID: ${groupId}):`, error);
+        throw error;
+    }
+};

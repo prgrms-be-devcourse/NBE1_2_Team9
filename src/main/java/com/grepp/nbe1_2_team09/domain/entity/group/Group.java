@@ -3,6 +3,7 @@ package com.grepp.nbe1_2_team09.domain.entity.group;
 import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.Task;
 import com.grepp.nbe1_2_team09.domain.entity.event.Event;
+import com.grepp.nbe1_2_team09.domain.entity.group.invitation.GroupInvitation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,6 +49,10 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Expense> expenses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<GroupInvitation> groupInvitations = new ArrayList<>();
 
     //기본 비즈니스 메서드
 

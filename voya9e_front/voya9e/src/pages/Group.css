@@ -2,10 +2,11 @@
     margin: 30px;
 }
 
-.groupListTitle{
+.groupListTitle {
     display: flex;
-    align-items: center; /* 수직 중앙 정렬 */
-    margin-bottom: 1rem; /* 아래 요소와의 간격 */
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .CreateGroup{
@@ -32,26 +33,25 @@
     margin-bottom: 1rem; /* 아래 요소와의 간격 */
 }
 
-.title{
-    margin: 20px;
+.title {
+    margin: 0;
     font-size: 2rem;
-    margin-right: 1rem; /* 버튼과의 간격 */
 }
 
-
 .groupBtn {
-    padding: 0.3rem 0.8rem; /* 패딩을 줄여 버튼 크기 축소 */
-    font-size: 0.875rem; /* 폰트 크기 조정 (보통 14px 정도) */
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
     background-color: #008CFF;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-    &:hover {
-        background-color: #5f99c5;
-    }
-} 
+.groupBtn:hover {
+    background-color: #0066CC;
+}
 
 .group {
     list-style-type: none; /* 점 없애기 */
@@ -69,6 +69,10 @@
     font-size: 20px;
 }
 
+.group:last-child {
+    margin-bottom: 0;
+}
+
 .groupMemberLi{
     list-style-type: none; /* 점 없애기 */
     padding: 0;
@@ -83,7 +87,6 @@
     cursor: pointer;
     font-size: 15px;
 }
-
 
 .createGroupForm {
     display: flex;
@@ -205,7 +208,6 @@
     transition: background-color 0.3s ease;
 }
 
-
 .notification-message {
     margin: 0;
     font-size: 1rem;
@@ -249,4 +251,198 @@
 .status-text {
     font-size: 0.9rem;
     color: #555;
+}
+
+/* ======== 추가된 스타일 ======== */
+
+/* 그룹 목록 UL 스타일 */
+.groupListUl {
+    list-style-type: none; /* 기본 리스트 스타일 제거 */
+    padding: 0;
+    margin: 0;
+}
+
+/* 보기 모드와 편집 모드의 컨테이너 스타일 */
+.viewMode, .editMode {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* 그룹 이름 스타일 */
+.groupName {
+    flex: 1;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* 버튼 그룹 스타일 */
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+/* 편집 모드의 입력 필드 스타일 */
+.editInput {
+    flex: 2;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+/* 버튼 별 동일한 크기 적용 */
+.buttonGroup .userButton {
+    flex: 1;
+    padding: 0.4rem 0.6rem; /* 패딩 조정하여 버튼 크기 축소 */
+    font-size: 0.75rem; /* 폰트 크기 더 축소 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* 저장 버튼 스타일 */
+.saveBtn {
+    background-color: #52c41a; /* 녹색 */
+    color: white;
+}
+
+.saveBtn:hover {
+    background-color: #73d13d;
+}
+
+/* 취소 버튼 스타일 */
+.cancelBtn {
+    background-color: #faad14; /* 노란색 */
+    color: white;
+}
+
+.cancelBtn:hover {
+    background-color: #ffc53d;
+}
+
+/* 수정 버튼 스타일 */
+.editBtn {
+    background-color: #1890ff; /* 파란색 */
+    color: white;
+}
+
+.editBtn:hover {
+    background-color: #40a9ff;
+}
+
+/* 삭제 버튼 스타일 */
+.deleteBtn {
+    background-color: #FF4D4D; /* 빨간색 */
+    color: white; /* 텍스트 색상을 흰색으로 설정 */
+    border: none; /* 기존 테두리 제거 */
+    padding: 0.4rem 0.6rem; /* 버튼 크기 조정 */
+    border-radius: 5px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteBtn:hover {
+    background-color: #FF3333;
+}
+
+/* 그룹 항목의 내부 패딩과 마진 조정 */
+.group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-left: 4px solid #008CFF;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.group:last-child {
+    margin-bottom: 0;
+}
+
+.group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 편집 모드와 보기 모드 컨테이너 */
+.editMode {
+    flex: 1;
+}
+
+.viewMode {
+    flex: 1;
+}
+
+/* 버튼 그룹 정렬 */
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+/* 입력 필드 확장 */
+.editInput {
+    flex: 2;
+}
+
+/* 추가적인 버튼 스타일링 */
+.userButton {
+    padding: 0.4rem 0.6rem; /* 패딩 조정하여 버튼 크기 축소 */
+    border: none;
+    border-radius: 5px;
+    font-size: 0.75rem; /* 폰트 크기 더 축소 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.userButton.saveBtn {
+    background-color: #52c41a; /* 녹색 */
+    color: white;
+}
+
+.userButton.saveBtn:hover {
+    background-color: #73d13d;
+}
+
+.userButton.cancelBtn {
+    background-color: #faad14; /* 노란색 */
+    color: white;
+}
+
+.userButton.cancelBtn:hover {
+    background-color: #ffc53d;
+}
+
+.userButton.editBtn {
+    background-color: #1890ff; /* 파란색 */
+    color: white;
+}
+
+.userButton.editBtn:hover {
+    background-color: #40a9ff;
+}
+
+.userButton.deleteBtn {
+    background-color: #FF4D4D; /* 빨간색 */
+    color: white; /* 텍스트 색상을 흰색으로 설정 */
+    border: none; /* 기존 테두리 제거 */
+    padding: 0.4rem 0.6rem; /* 버튼 크기 조정 */
+    border-radius: 5px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.userButton.deleteBtn:hover {
+    background-color: #FF3333;
 }

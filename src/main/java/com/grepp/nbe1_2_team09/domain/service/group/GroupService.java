@@ -13,13 +13,14 @@ import com.grepp.nbe1_2_team09.domain.entity.group.GroupRole;
 import com.grepp.nbe1_2_team09.domain.entity.group.invitation.GroupInvitation;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupInvitationRepository;
-import com.grepp.nbe1_2_team09.domain.repository.group.membership.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
+import com.grepp.nbe1_2_team09.domain.repository.group.membership.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
 import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationDto;
 import com.grepp.nbe1_2_team09.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,10 +80,19 @@ public class GroupService {
 
     @Transactional
     public void deleteGroup(Long id) {
-        if (!groupRepository.existsById(id)) {
-            throw new GroupException(ExceptionMessage.GROUP_NOT_FOUND);
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
+
+        try {
+            groupRepository.delete(group);
+            log.info("그룹 삭제 성공 - 그룹 ID: {}", id);
+        } catch (DataIntegrityViolationException e) {
+            log.error("그룹 삭제 실패 - 그룹 ID: {}: {}", id, e.getMessage());
+            throw new GroupException(ExceptionMessage.GROUP_DELETION_FAILED);
+        } catch (Exception e) {
+            log.error("그룹 삭제 실패 - 그룹 ID: {}: {}", id, e.getMessage());
+            throw new GroupException(ExceptionMessage.GROUP_DELETION_FAILED);
         }
-        groupRepository.deleteById(id);
     }
 
     @Transactional

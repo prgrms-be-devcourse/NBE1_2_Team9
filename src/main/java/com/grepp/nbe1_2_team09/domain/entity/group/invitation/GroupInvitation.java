@@ -3,10 +3,7 @@ package com.grepp.nbe1_2_team09.domain.entity.group.invitation;
 import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -14,18 +11,22 @@ import lombok.NoArgsConstructor;
 public class GroupInvitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ToString.Exclude
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
+    @ToString.Exclude
     private Group group;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inviter_id", nullable = false)
+    @ToString.Exclude
     private User inviter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invitee_id", nullable = false)
+    @ToString.Exclude
     private User invitee;
 
     @Enumerated(EnumType.STRING)
