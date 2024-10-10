@@ -88,6 +88,16 @@ export const getGroupEvents = async (groupId) => {
     return response.data;
 };
 
+export const getWeatherForecast = async (location) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/forecast?city=${encodeURIComponent(location)}`);
+        return response.data;
+    } catch (error) {
+        console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
+        throw error;
+    }
+};
+
 
 export const fetchUnreadNotificationCount = async () => {
     try {
