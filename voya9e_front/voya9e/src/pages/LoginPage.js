@@ -21,7 +21,7 @@ const LoginPage = () => {
   };
 
   const handleKakaoLogin = () => {
-    window.location.href = '/users/signin/kakao';
+    window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
   };
 
   return (

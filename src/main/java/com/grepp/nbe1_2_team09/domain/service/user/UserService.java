@@ -5,10 +5,7 @@ import com.grepp.nbe1_2_team09.admin.jwt.CookieUtil;
 import com.grepp.nbe1_2_team09.admin.jwt.JwtUtil;
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
-import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.UserInfoResp;
+import com.grepp.nbe1_2_team09.controller.user.dto.*;
 import com.grepp.nbe1_2_team09.domain.entity.user.Role;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
@@ -120,10 +117,15 @@ public class UserService  {
 
     // 비밀번호 변경
     @Transactional
-    public void changePassword(Long loggedInUserId, Long targetUserId, String newPassword) {
+    public void changePassword(Long loggedInUserId, Long targetUserId, ChangePasswordReq changePasswordReq) {
         checkAuthorization(loggedInUserId, targetUserId);
         User user = findByIdOrThrowUserException(targetUserId);
-        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        if (!passwordEncoder.matches(changePasswordReq.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(changePasswordReq.getNewPassword());
         user.changePassword(encodedPassword);
     }
 

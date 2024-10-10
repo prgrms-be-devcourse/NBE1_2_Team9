@@ -23,20 +23,20 @@ export const getUserInfo = async () => {
 };
 
 // 사용자 프로필 수정 요청
-export const updateProfile = async (userData) => {
-    const response = await axios.put(`${API_BASE_URL}/users/me`, userData, { withCredentials: true });
+export const updateProfile = async (userId, userData) => {
+    const response = await axios.put(`${API_BASE_URL}/users/${userId}`, userData, { withCredentials: true });
     return response.data;
 };
 
 // 비밀번호 변경 요청
-export const changePassword = async ({ currentPassword, newPassword }) => {
-    const response = await axios.put(`${API_BASE_URL}/users/me/password`, { currentPassword, newPassword }, { withCredentials: true });
+export const changePassword = async (userId, changePasswordReq) => {
+    const response = await axios.put(`${API_BASE_URL}/users/${userId}/password`, changePasswordReq, { withCredentials: true });
     return response.data;
 };
 
 // 회원 탈퇴 요청
-export const deleteUser = async () => {
-    const response = await axios.delete(`${API_BASE_URL}/users/me`, { withCredentials: true });
+export const deleteUser = async (userId) => {
+    const response = await axios.delete(`${API_BASE_URL}/users/${userId}`, { withCredentials: true });
     return response.data;
 };
 
@@ -50,8 +50,6 @@ export const fetchUserInfo = async () => {
         return null;
     }
 };
-
-
 
 export const isAuthenticated = async () => {
     try {

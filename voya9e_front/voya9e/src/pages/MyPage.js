@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUserInfo } from '../services/api'; // 사용자 정보 API 요청 함수
+import { fetchUserInfo } from '../services/api';
 import './user.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,6 +20,14 @@ const MyPage = () => {
     navigate('/update-profile');
   }
 
+  const handleChangePassword =()=>{
+    navigate('/change-password');
+  };
+
+  const handleDeleteAccount = () => {
+    navigate('/delete-account');  // 계정 삭제 페이지로 이동
+  };
+
   if (!user) {
     return <p>사용자 정보를 불러올 수 없습니다.</p>;
   }
@@ -33,6 +41,8 @@ const MyPage = () => {
       <p>가입일: {user.joinedDate}</p>
       <p>역할: {user.role}</p>
       <button className='mypageBtn' onClick={handleUpdateProfile}>프로필 수정</button>
+      <button className='mypageBtn' onClick={handleChangePassword}>비밀번호 변경</button>
+      <button className='mypageBtn deleteBtn' onClick={handleDeleteAccount}>회원 탈퇴</button>
     </div>
     </div>
   );

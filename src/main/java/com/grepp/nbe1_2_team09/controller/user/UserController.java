@@ -4,10 +4,7 @@ import com.grepp.nbe1_2_team09.admin.jwt.CookieUtil;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoApiService;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoUserInfo;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
-import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.UserInfoResp;
+import com.grepp.nbe1_2_team09.controller.user.dto.*;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,6 +67,8 @@ public class UserController {
 
             kakaoApiService.createJwtToken(user, response);
 
+            response.sendRedirect("http://localhost:3000/");
+
             return ResponseEntity.ok("카카오 로그인 성공, JWT 토큰이 쿠키에 저장되었습니다.");
         } catch (Exception e) {
             log.error("카카오 로그인 처리 중 오류 발생", e);
@@ -107,9 +106,13 @@ public class UserController {
 
     // 비밀번호 변경
     @PutMapping("/{userId}/password")
-    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestParam String newPassword, Principal principal) {
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody ChangePasswordReq changePasswordReq, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자가 로그인되지 않았습니다.");
+        }
+
         Long loggedInUserId = Long.parseLong(principal.getName());
-        userService.changePassword(loggedInUserId, userId, newPassword);
+        userService.changePassword(loggedInUserId, userId, changePasswordReq);
         return ResponseEntity.ok("비밀번호 변경 성공");
     }
 
