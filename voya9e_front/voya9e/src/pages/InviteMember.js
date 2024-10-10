@@ -14,10 +14,12 @@ const InviteMember = () => {
 
         if (!userId) {
             setMessage('사용자 정보를 가져올 수 없습니다. 다시 로그인해주세요.');
+            console.error('유효한 userId가 없습니다.'); // 로그 추가
             return;
         }
 
         try {
+            console.log(`초대 요청: 그룹 ID: ${groupId}, 이메일: ${email}`); // 로그 추가
             await inviteMember(groupId, email);
             setMessage('초대장이 발송되었습니다.');
             setEmail('');
@@ -30,20 +32,20 @@ const InviteMember = () => {
     return (
         <div className='CreateGroup'>
             <div className='CreateGrouppp'>
-            <h2>멤버 초대</h2>
-            <form className='createGroupForm' onSubmit={handleSubmit}>
-                <div>
-                    <label className='createGroupTitle'>이메일 </label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                {message && <div>{message}</div>}
-                <button  className='createGroupBtn' type="submit">초대하기</button>
-            </form>
+                <h2>멤버 초대</h2>
+                <form className='createGroupForm' onSubmit={handleSubmit}>
+                    <div>
+                        <label className='createGroupTitle'>이메일 </label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    {message && <div>{message}</div>}
+                    <button  className='createGroupBtn' type="submit">초대하기</button>
+                </form>
             </div>
         </div>
     );
