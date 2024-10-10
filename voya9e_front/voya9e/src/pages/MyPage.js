@@ -21,8 +21,11 @@ const MyPage = () => {
   }
 
   const handleChangePassword =()=>{
-    console.log("비밀번호 변경 페이지로 이동합니다.");
     navigate('/change-password');
+  };
+
+  const handleDeleteAccount = () => {
+    navigate('/delete-account');  // 계정 삭제 페이지로 이동
   };
 
   if (!user) {
@@ -39,6 +42,7 @@ const MyPage = () => {
       <p>역할: {user.role}</p>
       <button className='mypageBtn' onClick={handleUpdateProfile}>프로필 수정</button>
       <button className='mypageBtn' onClick={handleChangePassword}>비밀번호 변경</button>
+      <button className='mypageBtn deleteBtn' onClick={handleDeleteAccount}>회원 탈퇴</button>
     </div>
     </div>
   );

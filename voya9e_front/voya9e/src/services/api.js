@@ -29,8 +29,8 @@ export const updateProfile = async (userId, userData) => {
 };
 
 // 비밀번호 변경 요청
-export const changePassword = async (userId, { currentPassword, newPassword }) => {
-    const response = await axios.put(`${API_BASE_URL}/users/${userId}/password`, { currentPassword, newPassword }, { withCredentials: true });
+export const changePassword = async (userId, changePasswordReq) => {
+    const response = await axios.put(`${API_BASE_URL}/users/${userId}/password`, changePasswordReq, { withCredentials: true });
     return response.data;
 };
 
