@@ -83,7 +83,14 @@ const EventDetail = () => {
                 <h1>일정 추가하기</h1>
             </div>
             <form onSubmit={handleSubmit} className="detail-content">
-                <input
+                <div className="info-buttons">
+                    <button type="button" className="learn-more" onClick={() => navigate('/citysearch', { state: { groupId } })}>
+                        도시 검색
+                    </button>
+                    <button type="button" className="learn-more" onClick={() => navigate('/calendar', { state: { groupId } })}>
+                        날짜 검색
+                    </button>
+                    <input
                     type="text"
                     placeholder="일정 이름"
                     value={eventName}
@@ -95,14 +102,8 @@ const EventDetail = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
-                <div className="info-buttons">
-                    <button type="button" className="learn-more" onClick={() => navigate('/citysearch', { state: { groupId } })}>
-                        도시 검색
-                    </button>
-                    <button type="button" className="learn-more" onClick={() => navigate('/calendar', { state: { groupId } })}>
-                        날짜 검색
-                    </button>
                 </div>
+                
                 {city && <p>선택된 도시: {city}</p>}
                 {startDate && endDate && <p>선택된 날짜: {new Date(startDate).toLocaleDateString()} - {new Date(endDate).toLocaleDateString()}</p>}
                 <button type="submit" className="learn-more">선택 완료</button>

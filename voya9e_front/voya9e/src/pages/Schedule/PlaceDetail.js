@@ -69,11 +69,6 @@ function PlaceDetail() {
             <header className="header">
                 <h1 style={{ marginBottom: '5px' }}>Voyage</h1>
                 <div className="button-container"> {/* 버튼을 감싸는 div 추가 */}
-                    <button
-                        className="currency-button"
-                        onClick={() => {/* 환율 변환 기능 추가 */}}
-                    > 환율
-                    </button>
                     <button className="small-button-detail" onClick={handleBack}>뒤로가기</button>
                 </div>
             </header>
