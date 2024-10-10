@@ -83,7 +83,7 @@ const ScheduleDetail = () => {
             alert("일정이 저장되었습니다.");
 
             // 저장 후 Schedule 페이지로 이동
-            navigate(`/schedule?eventId=${eventId}&date=${selectedDate}`);
+            navigate(`/schedule/${eventId}`);
             sessionStorage.removeItem('locationData'); // 세션 스토리지 초기화
 
         } catch (error) {

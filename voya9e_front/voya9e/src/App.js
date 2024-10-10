@@ -58,7 +58,7 @@ const App = () => {
           <Route path="/notifications" element={<Notification />} />
           <Route path="/citysearch" element={<CitySearch />} />
           <Route path="/calendar" element={<Calendar />} />
-          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/schedule/:eventId" element={<Schedule />} />
           <Route path="/scheduledetail" element={<ScheduleDetail />} />
           <Route path="/autosearch/:eventId" element={<AutoSearchPage />} />
           <Route path="/recommended/:eventId" element={<RecommendedSearchPage />} />

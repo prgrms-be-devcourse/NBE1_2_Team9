@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 import { Stomp } from '@stomp/stompjs'; // STOMP 가져오기
 import SockJS from 'sockjs-client';    // SockJS 가져오기
 import './Schedule.css';
-
-const eventData = {
-    id: 1,
-    eventName: "seoul",
-    description: "second",
-    city: "seoul",
-    startDate: "2024-10-01",
-    endDate: "2024-10-04",
-    groupId: 1,
-};
 
 const startTime = 6; // 시작 시간
 const endTime = 25;  // 종료 시간
@@ -51,7 +41,6 @@ const generateTimeRows = (startTime, endTime, dates, events, handleMouseEvents) 
 
             // 이벤트 확인
             const event = events.find(event => {
-                console.log(event)
                 if (event && event.visitStartTime && event.visitEndTime) {
                     const eventDate = event.visitStartTime.split('T')[0];
                     const eventStart = new Date(event.visitStartTime);
@@ -115,11 +104,26 @@ const Schedule = () => {
     const [selectedCells, setSelectedCells] = useState([]);
     const [events, setEvents] = useState([]); // 이벤트를 저장할 상태
     const [stompClient, setStompClient] = useState(null); // STOMP 클라이언트 상태 추가
+    const { eventId } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const generatedDates = generateDates(eventData.startDate, eventData.endDate);
-        setDates(generatedDates);
+        const fetchEventData = async () => {
+            try {
+                const response = await fetch(`/events/${eventId}`);
+                const eventData = await response.json();
+                
+                if (eventData) {
+                    const { startDate, endDate } = eventData;
+                    const generatedDates = generateDates(startDate, endDate);
+                    setDates(generatedDates);
+                }
+            } catch (error) {
+                console.error('이벤트 데이터를 불러오는 중 오류 발생:', error);
+            }
+        };
+
+        fetchEventData();
         fetchSavedEvents(); // 페이지 로드 시 저장된 이벤트 가져오기
 
         // 웹소켓 연결 설정
@@ -164,15 +168,13 @@ const Schedule = () => {
 
             if (cell) {
                 cell.classList.add('selected'); // 선택된 셀 배경색을 변경
-                cell.style.backgroundColor = '#d0e6f9'; // 배경색 지정 (선택 중인 셀에 대해 변경)
-                cell.innerHTML = '선택 중'; // 셀에 '선택 중' 텍스트 추가
+                cell.style.backgroundColor = '#ffbf0052'; // 배경색 지정 (선택 중인 셀에 대해 변경)
                 cell.style.pointerEvents = 'none'; // 드래그 불가능하게 설정
             }
 
             if (halfCell) {
                 halfCell.classList.add('selected');
-                halfCell.style.backgroundColor = '#d0e6f9'; // 배경색 지정 (선택 중인 셀에 대해 변경)
-                halfCell.innerHTML = '선택 중'; // 셀에 '선택 중' 텍스트 추가
+                halfCell.style.backgroundColor = '#ffbf0052'; // 배경색 지정 (선택 중인 셀에 대해 변경)
                 halfCell.style.pointerEvents = 'none'; // 드래그 불가능하게 설정
             }
         }
@@ -182,7 +184,7 @@ const Schedule = () => {
     // 저장된 이벤트를 가져오는 함수
     const fetchSavedEvents = async () => {
         try {
-            const response = await fetch(`/events/${eventData.id}/locations`);
+            const response = await fetch(`/events/${eventId}/locations`);
             const data = await response.json();
             console.log("data", data); // 데이터를 로그에 출력하여 확인
             
@@ -261,7 +263,7 @@ const Schedule = () => {
                 console.error('STOMP 클라이언트가 연결되어 있지 않습니다.'); // 오류 로그
             }
 
-            navigate(`/scheduledetail?date=${selectedDate}&startTime=${startTime}&endTime=${endTime}&eventId=${eventData.id}`);
+            navigate(`/scheduledetail?date=${selectedDate}&startTime=${startTime}&endTime=${endTime}&eventId=${eventId}`);
         }
     };
 
@@ -279,6 +281,12 @@ const Schedule = () => {
     return (
         <div className="container">
             <h1>여행 일정표</h1>
+            <div className="selection-info">
+                <button className="selection-btn-end"></button>
+                <span className="selection-text">선택완료</span>
+                <button className="selection-btn"></button>
+                <span className="selection-text">선택 중</span>
+            </div>
             <table>
                 <thead>
                 <tr id="date-row">
