@@ -67,6 +67,8 @@ public class UserController {
 
             kakaoApiService.createJwtToken(user, response);
 
+            response.sendRedirect("http://localhost:3000/");
+
             return ResponseEntity.ok("카카오 로그인 성공, JWT 토큰이 쿠키에 저장되었습니다.");
         } catch (Exception e) {
             log.error("카카오 로그인 처리 중 오류 발생", e);
