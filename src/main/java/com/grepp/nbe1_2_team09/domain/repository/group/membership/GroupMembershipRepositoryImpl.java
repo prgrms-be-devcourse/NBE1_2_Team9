@@ -14,11 +14,11 @@ import java.util.Optional;
 import static com.grepp.nbe1_2_team09.domain.entity.group.QGroupMembership.groupMembership;
 import static com.grepp.nbe1_2_team09.domain.entity.user.QUser.user;
 
-public class GroupMemshipRepositoryImpl implements GroupMembershipRepositoryCustom{
+public class GroupMembershipRepositoryImpl implements GroupMembershipRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
-    public GroupMemshipRepositoryImpl(EntityManager em) {
+    public GroupMembershipRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
