@@ -1,3 +1,4 @@
+// src/main/java/com/grepp/nbe1_2_team09/domain/service/group/GroupService.java
 package com.grepp.nbe1_2_team09.domain.service.group;
 
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
@@ -16,7 +17,7 @@ import com.grepp.nbe1_2_team09.domain.repository.group.GroupInvitationRepository
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.membership.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
-import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationDto;
+import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationResp;
 import com.grepp.nbe1_2_team09.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -118,11 +121,19 @@ public class GroupService {
 
         GroupInvitation savedInvitation = groupInvitationRepository.save(invitation);
 
-        notificationService.sendNotificationAsync(new NotificationDto("INVITE",
+        // NotificationResp 생성
+        NotificationResp responseResp = new NotificationResp(
+                UUID.randomUUID().toString(),
+                "INVITE",
                 group.getGroupName() + " 그룹에 초대되셨습니다.",
                 inviter.getUserId(),
                 invitee.getUserId(),
-                savedInvitation.getId()));
+                savedInvitation.getId(),
+                LocalDateTime.now().toString(),
+                false
+        );
+
+        notificationService.sendNotificationAsync(responseResp);
     }
 
     @Transactional
@@ -142,11 +153,19 @@ public class GroupService {
                 .build();
         groupMembershipRepository.save(membership);
 
-        notificationService.sendNotificationAsync(new NotificationDto("ACCEPT",
+        // NotificationResp 생성
+        NotificationResp responseResp = new NotificationResp(
+                UUID.randomUUID().toString(),
+                "ACCEPT",
                 invitation.getInvitee().getUsername() + "님이 그룹에 참여했습니다.",
                 invitation.getInvitee().getUserId(),
                 invitation.getInviter().getUserId(),
-                invitationId));
+                invitationId,
+                LocalDateTime.now().toString(),
+                false
+        );
+
+        notificationService.sendNotificationAsync(responseResp);
     }
 
     @Transactional
@@ -159,11 +178,19 @@ public class GroupService {
         invitation.reject();
         groupInvitationRepository.save(invitation);
 
-        notificationService.sendNotificationAsync(new NotificationDto("REJECT",
+        // NotificationResp 생성
+        NotificationResp responseResp = new NotificationResp(
+                UUID.randomUUID().toString(),
+                "REJECT",
                 invitation.getInvitee().getUsername() + "님이 그룹 초대를 거절했습니다.",
                 invitation.getInvitee().getUserId(),
                 invitation.getInviter().getUserId(),
-                invitationId));
+                invitationId,
+                LocalDateTime.now().toString(),
+                false
+        );
+
+        notificationService.sendNotificationAsync(responseResp);
     }
 
     @Transactional

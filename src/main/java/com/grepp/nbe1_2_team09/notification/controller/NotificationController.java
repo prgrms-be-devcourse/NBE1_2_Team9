@@ -2,6 +2,7 @@ package com.grepp.nbe1_2_team09.notification.controller;
 
 import com.grepp.nbe1_2_team09.admin.service.CustomUserDetails;
 import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationDto;
+import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationResp;
 import com.grepp.nbe1_2_team09.notification.entity.Notification;
 import com.grepp.nbe1_2_team09.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,12 +27,32 @@ public class NotificationController {
 
     @MessageMapping("/invite")
     public void sendInvitation(NotificationDto notificationDto) {
-        notificationService.sendNotification(notificationDto);
+        NotificationResp responseResp = new NotificationResp(
+                UUID.randomUUID().toString(),
+                notificationDto.type(),
+                notificationDto.message(),
+                notificationDto.senderId(),
+                notificationDto.receiverId(),
+                notificationDto.invitationId(),
+                LocalDateTime.now().toString(),
+                false
+        );
+        notificationService.sendNotificationAsync(responseResp);
     }
 
     @MessageMapping("/inviteResponse")
     public void sendInvitationResponse(NotificationDto notificationDto) {
-        notificationService.sendNotification(notificationDto);
+        NotificationResp responseResp = new NotificationResp(
+                UUID.randomUUID().toString(),
+                notificationDto.type(),
+                notificationDto.message(),
+                notificationDto.senderId(),
+                notificationDto.receiverId(),
+                notificationDto.invitationId(),
+                LocalDateTime.now().toString(),
+                false
+        );
+        notificationService.sendNotificationAsync(responseResp);
     }
 
     @GetMapping("/notifications")

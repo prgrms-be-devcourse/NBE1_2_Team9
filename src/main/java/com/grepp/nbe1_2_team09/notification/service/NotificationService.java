@@ -1,17 +1,16 @@
 package com.grepp.nbe1_2_team09.notification.service;
 
-import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationDto;
+import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationResp;
 import com.grepp.nbe1_2_team09.notification.entity.Notification;
 import com.grepp.nbe1_2_team09.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -23,34 +22,34 @@ public class NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Async
-    public CompletableFuture<Void> sendNotificationAsync(NotificationDto notificationDto) {
+    public CompletableFuture<Void> sendNotificationAsync(NotificationResp notificationResp) {
         return CompletableFuture.runAsync(() -> {
             try {
-                sendNotification(notificationDto);
+                sendNotification(notificationResp);
             } catch (Exception e) {
                 log.error("Failed to send notification: " + e.getMessage(), e);
             }
         });
     }
 
-    public void sendNotification(NotificationDto notificationDto) {
-        // 실시간 메시지 전송
-        messagingTemplate.convertAndSend("/topic/user/" + notificationDto.receiverId(), notificationDto);
-        log.info("Sent notification to user: " + notificationDto.receiverId());
+    public void sendNotification(NotificationResp notificationResp) {
+        // 웹소켓을 통해 알림 전송
+        messagingTemplate.convertAndSend("/topic/user/" + notificationResp.receiverId(), notificationResp);
+        log.info("Sent notification to user: " + notificationResp.receiverId());
 
         // Redis에 알림 저장
         Notification notification = Notification.builder()
-                .id(UUID.randomUUID().toString())
-                .type(notificationDto.type())
-                .message(notificationDto.message())
-                .senderId(notificationDto.senderId())
-                .receiverId(notificationDto.receiverId())
-                .createdAt(LocalDateTime.now())
-                .read(false)
-                .invitationId(notificationDto.invitationId())
+                .id(notificationResp.id())
+                .type(notificationResp.type())
+                .message(notificationResp.message())
+                .senderId(notificationResp.senderId())
+                .receiverId(notificationResp.receiverId())
+                .createdAt(LocalDateTime.parse(notificationResp.createdAt()))
+                .read(notificationResp.read())
+                .invitationId(notificationResp.invitationId())
                 .build();
-        log.info("보낸 사람: " + notificationDto.senderId());
-        log.info("Sent notification to user: " + notificationDto.receiverId());
+        log.info("보낸 사람: " + notificationResp.senderId());
+        log.info("Sent notification to user: " + notificationResp.receiverId());
         notificationRepository.save(notification);
     }
 
