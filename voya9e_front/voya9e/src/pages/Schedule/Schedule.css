@@ -67,3 +67,33 @@ td.date-cell div::after {
     content: attr(data-time); /* 텍스트 제거해도 데이터를 유지 */
     visibility: hidden; /* 텍스트가 화면에 보이지 않도록 처리 */
 }
+.selection-info {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: auto;
+}
+
+.selection-btn {
+    width: 25px;
+    height: 18px;
+    background-color: #ffbf0052;
+    border: none;
+    border-radius: 30%;
+    margin-right: 5px;
+}
+.selection-btn-end {
+    width: 25px;
+    height: 15px;
+    background-color: #90caf9;
+    border: none;
+    border-radius: 30%;
+    margin-right: 5px;
+}
+
+.selection-text {
+    font-size: 14px;
+    color: #333;
+}
+
