@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchUserInfo } from '../services/api'; // api.js에서 가져옴
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import voya9eLogo from '../voya9eLogo.png';
 
 const MainPage = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -18,6 +19,7 @@ const MainPage = () => {
       loadUserInfo();
     }, []);
 
+
     const handleChatBot=()=>{
       navigate('/chat');
     }
@@ -33,12 +35,13 @@ const MainPage = () => {
   return (
     <div className='userBody'>
     <MainContainer>
+    <img className='voya9eLogo' src={voya9eLogo} width = '300px'/>
       {userInfo ? (
         <>
           <WelcomeText>{`${userInfo.username}님 환영합니다!`}</WelcomeText>
           <SearchInput type="text" placeholder="어디로 떠나시나요?" />
           <TravelOptions>
-            {/* <OptionButton>찜한 여행지</OptionButton> */}
+            <OptionButton>날씨 검색</OptionButton>
               <OptionButton onClick={handleGroupView}>그룹 보기</OptionButton>
             {/* <OptionButton>찜한 장소</OptionButton> */}
             <OptionButton onClick={handleChatBot}>챗봇</OptionButton>

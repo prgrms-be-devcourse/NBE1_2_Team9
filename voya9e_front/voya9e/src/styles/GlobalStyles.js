@@ -111,6 +111,10 @@ const GlobalStyles = createGlobalStyle`
   a:hover {
     text-decoration: underline;
   }
+
+  .voya9eLogo{
+    margin-bottom: 50px;
+  }
 `;
 
 export default GlobalStyles;
