@@ -111,7 +111,7 @@ const GlobalStyles = createGlobalStyle`
   a:hover {
     text-decoration: underline;
   }
-
+  
   .deleteBtn {
     color: #FF4D4D;
     border: 1px solid #FF4D4D;
@@ -120,6 +120,10 @@ const GlobalStyles = createGlobalStyle`
   .deleteBtn:hover {
     color: #FF3333;
     border-color: #FF3333;
+  }
+
+  .voya9eLogo{
+    margin-bottom: 50px;
   }
 `;
 

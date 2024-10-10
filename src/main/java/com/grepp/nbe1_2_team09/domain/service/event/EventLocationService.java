@@ -11,7 +11,7 @@ import com.grepp.nbe1_2_team09.domain.entity.Location;
 import com.grepp.nbe1_2_team09.domain.entity.event.Event;
 import com.grepp.nbe1_2_team09.domain.entity.event.EventLocation;
 import com.grepp.nbe1_2_team09.domain.repository.event.EventLocationRepository;
-import com.grepp.nbe1_2_team09.domain.repository.event.EventRepository;
+import com.grepp.nbe1_2_team09.domain.repository.event.eventrepo.EventRepository;
 import com.grepp.nbe1_2_team09.domain.repository.location.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
