@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 //import { Route, Routes } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotificationProvider } from './context/NotificationContext';
@@ -30,11 +30,22 @@ import RecommendedSearchPage from './pages/Schedule/RecommendationSearch';
 import PlaceDetail from './pages/Schedule/PlaceDetail';
 import Calendar from './pages/Event/Calendar';
 import EventDetail from './pages/Event/EventDetail';
+import { isAuthenticated } from './services/api';
 
 const App = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authenticated = await isAuthenticated();
+      setLoggedIn(authenticated);
+    };
+    checkAuth();
+  }, []);
+
   return (
       <NotificationProvider>
-        <NavBar />
+        <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
 
         <Routes>
           <Route path="/" element={<MainPage />} />
@@ -43,7 +54,7 @@ const App = () => {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/update-profile" element={<UpdateProfilePage />} />
           <Route path="/change-password" element={<ChangePasswordPage />} />
-          <Route path="/delete-account" element={<DeleteAccountPage />} />
+          <Route path="/delete-account" element={<DeleteAccountPage setLoggedIn={setLoggedIn} />} />
           <Route path="/accountBook/:groupId" element={<AccountBook />} />
           <Route path="/accountBook/:groupId/addExpense" element={<AddExpense/>}/>
           <Route path="/expense/:groupId" element={<ExpenseDetail />} />

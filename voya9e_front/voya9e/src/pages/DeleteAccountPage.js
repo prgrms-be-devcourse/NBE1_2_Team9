@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchUserInfo, deleteUser, logout } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-const DeleteAccountPage = () => {
+const DeleteAccountPage = ({ setLoggedIn }) => {
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
@@ -21,11 +21,11 @@ const DeleteAccountPage = () => {
     }
 
     try {
+      setLoggedIn(false);
       await deleteUser(userId);
-      alert('계정이 삭제되었습니다.');
+      navigate('/');
       await logout();
-      
-      navigate('/signup');
+      alert('계정이 삭제되었습니다.');
     } catch (error) {
       console.error('계정 삭제 오류:', error);
     }

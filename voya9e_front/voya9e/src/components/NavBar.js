@@ -4,29 +4,23 @@ import styled from 'styled-components';
 import {logout, isAuthenticated, fetchUnreadNotificationCount} from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 
-const NavBar = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+const NavBar = ({ loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
   const { unreadCount, updateUnreadCount } = useNotification();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const authenticated = await isAuthenticated();
-      setLoggedIn(authenticated);
-    };
-
     const fetchUnreadCount = async () => {
       const count = await fetchUnreadNotificationCount();
       updateUnreadCount(count);
-    }
-    checkAuth();
-    if(loggedIn){
+    };
+    
+    if (loggedIn) {
       fetchUnreadCount();
     }
   }, [loggedIn, updateUnreadCount]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setLoggedIn(false);
     navigate('/login');
   };
