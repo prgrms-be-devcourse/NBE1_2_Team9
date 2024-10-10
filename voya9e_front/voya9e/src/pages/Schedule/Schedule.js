@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate,useParams } from 'react-router-dom';
-import { Stomp } from '@stomp/stompjs'; // STOMP 가져오기
-import SockJS from 'sockjs-client';    // SockJS 가져오기
+import { useNotification } from '../../context/NotificationContext'; // NotificationProvider 사용
 import './Schedule.css';
 
 const startTime = 6; // 시작 시간
@@ -102,9 +101,12 @@ const Schedule = () => {
     const [dates, setDates] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const [selectedCells, setSelectedCells] = useState([]);
-    const [events, setEvents] = useState([]); // 이벤트를 저장할 상태
-    const [stompClient, setStompClient] = useState(null); // STOMP 클라이언트 상태 추가
+    const { selectedCell } = useNotification();
+    const { deletedCell } = useNotification(); 
+    const [events, setEvents] = useState([]);
+    const { stompClient } = useNotification();
     const { eventId } = useParams();
+    const [locations, setLocations] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -122,91 +124,165 @@ const Schedule = () => {
                 console.error('이벤트 데이터를 불러오는 중 오류 발생:', error);
             }
         };
-
+    
         fetchEventData();
         fetchSavedEvents(); // 페이지 로드 시 저장된 이벤트 가져오기
+        fetchLocations(); // 장소 데이터 가져오기
+    }, [eventId]);
+    
+    // WebSocket에서 받은 선택된 셀 데이터 반영
+    useEffect(() => {
+        if (selectedCell) {
+            console.log('WebSocket으로 받은 선택 셀 데이터:', selectedCell);
+            handleReceivedSelection(selectedCell);
+        }
+    }, [selectedCell]);
 
-        // 웹소켓 연결 설정
-        const socket = new SockJS('http://localhost:8080/ws/schedule'); // 웹소켓 서버 URL
-        const client = Stomp.over(socket); // STOMP 클라이언트 생성
+    //WebSocket에서 받은 삭제된 셀 데이터 반영
+    useEffect(() => {
+        if (deletedCell) {
+            handleRemoveSelection(deletedCell)
+            
+        }
+    }, [deletedCell]);
 
-        client.connect({}, (frame) => {
-            console.log('웹소켓 연결 성공:', frame);
-
-            client.subscribe('/topic/selectedCells', (message) => {
-                const data = JSON.parse(message.body);
-                console.log('받은 메시지:', data);
-                handleReceivedSelection(data); // 받은 데이터를 처리하는 함수 호출
-            });
-        });
-
-        setStompClient(client); // STOMP 클라이언트 상태 설정
-
-        return () => {
-            if (client) {
-                client.disconnect(); // 컴포넌트 언마운트 시 STOMP 클라이언트 종료
-            }
-        };
-    }, []);
-
-    // 선택된 셀 정보를 처리하는 함수
-    const handleReceivedSelection = (selectionData) => {
-        console.log('선택된 셀 정보:', selectionData);
+    const handleRemoveSelection = (selectionData) => {
+        console.log('삭제할 셀 정보:', selectionData);
 
         const { date, startTime, endTime } = selectionData;
 
         const startHour = parseInt(startTime.split(':')[0]);
         const endHour = parseInt(endTime.split(':')[0]);
 
-        // 선택된 셀을 업데이트하여 UI에 반영
         for (let hour = startHour; hour <= endHour; hour++) {
             const formattedHour = String(hour).padStart(2, '0');
 
-            // 각 시간대에 맞는 셀을 찾아 'selected' 클래스 추가
+            // 각 시간대에 맞는 셀을 찾아 'selected' 클래스 제거
             const cell = document.querySelector(`[data-date="${date}"][data-time="${formattedHour}:00"]`);
             const halfCell = document.querySelector(`[data-date="${date}"][data-time="${formattedHour}:30"]`);
 
             if (cell) {
-                cell.classList.add('selected'); // 선택된 셀 배경색을 변경
-                cell.style.backgroundColor = '#ffbf0052'; // 배경색 지정 (선택 중인 셀에 대해 변경)
-                cell.style.pointerEvents = 'none'; // 드래그 불가능하게 설정
+                cell.classList.remove('selected');
+                cell.style.backgroundColor = '';
+                cell.style.pointerEvents = ''; // 드래그 가능하게
             }
 
             if (halfCell) {
-                halfCell.classList.add('selected');
-                halfCell.style.backgroundColor = '#ffbf0052'; // 배경색 지정 (선택 중인 셀에 대해 변경)
-                halfCell.style.pointerEvents = 'none'; // 드래그 불가능하게 설정
+                halfCell.classList.remove('selected');
+                halfCell.style.backgroundColor = '';
+                halfCell.style.pointerEvents = ''; 
             }
         }
     };
-
-
+    
+    const handleReceivedSelection = (selectionData) => {
+        console.log('선택된 셀 정보:', selectionData);
+    
+        const { date, startTime, endTime } = selectionData;
+    
+        const startHour = parseInt(startTime.split(':')[0]);
+        const endHour = parseInt(endTime.split(':')[0]);
+    
+        // 선택된 셀을 업데이트하여 UI에 반영
+        for (let hour = startHour; hour <= endHour; hour++) {
+            const formattedHour = String(hour).padStart(2, '0');
+    
+            const cell = document.querySelector(`[data-date="${date}"][data-time="${formattedHour}:00"]`);
+            const halfCell = document.querySelector(`[data-date="${date}"][data-time="${formattedHour}:30"]`);
+    
+            if (cell) {
+                cell.classList.add('selected');
+                cell.style.backgroundColor = '#ffbf0052';
+                cell.style.pointerEvents = 'none';
+            }
+    
+            if (halfCell) {
+                halfCell.classList.add('selected');
+                halfCell.style.backgroundColor = '#ffbf0052';
+                halfCell.style.pointerEvents = 'none';
+            }
+        }
+    };
+    
     // 저장된 이벤트를 가져오는 함수
     const fetchSavedEvents = async () => {
         try {
             const response = await fetch(`/events/${eventId}/locations`);
             const data = await response.json();
-            console.log("data", data); // 데이터를 로그에 출력하여 확인
             
             // 이벤트가 있는 경우에만 상태 업데이트
             if (data && Array.isArray(data) && data.length > 0) {
-                const events = data; // 이미 배열이므로 그대로 사용
-                console.log("events", events); // 변환된 events를 로그에 출력하여 확인
+                const events = data;
                 setEvents(events);
             } else {
-                console.log("이벤트가 없습니다."); // 이벤트가 없는 경우 로그에 출력
+                console.log("이벤트가 없습니다.");
             }
         } catch (error) {
             console.error('이벤트를 가져오는 중 오류 발생:', error);
         }
     };
 
+    // 날짜 버튼 클릭 시 장소 데이터 가져오기
+    const handleDateButtonClick = async (date) => {
+        await fetchLocations(date);
+    };
+    
+    // 장소 데이터 가져오기
+    const fetchLocations = async (date) => {
+        try {
+            const response = await fetch(`/events/${eventId}/locationsByDate?date=${date}`);
+            const data = await response.json();
+            setLocations(data.map(item => item.location)); // 가져온 장소 데이터 저장
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
+    };
+    
+    // locations 상태가 업데이트되면 initMap을 호출
+    useEffect(() => {
+        if (locations.length > 0) {
+            initMap();
+        }
+    }, [locations]);
+    
+    const initMap = () => {
+        console.log("locaiontt", locations);
+        const map = new window.google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: { lat: locations[0]?.latitude || 0, lng: locations[0]?.longitude || 0 },
+        });
+    
+        const pathArray = [];
+
+        locations.forEach((location, index) => {
+            const markerLabel = (index + 1).toString(); // 마커 라벨 설정
+            const marker = new window.google.maps.Marker({
+                position: { lat: location.latitude, lng: location.longitude },
+                map: map,
+                label: markerLabel,
+            });
+            // 경로 배열에 추가
+            pathArray.push(marker.getPosition());
+        });
+    
+        // 경로 그리기
+        const polyline = new window.google.maps.Polyline({
+            path: pathArray,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+        });
+    
+        polyline.setMap(map); // 맵에 경로 추가
+    };
+    
     const handleMouseDown = (e) => {
         const targetDiv = e.target;
 
         // 이미 선택된 경우 드래그 시작하지 않음
         if (targetDiv.classList.contains('selected')) {
-            return; // 드래그 시작하지 않음
+            return;
         }
 
         setIsDragging(true);
@@ -219,7 +295,7 @@ const Schedule = () => {
         if (isDragging) {
             const targetDiv = e.target;
 
-            // 현재 마우스가 있는 셀과 처음 선택된 셀의 날짜가 같을 때만 드래그가 가능하게 만듦
+            // 현재 마우스가 있는 셀과 처음 선택된 셀의 날짜가 같을 때만 드래그 가능
             const initialDate = selectedCells.length > 0 ? selectedCells[0].dataset.date : null;
             const targetDate = targetDiv.dataset.date;
 
@@ -233,13 +309,12 @@ const Schedule = () => {
         }
     };
 
-
     const handleMouseUp = () => {
         setIsDragging(false);
 
         if (selectedCells.length > 0) {
             selectedCells.forEach((cell) => {
-                cell.classList.add('selected'); // div에 클래스 추가
+                cell.classList.add('selected');
             });
 
             const midIndex = Math.floor((selectedCells.length - 1) / 2);
@@ -255,12 +330,11 @@ const Schedule = () => {
                 endTime: endTime,
             };
 
-            // STOMP를 통해 서버로 메시지 전송
             if (stompClient && stompClient.connected) {
-                stompClient.send('/app/selectCell', {}, JSON.stringify(selectionData));
-                console.log('전송한 데이터:', selectionData); // 전송 데이터 로그
-            } else {
-                console.error('STOMP 클라이언트가 연결되어 있지 않습니다.'); // 오류 로그
+                stompClient.publish({
+                    destination: '/app/selectCell',
+                    body: JSON.stringify(selectionData),
+                });
             }
 
             navigate(`/scheduledetail?date=${selectedDate}&startTime=${startTime}&endTime=${endTime}&eventId=${eventId}`);
@@ -268,7 +342,6 @@ const Schedule = () => {
     };
 
     const handleDivSelection = (div) => {
-        // div 요소에 'selected' 클래스 추가/제거
         div.classList.toggle('selected'); // div에 클래스 토글
     };
 
@@ -281,6 +354,14 @@ const Schedule = () => {
     return (
         <div className="container">
             <h1>여행 일정표</h1>
+            <div id="map" style={{ height: '400px', width: '100%' }}></div> {}
+            <div className="date-buttons">
+                {dates.map((date) => (
+                    <button key={date} onClick={() => handleDateButtonClick(date)}>
+                        {date}
+                    </button>
+                ))}
+            </div>
             <div className="selection-info">
                 <button className="selection-btn-end"></button>
                 <span className="selection-text">선택완료</span>

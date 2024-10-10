@@ -10,6 +10,10 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [userId, setUserId] = useState(null);
     const stompClientRef = useRef(null);  // stompClient 상태를 유지할 수 있는 ref 사용
+    const [selectedCell, setSelectedCell] = useState(null); // 선택한 셀 상태
+    const [deletedCell, setDeletedCell] = useState(null); // 선택한 셀 상태
+    const [stompClient, setStompClient] = useState(null); // STOMP 클라이언트 상태
+
 
     const updateUnreadCount = useCallback(async () => {
         try {
@@ -63,6 +67,19 @@ export const NotificationProvider = ({ children }) => {
                             const newUnreadCount = parseInt(message.body);
                             setUnreadCount(newUnreadCount);
                         });
+                        // 일정 관련 구독 추가
+                        stompClientRef.current.subscribe('/topic/selectedCells', (message) => {
+                            const data = JSON.parse(message.body);
+                            setSelectedCell(data); // 선택된 셀 데이터 업데이트
+                            console.log('받은 선택 셀 데이터:', data);
+                        });
+
+                         // // 일정 관련 셀 삭제
+                         stompClientRef.current.subscribe('/topic/deletedCells', (message) => {
+                            const data = JSON.parse(message.body);
+                            setDeletedCell(data); // 선택된 셀 데이터 업데이트
+                            console.log('받은 삭제 셀 데이터:', data);
+                        });
                     },
                     onStompError: (frame) => {
                         console.error('STOMP 오류 발생', frame.headers['message']);
@@ -70,6 +87,7 @@ export const NotificationProvider = ({ children }) => {
                 });
 
                 stompClientRef.current.activate();
+                setStompClient(stompClientRef.current); // STOMP 클라이언트 저장
             } catch (error) {
                 console.error('알림 초기화 중 오류 발생:', error);
             }
@@ -97,7 +115,10 @@ export const NotificationProvider = ({ children }) => {
     }, []);
 
     return (
-        <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, updateUnreadCount, userId, markAllAsRead }}>
+        <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, updateUnreadCount, userId, markAllAsRead,selectedCell,
+            deletedCell,
+            stompClient
+}}>
             {children}
         </NotificationContext.Provider>
     );
