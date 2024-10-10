@@ -5,7 +5,7 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    // font-family: 'Arial', sans-serif;
   }
 
   .userBody {
@@ -16,6 +16,13 @@ const GlobalStyles = createGlobalStyle`
     background-color: #f5f5f5;
   }
 
+  .noto-sans-kr-<uniquifier> {
+    font-family: "Noto Sans KR", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: <weight>;
+    font-style: normal;
+  }
+
   // body {
   //   display: flex;
   //   justify-content: center;
@@ -23,6 +30,11 @@ const GlobalStyles = createGlobalStyle`
   //   height: 100vh;
   //   background-color: #f5f5f5;
   // }
+
+  body {
+    font-family: "Noto Sans KR", sans-serif;
+    font-optical-sizing: auto;
+  }
 
   .login-container, .signup-container {
     background-color: #ffffff;
@@ -33,12 +45,12 @@ const GlobalStyles = createGlobalStyle`
     width: 350px;
   }
 
-  h1 {
-    font-family: 'Pacifico', cursive;
-    font-size: 40px;
-    color: #2f4f4f;
-    margin-bottom: 30px;
-  }
+  // h1 {
+  //   font-family: 'Pacifico', cursive;
+  //   font-size: 40px;
+  //   color: #2f4f4f;
+  //   margin-bottom: 30px;
+  // }
 
   .userInput {
     width: 100%;
