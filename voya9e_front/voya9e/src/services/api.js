@@ -98,7 +98,6 @@ export const getWeatherForecast = async (location) => {
     }
 };
 
-
 export const fetchUnreadNotificationCount = async () => {
     try {
         const response = await axios.get('/notifications/unread-count', {

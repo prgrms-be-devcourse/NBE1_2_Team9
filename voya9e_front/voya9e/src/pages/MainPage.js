@@ -10,7 +10,7 @@ const MainPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
   const navigate = useNavigate();
-  
+
     useEffect(() => {
       const loadUserInfo = async () => {
         const user = await fetchUserInfo();
@@ -30,11 +30,22 @@ const MainPage = () => {
         navigate('/groups');
     };
 
-    const handleExchangeRate=()=>{
-      navigate('/exchange-rate')
-    }
+    loadUserInfo();
+  }, []);
 
-    // 날씨 검색 핸들러
+  const handleChatBot = () => {
+    navigate('/chat');
+  }
+
+  const handleGroupView = () => {
+    navigate('/groups');
+  };
+
+  const handleExchangeRate = () => {
+    navigate('/exchange-rate');
+  };
+
+  // 날씨 검색 핸들러
   const handleWeatherSearch = async () => {
     try {
       const data = await getWeatherForecast(searchLocation);
@@ -48,7 +59,6 @@ const MainPage = () => {
       console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
       setErrorMessage('날씨 정보를 가져오는 중 오류가 발생했습니다.');
     }
-  };
   
 
   return (
@@ -138,7 +148,7 @@ const OptionButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #007ACC;  /* 좀 더 어두운 파랑색으로 hover 효과 */
+    background-color: #007ACC;
   }
 `;
 
@@ -181,49 +191,49 @@ const SearchButton = styled.button`
   }
 `;
 
-  const WeatherContainer = styled.div`
-    margin: 20px 0;
-    text-align: center;
-  `;
+const WeatherContainer = styled.div`
+  margin: 20px 0;
+  text-align: center;
+`;
 
-  const WeatherGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  `;
+const WeatherGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+`;
 
-  const WeatherCard = styled.div`
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  `;
+const WeatherCard = styled.div`
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
 
-  const WeatherTime = styled.div`
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-  `;
+const WeatherTime = styled.div`
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+`;
 
-  const WeatherIcon = styled.img`
-    width: 50px;
-    height: 50px;
-    margin-bottom: 10px;
-  `;
+const WeatherIcon = styled.img`
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+`;
 
-  const WeatherTemp = styled.div`
-    font-size: 1.5rem;
-    font-weight: bold;
-  `;
+const WeatherTemp = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+`;
 
-  const WeatherDescription = styled.div`
-    font-size: 1rem;
-    color: #555;
-  `;
+const WeatherDescription = styled.div`
+  font-size: 1rem;
+  color: #555;
+`;
 
-  const ErrorMessage = styled.div`
-    color: red;
-    margin-top: 1rem;
-  `;
+const ErrorMessage = styled.div`
+  color: red;
+  margin-top: 1rem;
+`;
 
 export default MainPage;

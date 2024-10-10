@@ -8,7 +8,7 @@ import com.grepp.nbe1_2_team09.controller.event.dto.EventDto;
 import com.grepp.nbe1_2_team09.controller.event.dto.UpdateEventRequest;
 import com.grepp.nbe1_2_team09.domain.entity.event.Event;
 import com.grepp.nbe1_2_team09.domain.entity.group.Group;
-import com.grepp.nbe1_2_team09.domain.repository.event.EventRepository;
+import com.grepp.nbe1_2_team09.domain.repository.event.eventrepo.EventRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

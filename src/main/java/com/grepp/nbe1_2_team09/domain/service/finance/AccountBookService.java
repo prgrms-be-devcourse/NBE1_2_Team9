@@ -10,7 +10,7 @@ import com.grepp.nbe1_2_team09.domain.entity.Expense;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.entity.group.Group;
 import com.grepp.nbe1_2_team09.domain.repository.finance.AccountBookRepository;
-import com.grepp.nbe1_2_team09.domain.repository.group.GroupMembershipRepository;
+import com.grepp.nbe1_2_team09.domain.repository.group.membership.GroupMembershipRepository;
 import com.grepp.nbe1_2_team09.domain.repository.group.GroupRepository;
 import com.grepp.nbe1_2_team09.domain.repository.user.UserRepository;
 import jakarta.persistence.EntityManager;
