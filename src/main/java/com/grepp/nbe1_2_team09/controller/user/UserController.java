@@ -4,10 +4,7 @@ import com.grepp.nbe1_2_team09.admin.jwt.CookieUtil;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoApiService;
 import com.grepp.nbe1_2_team09.admin.service.oauth2.KakaoUserInfo;
 import com.grepp.nbe1_2_team09.common.exception.exceptions.UserException;
-import com.grepp.nbe1_2_team09.controller.user.dto.SignInReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.SignUpReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.UpdateProfileReq;
-import com.grepp.nbe1_2_team09.controller.user.dto.UserInfoResp;
+import com.grepp.nbe1_2_team09.controller.user.dto.*;
 import com.grepp.nbe1_2_team09.domain.entity.user.User;
 import com.grepp.nbe1_2_team09.domain.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -107,9 +104,13 @@ public class UserController {
 
     // 비밀번호 변경
     @PutMapping("/{userId}/password")
-    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody String newPassword, Principal principal) {
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody ChangePasswordReq changePasswordReq, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자가 로그인되지 않았습니다.");
+        }
+
         Long loggedInUserId = Long.parseLong(principal.getName());
-        userService.changePassword(loggedInUserId, userId, newPassword);
+        userService.changePassword(loggedInUserId, userId, changePasswordReq);
         return ResponseEntity.ok("비밀번호 변경 성공");
     }
 
