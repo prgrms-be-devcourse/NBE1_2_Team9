@@ -1,5 +1,8 @@
 # ✈️ Voya9e
-Voya9e는 다양한 기능을 활용한 안정적이고 효율적인 여행 일정 관리 사이트입니다.<br><br><br><br>
+
+다양한 기능을 활용한 안정적이고 효율적인 여행 일정 관리 사이트
+
+<br><br><br>
 <img src="https://github.com/user-attachments/assets/a637d512-9bca-40c1-8d38-ae8d5c72fbc0" alt="voya9e" width="400" height="400"/>
 
 <br>
