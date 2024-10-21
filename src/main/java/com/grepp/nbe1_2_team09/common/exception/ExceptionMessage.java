@@ -37,8 +37,10 @@ public enum ExceptionMessage {
     USER_ALREADY_IN_GROUP("해당 사용자는 이미 그룹의 멤버입니다."),
     USER_NOT_IN_GROUP("해당 사용자는 그룹의 멤버가 아닙니다."),
     CANNOT_REMOVE_LAST_ADMIN("그룹에는 최소 한 명의 관리자가 필요합니다."),
+    GROUP_OWNER_ACCESS_ONLY("그룹 소유자만 접근할 수 있습니다."),
     GROUP_ADMIN_ACCESS_ONLY("그룹 관리자만 접근할 수 있습니다."),
     GROUP_DELETION_FAILED("그룹 삭제에 실패했습니다."),
+    INSUFFICIENT_PERMISSION("자신보다 낮은 역할의 멤버만 접근할 수 있습니다."),
 
     // Event
     EVENT_NOT_FOUND("해당 이벤트를 찾을 수 없습니다."),

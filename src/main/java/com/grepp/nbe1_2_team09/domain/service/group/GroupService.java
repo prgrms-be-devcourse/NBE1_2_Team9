@@ -1,4 +1,3 @@
-// src/main/java/com/grepp/nbe1_2_team09/domain/service/group/GroupService.java
 package com.grepp.nbe1_2_team09.domain.service.group;
 
 import com.grepp.nbe1_2_team09.common.exception.ExceptionMessage;
@@ -21,7 +20,6 @@ import com.grepp.nbe1_2_team09.notification.controller.dto.NotificationResp;
 import com.grepp.nbe1_2_team09.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,29 +71,39 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    //그룹 변경
     @Transactional
-    public GroupDto updateGroup(Long id, UpdateGroupRequest request) {
+    public GroupDto updateGroup(Long id, UpdateGroupRequest request, Long userId) {
+        User user = findUserByIdOrThrowUserException(userId);
         Group group = findGroupByIdOrThrowGroupException(id);
+
+        GroupMembership groupMembership = findGroupMemberByGroupAndUserThrowGroupException(group, user);
+
+        if (groupMembership.getRole() != GroupRole.OWNER) {
+            throw new GroupException(ExceptionMessage.GROUP_OWNER_ACCESS_ONLY);
+        }
+
         group.updateGroupName(request.groupName());
         Group updatedGroup = groupRepository.save(group);
         return GroupDto.from(updatedGroup);
     }
 
     @Transactional
-    public void deleteGroup(Long id) {
+    public void deleteGroup(Long id, Long userId) {
+        User user = findUserByIdOrThrowUserException(userId);
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new GroupException(ExceptionMessage.GROUP_NOT_FOUND));
 
-        try {
-            groupRepository.delete(group);
-            log.info("그룹 삭제 성공 - 그룹 ID: {}", id);
-        } catch (DataIntegrityViolationException e) {
-            log.error("그룹 삭제 실패 - 그룹 ID: {}: {}", id, e.getMessage());
-            throw new GroupException(ExceptionMessage.GROUP_DELETION_FAILED);
-        } catch (Exception e) {
-            log.error("그룹 삭제 실패 - 그룹 ID: {}: {}", id, e.getMessage());
-            throw new GroupException(ExceptionMessage.GROUP_DELETION_FAILED);
+        GroupMembership groupMembership = findGroupMemberByGroupAndUserThrowGroupException(group, user);
+
+        // 그룹 소유자만 그룹을 삭제할 수 있도록
+        if (groupMembership.getRole() != GroupRole.OWNER) {
+            throw new GroupException(ExceptionMessage.GROUP_OWNER_ACCESS_ONLY);
         }
+
+
+        groupRepository.delete(group);
+
     }
 
     @Transactional
@@ -104,11 +112,13 @@ public class GroupService {
         User inviter = findUserByIdOrThrowUserException(adminId);
         User invitee = findUserByEmailOrThrowUserException(email);
 
-        GroupMembership groupMembership = findGroupMemberByIdThrowGroupException(group, inviter);
-        if(groupMembership.getRole() != GroupRole.ADMIN){
+        GroupMembership groupMembership = findGroupMemberByGroupAndUserThrowGroupException(group, inviter);
+        //관리자 혹은 소유자만 초대할 수 있도록
+        if (groupMembership.getRole() != GroupRole.ADMIN && groupMembership.getRole() != GroupRole.OWNER) {
             throw new GroupException(ExceptionMessage.GROUP_ADMIN_ACCESS_ONLY);
         }
 
+        //초대할 사용자가 이미 그룹에 있는지 확인
         if (groupMembershipRepository.existsByGroupAndUser(group, invitee)) {
             throw new GroupException(ExceptionMessage.USER_ALREADY_IN_GROUP);
         }
@@ -137,9 +147,9 @@ public class GroupService {
     }
 
     @Transactional
-    public void acceptInvitation(Long invitationId, Long userId){
+    public void acceptInvitation(Long invitationId, Long userId) {
         GroupInvitation invitation = findInvitationByIdOrThrowException(invitationId);
-        if(!invitation.getInvitee().getUserId().equals(userId)){
+        if (!invitation.getInvitee().getUserId().equals(userId)) {
             throw new GroupException(ExceptionMessage.NOT_INVITED_USER);
         }
 
@@ -169,9 +179,9 @@ public class GroupService {
     }
 
     @Transactional
-    public void rejectInvitation(Long invitationId, Long userId){
+    public void rejectInvitation(Long invitationId, Long userId) {
         GroupInvitation invitation = findInvitationByIdOrThrowException(invitationId);
-        if( !invitation.getInvitee().getUserId().equals(userId)){
+        if (!invitation.getInvitee().getUserId().equals(userId)) {
             throw new GroupException(ExceptionMessage.NOT_INVITED_USER);
         }
 
@@ -193,32 +203,44 @@ public class GroupService {
         notificationService.sendNotificationAsync(responseResp);
     }
 
+    //
     @Transactional
-    public void changeGroupMemberRole(Long groupId, Long userId, GroupRole role) {
+    public void changeGroupMemberRole(Long groupId, Long targetUserId, GroupRole role, Long userId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
+        User targetUser = findUserByIdOrThrowUserException(targetUserId);
         User user = findUserByIdOrThrowUserException(userId);
-        GroupMembership membership = findGroupMemberByIdThrowGroupException(group, user);
 
-        if (membership.getRole() == GroupRole.ADMIN && role != GroupRole.ADMIN) {
-            List<GroupMembership> memberships = groupMembershipRepository.findByGroup(group);
-            long adminCount = memberships.stream()
-                    .filter(m -> m.getRole() == GroupRole.ADMIN)
-                    .count();
-            if (adminCount == 1) {
-                throw new GroupException(ExceptionMessage.CANNOT_REMOVE_LAST_ADMIN);
-            }
+        GroupMembership targetUserMembership = findGroupMemberByGroupAndUserThrowGroupException(group, targetUser);
+        GroupMembership membership = findGroupMemberByGroupAndUserThrowGroupException(group, user);
+
+        // 그룹 소유자만이 멤버 역할을 바꿀 수 있다
+        if(membership.getRole() != GroupRole.OWNER){
+            throw new GroupException(ExceptionMessage.INSUFFICIENT_PERMISSION);
         }
 
-        membership.changeRole(role);
+        // 자기보다 낮은 레벨의 역할만 바꿀 수 있다(owner 2명 불가)
+        if(membership.getRole().getPriority() <= targetUserMembership.getRole().getPriority()) {
+            throw new GroupException(ExceptionMessage.INSUFFICIENT_PERMISSION);
+        }
+
+        targetUserMembership.changeRole(role);
     }
 
     @Transactional
-    public void removeMemberFromGroup(Long groupId, Long userId) {
+    public void removeMemberFromGroup(Long groupId, Long userId, Long targetUserId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
         User user = findUserByIdOrThrowUserException(userId);
-        GroupMembership membership = findGroupMemberByIdThrowGroupException(group, user);
+        User targetUser = findUserByIdOrThrowUserException(targetUserId);
 
-        groupMembershipRepository.delete(membership);
+        GroupMembership membership = findGroupMemberByGroupAndUserThrowGroupException(group, user);
+        GroupMembership targetUserMembership = findGroupMemberByGroupAndUserThrowGroupException(group, targetUser);
+
+        // 자기보다 낮은 레벨의 역할만 멤버 삭제가 가능하다
+        if(membership.getRole().getPriority() <= targetUserMembership.getRole().getPriority()) {
+            throw new GroupException(ExceptionMessage.INSUFFICIENT_PERMISSION);
+        }
+
+        groupMembershipRepository.delete(targetUserMembership);
     }
 
     public List<GroupMembershipDto> getGroupMembers(Long groupId) {
@@ -253,7 +275,7 @@ public class GroupService {
                 });
     }
 
-    private GroupMembership findGroupMemberByIdThrowGroupException(Group group, User user) {
+    private GroupMembership findGroupMemberByGroupAndUserThrowGroupException(Group group, User user) {
         return groupMembershipRepository.findByGroupAndUser(group, user)
                 .orElseThrow(() -> {
                     log.warn(">>>> User{} not in Group {} : {}", user.getUserId(), group.getGroupId(), ExceptionMessage.USER_NOT_FOUND);
