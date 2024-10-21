@@ -84,10 +84,10 @@ public class GroupController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{groupId}/members/{targetUserId}")
-    public ResponseEntity<Void> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable Long targetUserId, @AuthenticationPrincipal CustomUserDetails userDetails) {//여기는 다른 사람
+    @DeleteMapping("/{groupId}/members/{targetUsername}")
+    public ResponseEntity<Void> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable String targetUsername, @AuthenticationPrincipal CustomUserDetails userDetails) {//여기는 다른 사람
         Long userId = userDetails.getUser().getUserId();
-        groupService.removeMemberFromGroup(groupId, userId, targetUserId);
+        groupService.removeMemberFromGroup(groupId, userId, targetUsername);
         return ResponseEntity.ok().build();
     }
 
@@ -97,10 +97,10 @@ public class GroupController {
         return ResponseEntity.ok(groupMembers);
     }
 
-    @PutMapping("/{groupId}/members/{targetUserId}/role")
-    public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable Long targetUserId, @RequestParam GroupRole role, @AuthenticationPrincipal CustomUserDetails userDetails) { //userId 변경해야하는 부분
+    @PutMapping("/{groupId}/members/{targetUsername}/role")
+    public ResponseEntity<Void> changeGroupMemberRole(@PathVariable Long groupId, @PathVariable String targetUsername, @RequestParam GroupRole role, @AuthenticationPrincipal CustomUserDetails userDetails) { //userId 변경해야하는 부분
         Long userId = userDetails.getUser().getUserId();
-        groupService.changeGroupMemberRole(groupId, targetUserId, role, userId);
+        groupService.changeGroupMemberRole(groupId, targetUsername, role, userId);
         return ResponseEntity.ok().build();
     }
 

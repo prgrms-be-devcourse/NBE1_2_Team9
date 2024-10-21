@@ -11,4 +11,5 @@ public interface GroupMembershipRepositoryCustom {
     Optional<GroupMembership> findByGroupAndUser(Group group, User user);
     List<GroupMembership> findByUserId(Long userId);
     List<GroupMembership> findByGroup(Group group);
+
 }

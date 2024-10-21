@@ -52,7 +52,7 @@ public class GroupService {
         GroupMembership membership = GroupMembership.builder()
                 .group(savedGroup)
                 .user(creator)
-                .role(GroupRole.ADMIN)
+                .role(GroupRole.OWNER)
                 .build();
         groupMembershipRepository.save(membership);
 
@@ -205,9 +205,9 @@ public class GroupService {
 
     //
     @Transactional
-    public void changeGroupMemberRole(Long groupId, Long targetUserId, GroupRole role, Long userId) {
+    public void changeGroupMemberRole(Long groupId, String targetUsername, GroupRole role, Long userId) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
-        User targetUser = findUserByIdOrThrowUserException(targetUserId);
+        User targetUser = findUserByUsernameOrThrowUserException(targetUsername);
         User user = findUserByIdOrThrowUserException(userId);
 
         GroupMembership targetUserMembership = findGroupMemberByGroupAndUserThrowGroupException(group, targetUser);
@@ -227,10 +227,10 @@ public class GroupService {
     }
 
     @Transactional
-    public void removeMemberFromGroup(Long groupId, Long userId, Long targetUserId) {
+    public void removeMemberFromGroup(Long groupId, Long userId, String targetUsername) {
         Group group = findGroupByIdOrThrowGroupException(groupId);
         User user = findUserByIdOrThrowUserException(userId);
-        User targetUser = findUserByIdOrThrowUserException(targetUserId);
+        User targetUser = findUserByUsernameOrThrowUserException(targetUsername);
 
         GroupMembership membership = findGroupMemberByGroupAndUserThrowGroupException(group, user);
         GroupMembership targetUserMembership = findGroupMemberByGroupAndUserThrowGroupException(group, targetUser);
@@ -263,6 +263,14 @@ public class GroupService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn(">>>> UserId {} : {} <<<<", userId, ExceptionMessage.USER_NOT_FOUND);
+                    return new UserException(ExceptionMessage.USER_NOT_FOUND);
+                });
+    }
+
+    private User findUserByUsernameOrThrowUserException(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.warn(">>>> UserId {} : {} <<<<", username, ExceptionMessage.USER_NOT_FOUND);
                     return new UserException(ExceptionMessage.USER_NOT_FOUND);
                 });
     }

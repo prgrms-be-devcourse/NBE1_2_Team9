@@ -176,3 +176,26 @@ export const updateGroup = async (groupId, updatedData) => {
         throw error;
     }
 };
+
+export const changeMemberRole = async (groupId, username, newRole) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/groups/${groupId}/members/${username}/role`, null, {
+            params: { role: newRole },  // 역할을 쿼리 파라미터로 전달
+            withCredentials: true
+        });
+        return response.data;
+    } catch (error) {
+        console.error('역할 변경 실패:', error);
+        throw error;
+    }
+};
+
+export const removeMemberFromGroup = async (groupId, username) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/groups/${groupId}/members/${username}`, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error('멤버 삭제 실패:', error);
+        throw error;
+    }
+};
